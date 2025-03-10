@@ -34,6 +34,11 @@ class Role extends Model
         return $this->hasMany(Resource::class);
     }
 
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
     // Since we have not implemented middleware, the following may be useful
 
     public function isAdmin(): bool

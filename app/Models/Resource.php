@@ -44,4 +44,9 @@ class Resource extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
 }
