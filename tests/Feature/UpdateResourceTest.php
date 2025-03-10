@@ -6,14 +6,12 @@ namespace Tests\Feature;
 
 use App\Models\Resource;
 use App\Models\Role;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class UpdateResourceTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use WithFaker;
 
    
     protected function setUp(): void
@@ -33,7 +31,7 @@ class UpdateResourceTest extends TestCase
     //Solicitar una actualizacion de un reource
     private function updateResourceRequest(int $resourceId, array $data)
     {
-        return $this->putJson(route('resource.update', $resourceId), $data);
+        return $this->putJson(route('resources.update', $resourceId), $data);
     }
 
    //Puede actualizar un resource

@@ -6,8 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Resource;
 use App\Models\Role;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -15,12 +13,7 @@ use Tests\TestCase;
 
 class CreateResourceTest extends TestCase
 {
-    use DatabaseTransactions, WithFaker;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
+    use WithFaker;
 
     private function GetResourceData(): array
     {

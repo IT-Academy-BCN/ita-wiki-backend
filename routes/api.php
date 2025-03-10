@@ -14,7 +14,7 @@ Route::get('/resources', [ResourceController::class, 'index'])->name('resources'
 
 Route::get('/users/user-signedin-as', [RoleController::class, 'getRoleByGithubId']);
 
-Route::put('/resources/{resource}', [ResourceEditController::class, 'update'])->name('resource.update');
+Route::put('/resources/{resource}', [ResourceEditController::class, 'update'])->name('resources.update');
 
 
 

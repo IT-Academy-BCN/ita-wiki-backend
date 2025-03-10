@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Role;
@@ -10,7 +9,6 @@ use Database\Seeders\RoleSeeder;
 
 class RoleControllerTest extends TestCase
 {
-    use RefreshDatabase;
     protected $student;
 
     public function setUp(): void
