@@ -7,7 +7,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\GithubIdRule;
 use App\Rules\RoleStudentRule;
-//use App\Models\Role;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BookmarkRequest extends FormRequest
 {
@@ -24,12 +25,16 @@ class BookmarkRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    
+     protected function prepareForValidation()
     {
         if ($this->route('github_id')) {
             $this->merge(['github_id' => $this->route('github_id')]);
         }
+    }
 
+     public function rules(): array
+    {
         $rules = [
             'github_id' => [
                 new GithubIdRule(), // General validation for github_id
@@ -42,5 +47,13 @@ class BookmarkRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        if ($this->expectsJson()) {
+            throw new HttpResponseException(response()->json($validator->errors(), 422));
+        }
+        parent::failedValidation($validator);
     }
 }

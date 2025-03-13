@@ -19,7 +19,7 @@ class ResourceFactory extends Factory
      */
     public function definition(): array
     {
-        $role = Role::where('role', '!=', 'anonymous')
+        $role = Role::where('role', '=', 'student')
         ->inRandomOrder()
         ->first();
 

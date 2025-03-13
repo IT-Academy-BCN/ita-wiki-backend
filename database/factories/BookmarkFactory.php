@@ -50,26 +50,5 @@ class BookmarkFactory extends Factory
             'github_id' => $randomPair[0],
             'resource_id' => $randomPair[1],
         ];
-        /*
-        do {
-            $role = Role::where('role', 'student')->inRandomOrder()->first();
-            $resource = Resource::inRandomOrder()->first();
-        
-            if (!$role || !$resource) {
-                throw new \Exception('Roles or Resources table is empty.');
-            }
-
-            $github_id = $role->github_id;
-            $resource_id = $resource->id;
-
-        } while (Bookmark::where('github_id', $github_id)
-            ->where('resource_id', $resource_id)
-            ->exists());
-
-        return [
-            'github_id' => $github_id,
-            'resource_id' => $resource_id,
-        ];
-        */
     }
 }

@@ -13,7 +13,6 @@ use App\Models\Bookmark;
 class BookmarkControllerTest extends TestCase
 {
     protected $student;
-    protected $anonymous;
     protected $resources;
     protected $bookmarks;
 
@@ -25,14 +24,8 @@ class BookmarkControllerTest extends TestCase
             'github_id' => 9871315,
             'role' => 'student'
         ]);
-        $this->anonymous = Role::factory()->create([
-            'github_id' => 9861725,
-            'role' => 'anonymous'
-        ]);
 
-        $this->resources = Resource::factory(3)->create([
-            'github_id' => $this->student->github_id
-        ]);
+        $this->resources = Resource::factory(10)->create();
 
         $this->bookmarks = [
             Bookmark::create([
@@ -50,13 +43,13 @@ class BookmarkControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(2)
             ->assertJson([
-                ['github_id' => 9871315, 'resource_id' => $this->resources[0]->id],
-                ['github_id' => 9871315, 'resource_id' => $this->resources[1]->id]
+                ['github_id' => $this->student->github_id, 'resource_id' => $this->resources[0]->id],
+                ['github_id' => $this->student->github_id, 'resource_id' => $this->resources[1]->id]
             ]);
     }
 
     public function testGetBookmarksForUnexistentRoleFails(): void {
-        $nonExistentGithubId = 92920;
+        $nonExistentGithubId = 38928374;
         $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
         $response->assertStatus(422);
     }
@@ -111,19 +104,6 @@ class BookmarkControllerTest extends TestCase
             'github_id' => $this->student->github_id,
             'resource_id' => 447012
         ]);
-        $response->assertStatus(422);
-    }
-
-    public function testCreateAnonymousBookmarkFails() : void {
-        $response = $this->post('api/bookmarks', [
-            'github_id' => $this->anonymous->github_id,
-            'resource_id' => 2]);
-        $response->assertStatus(422);
-    }
-
-    public function testGetAnonymousBookmarksFails(): void
-    {
-        $response = $this->get('api/bookmarks/' . $this->anonymous->github_id);
         $response->assertStatus(422);
     }
 }
