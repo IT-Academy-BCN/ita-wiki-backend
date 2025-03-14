@@ -23,7 +23,7 @@ class RoleFactory extends Factory
         } while (Role::where('github_id', $githubId)->exists());
         return [
             'github_id' => $githubId,
-            'role' => $this->faker->randomElement(['admin', 'mentor', 'student', 'anonymous']),
+            'role' => $this->faker->randomElement(['admin', 'mentor', 'student']),
         ];
     }
 }

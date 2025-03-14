@@ -22,3 +22,5 @@ Route::get('/bookmarks/{github_id}', [BookmarkController::class,'getStudentBookm
 Route::post('/bookmarks', [BookmarkController::class,'createStudentBookmark'])->name('bookmark.create');
 
 Route::delete('/bookmarks', [BookmarkController::class,'deleteStudentBookmark'])->name('bookmark.delete');
+
+Route::post('/roles', [RoleController::class, 'createRole'])->name('roles.create');

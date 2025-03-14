@@ -34,10 +34,95 @@
             }
         },
         "/api/roles": {
+            "post": {
+                "summary": "Create a new role",
+                "description": "Allows an authorized user to create a new role for a specific GitHub ID.",
+                "operationId": "4131bb39b430bdf2d95b73111d2e126a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "role",
+                                    "authorized_github_id"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "description": "GitHub ID of the user to assign the role",
+                                        "type": "integer",
+                                        "example": 12345
+                                    },
+                                    "role": {
+                                        "description": "Role to be assigned",
+                                        "type": "string",
+                                        "example": "mentor"
+                                    },
+                                    "authorized_github_id": {
+                                        "description": "GitHub ID of the user making the request (must have permissions)",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Role created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rol creado con éxito."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized: Cannot create a role equal or higher than your own",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No puedes crear un rol igual o superior al tuyo."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/user-signedin-as": {
             "get": {
                 "summary": "Retrieve a role by GitHub ID",
-                "description": "Fetches a role using the provided GitHub ID. If the role does not exist, it creates a new role for the user as anonymous.",
-                "operationId": "191581065659b730e9c5171735405640",
+                "description": "Fetches a role using the provided GitHub ID.",
+                "operationId": "199a3501936a1430a8c84f030f9e6cb1",
+                "parameters": [
+                    {
+                        "name": "github_id",
+                        "in": "query",
+                        "description": "GitHub ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Role found",
@@ -58,18 +143,15 @@
                             }
                         }
                     },
-                    "201": {
-                        "description": "Role not found, created as a new anonymous user",
+                    "404": {
+                        "description": "Role not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Role not found. Created as new anonymous user."
-                                        },
-                                        "role": {
-                                            "$ref": "#/components/schemas/Role"
+                                            "example": "Role not found."
                                         }
                                     },
                                     "type": "object"
@@ -109,6 +191,48 @@
                         "format": "url",
                         "example": "https://www.hola.com",
                         "nullable": true
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "Node",
+                            "React",
+                            "Angular",
+                            "JavaScript",
+                            "Java",
+                            "Fullstack PHP",
+                            "Data Science",
+                            "BBDD"
+                        ],
+                        "example": "Node"
+                    },
+                    "theme": {
+                        "type": "string",
+                        "enum": [
+                            "All",
+                            "Components",
+                            "UseState & UseEffect",
+                            "Eventos",
+                            "Renderizado condicional",
+                            "Listas",
+                            "Estilos",
+                            "Debugging",
+                            "React Router"
+                        ],
+                        "example": "All"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Video",
+                            "Cursos",
+                            "Blog"
+                        ],
+                        "example": "Video"
+                    },
+                    "votes": {
+                        "type": "integer",
+                        "example": 1
                     }
                 },
                 "type": "object"

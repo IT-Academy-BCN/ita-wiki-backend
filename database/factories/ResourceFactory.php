@@ -19,9 +19,7 @@ class ResourceFactory extends Factory
      */
     public function definition(): array
     {
-        $role = Role::where('role', '!=', 'anonymous')
-        ->inRandomOrder()
-        ->first();
+        $role = Role::find(1)->inRandomOrder("id")->first();
 
         return [
             'github_id' => $role->github_id,

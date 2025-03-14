@@ -35,18 +35,14 @@ class CreateResourceTest extends TestCase
         $response->assertStatus(404);
     } 
     
-    public function testItCanShowStatus_422WhenGithubIdIsAnonymous(): void
+    public function testItCanShowStatus_404WhenGithubIdDoesNotHaveARole(): void
     {
-        $anonymousGithubId = Role::factory()->create(['role' => 'anonymous'])->github_id;
         $data = $this->GetResourceData();
-        $data['github_id'] = $anonymousGithubId;
+        $data['github_id'] = '9999999';
     
         $response = $this->postJson(route('resources.store'), $data);
 
-        $response->assertStatus(422)
-            ->assertJsonPath('github_id', function ($errors) {
-                return is_array($errors) && count($errors) > 0;
-            });
+        $response->assertStatus(404);
     }    
 
     #[DataProvider('resourceValidationProvider')]

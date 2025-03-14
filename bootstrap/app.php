@@ -31,8 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->reportable(function (ValidationException $e) {
             Log::error('Error de validación: ' . $e->getMessage());
         });
-        $exceptions->renderable(function (ValidationException $e) {
-            return response()->json(['error' => 'Datos de entrada inválidos'], 422);
+        $exceptions->renderable(function (ValidationException $e,  $request) {
+            if ($request->is('api/*')) {
+                return response()->json($e->errors(),
+                 422);
+            }
         });
 
         $exceptions->reportable(function (AuthenticationException $e) {
