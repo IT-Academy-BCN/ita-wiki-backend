@@ -55,15 +55,17 @@
                                         },
                                         "resource_id": {
                                             "type": "integer",
-                                            "example": 11
+                                            "example": 10
                                         },
                                         "created_at": {
                                             "type": "string",
-                                            "format": "date-time"
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
                                         },
                                         "updated_at": {
                                             "type": "string",
-                                            "format": "date-time"
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
                                         }
                                     },
                                     "type": "object"
@@ -181,15 +183,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "bookmarks": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Bookmark"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Bookmark"
+                                    }
                                 }
                             }
                         }
@@ -203,7 +200,7 @@
                     "Resources"
                 ],
                 "summary": "Get all resources",
-                "description": "return a list of all resources",
+                "description": "Returns a list of all resources",
                 "operationId": "ee96de2f37d473ea4740b7700ddd1daf",
                 "responses": {
                     "200": {
@@ -211,11 +208,164 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Resource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Create a new resource",
+                "description": "Creates a new resource and returns the created resource",
+                "operationId": "0da436b1bb56ca9fcbc4523e6be6b1cc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "title",
+                                    "description",
+                                    "url",
+                                    "category",
+                                    "theme",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "description": "GitHub ID of an existing user role creating the resource",
+                                        "type": "integer",
+                                        "example": 6729608
+                                    },
+                                    "title": {
+                                        "description": "Title of the resource",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "minLength": 5,
+                                        "example": "Laravel Best Practices"
+                                    },
+                                    "description": {
+                                        "description": "Description of the resource (10-1000 characters)",
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "minLength": 10,
+                                        "example": "A collection of best practices for Laravel development"
+                                    },
+                                    "url": {
+                                        "description": "URL of the resource",
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://laravelbestpractices.com"
+                                    },
+                                    "category": {
+                                        "description": "Category of the resource",
+                                        "type": "string",
+                                        "enum": [
+                                            "Node",
+                                            "React",
+                                            "Angular",
+                                            "JavaScript",
+                                            "Java",
+                                            "Fullstack PHP",
+                                            "Data Science",
+                                            "BBDD"
+                                        ],
+                                        "example": "React"
+                                    },
+                                    "theme": {
+                                        "description": "Theme of the resource",
+                                        "type": "string",
+                                        "enum": [
+                                            "All",
+                                            "Components",
+                                            "UseState & UseEffect",
+                                            "Eventos",
+                                            "Renderizado condicional",
+                                            "Listas",
+                                            "Estilos",
+                                            "Debugging",
+                                            "React Router"
+                                        ],
+                                        "example": "Components"
+                                    },
+                                    "type": {
+                                        "description": "Type of the resource",
+                                        "type": "string",
+                                        "enum": [
+                                            "Video",
+                                            "Cursos",
+                                            "Blog"
+                                        ],
+                                        "example": "Video"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Resource created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
                                     "properties": {
-                                        "resources": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Resource"
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "github_id": [
+                                                    "The github_id field is required.",
+                                                    "The selected github_id is invalid."
+                                                ],
+                                                "title": [
+                                                    "The title field is required.",
+                                                    "Title must be at least 5 characters.",
+                                                    "Title must not exceed 255 characters."
+                                                ],
+                                                "description": [
+                                                    "The description field is required.",
+                                                    "Description must be at least 10 characters.",
+                                                    "Description must not exceed 1000 characters."
+                                                ],
+                                                "url": [
+                                                    "The url field is required.",
+                                                    "The url format is invalid."
+                                                ],
+                                                "category": [
+                                                    "The category field is required.",
+                                                    "The selected category is invalid."
+                                                ],
+                                                "theme": [
+                                                    "The theme field is required.",
+                                                    "The selected theme is invalid."
+                                                ],
+                                                "type": [
+                                                    "The type field is required.",
+                                                    "The selected type is invalid."
+                                                ]
                                             }
                                         }
                                     },
@@ -465,9 +615,23 @@
                         ],
                         "example": "Video"
                     },
-                    "votes": {
+                    "bookmark_count": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "like_count": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
                     }
                 },
                 "type": "object"

@@ -31,9 +31,9 @@ class BookmarkController extends Controller
      *             type="object",
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="github_id", type="integer", example=6729608),
-     *             @OA\Property(property="resource_id", type="integer", example=11),
-     *             @OA\Property(property="created_at", type="string", format="date-time"),
-     *             @OA\Property(property="updated_at", type="string", format="date-time")
+     *             @OA\Property(property="resource_id", type="integer", example=10),
+     *             @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-03T15:27:09.000000Z"),
+     *             @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-03T15:27:09.000000Z")
      *         )
      *     ),
      *     @OA\Response(
@@ -124,8 +124,8 @@ class BookmarkController extends Controller
      *         response=200,
      *         description="Success",
      *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="bookmarks", type="array", @OA\Items(ref="#/components/schemas/Bookmark"))
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Bookmark")
      *         )
      *     )
      * )

@@ -20,7 +20,10 @@ use Illuminate\Database\Eloquent\Model;
      *      @OA\Property(property="category", type="string", enum={"Node","React","Angular","JavaScript","Java","Fullstack PHP", "Data Science","BBDD"}, example="Node"),
      *      @OA\Property(property="theme", type="string", enum={"All","Components","UseState & UseEffect","Eventos","Renderizado condicional","Listas", "Estilos","Debugging", "React Router"}, example="All"),
      *      @OA\Property(property="type", type="string", enum={"Video","Cursos","Blog"}, example="Video"),
-     *      @OA\Property(property="votes", type="integer", example = 1)
+     *      @OA\Property(property="bookmark_count", type="integer", example = 1),
+     *      @OA\Property(property="like_count", type="integer", example = 1),
+     *      @OA\Property(property="created_at", type="string", format="date-time", example="2025-03-17T19:23:41.000000Z"),
+     *      @OA\Property(property="updated_at", type="string", format="date-time", example="2025-03-17T19:23:41.000000Z")
      * )
      */
 class Resource extends Model
@@ -36,7 +39,8 @@ class Resource extends Model
         'category',
         'theme',
         'type',
-        'votes'
+        'bookmark_count',
+        'like_count'
     ];
 
     public function role()

@@ -55,6 +55,8 @@ class BookmarkControllerTest extends TestCase
 
     public function testDestroyBookmark(): void
     {
+        $initial_count = $this->bookmarks[1]->resource->bookmark_count;
+
         $response = $this->delete('api/bookmarks', [
             'github_id' => $this->student->github_id,
             'resource_id' => $this->bookmarks[1]->resource_id
@@ -68,10 +70,16 @@ class BookmarkControllerTest extends TestCase
             'github_id' => $this->student->github_id,
             'resource_id' => $this->bookmarks[1]->resource_id
         ]);
+
+        // Assert counter decremented by BookmarkObserver
+        $this->assertEquals($initial_count - 1, $this->bookmarks[1]->resource->fresh()->bookmark_count);
     }
 
     public function testCreateBookmark(): void
     {
+        $test_increment_resource = $this->resources[2];
+        $initial_count = $test_increment_resource->bookmark_count;
+
         $response = $this->post('api/bookmarks', [
             'github_id' => $this->student->github_id,
             'resource_id' => $this->resources[2]->id
@@ -87,6 +95,9 @@ class BookmarkControllerTest extends TestCase
             'github_id' => $this->student->github_id,
             'resource_id' => $this->resources[2]->id
         ]);
+
+        // Assert counter incremented by BookmarkObserver
+        $this->assertEquals($initial_count + 1, $test_increment_resource->fresh()->bookmark_count);
     }
 
     public function testCreateBookmarkForNonexistentRoleFails(): void {

@@ -4,6 +4,8 @@ declare (strict_types= 1);
 
 namespace App\Models;
 
+use App\Observers\BookmarkObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -20,7 +22,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * )
  */
 
-class Bookmark extends Model
+#[ObservedBy([BookmarkObserver::class])]
+ class Bookmark extends Model
 {
     use HasFactory;
     protected $table = 'bookmarks';
