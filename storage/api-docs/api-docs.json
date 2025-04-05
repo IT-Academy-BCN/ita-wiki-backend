@@ -55,15 +55,17 @@
                                         },
                                         "resource_id": {
                                             "type": "integer",
-                                            "example": 11
+                                            "example": 10
                                         },
                                         "created_at": {
                                             "type": "string",
-                                            "format": "date-time"
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
                                         },
                                         "updated_at": {
                                             "type": "string",
-                                            "format": "date-time"
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
                                         }
                                     },
                                     "type": "object"
@@ -143,7 +145,7 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "error": {
+                                        "message": {
                                             "type": "string",
                                             "example": "Bookmark not found"
                                         }
@@ -181,15 +183,198 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Bookmark"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/likes": {
+            "post": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Create a like",
+                "description": "Creates a new like and returns a confirmation message",
+                "operationId": "5ac3202f731f8f61051e941be69be36a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "resource_id"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "type": "integer",
+                                        "example": 6729608
+                                    },
+                                    "resource_id": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
                                     "properties": {
-                                        "bookmarks": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Bookmark"
-                                            }
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "github_id": {
+                                            "type": "integer",
+                                            "example": 6729608
+                                        },
+                                        "resource_id": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-03T15:27:09.000000Z"
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Like already exists."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Delete a like",
+                "description": "Deletes a like and returns a confirmation message",
+                "operationId": "20e338aa7fcb7d52fa22762125b1a3ea",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "resource_id"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "type": "integer",
+                                        "example": 6729608
+                                    },
+                                    "resource_id": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Like deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Like not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/likes/{github_id}": {
+            "get": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Get all likes for a student",
+                "description": "If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
+                "operationId": "f550cb3cd10c52a7b8a033b17039f72c",
+                "parameters": [
+                    {
+                        "name": "github_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6729608
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Like"
+                                    }
                                 }
                             }
                         }
@@ -211,15 +396,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "resources": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Resource"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Resource"
+                                    }
                                 }
                             }
                         }
@@ -385,7 +565,37 @@
                     "resource_id": {
                         "description": "Foreign key representing the ID of the bookmarked resource",
                         "type": "integer",
-                        "example": 11
+                        "example": 10
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Like": {
+                "title": "Like",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 9
+                    },
+                    "github_id": {
+                        "description": "Foreign key representing the GitHub ID of the user",
+                        "type": "integer",
+                        "example": 6729608
+                    },
+                    "resource_id": {
+                        "description": "Foreign key representing the ID of the liked resource",
+                        "type": "integer",
+                        "example": 10
                     },
                     "created_at": {
                         "type": "string",
@@ -465,9 +675,23 @@
                         ],
                         "example": "Video"
                     },
-                    "votes": {
+                    "bookmark_count": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "like_count": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
                     }
                 },
                 "type": "object"
@@ -494,6 +718,10 @@
         {
             "name": "Bookmarks",
             "description": "Bookmarks"
+        },
+        {
+            "name": "Likes",
+            "description": "Likes"
         },
         {
             "name": "Resources",
