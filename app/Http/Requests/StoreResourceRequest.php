@@ -29,8 +29,8 @@ class StoreResourceRequest extends FormRequest
                 'required',
                 'exists:roles,github_id'
             ],
-            'description' => ['required', 'string', 'min:10', 'max:1000'],
             'title' => ['required', 'string', 'min:5', 'max:255'],
+            'description' => ['required', 'string', 'min:10', 'max:1000'],
             'url' => ['required', 'url'],
             'category' => ['required', 'string', 'in:Node,React,Angular,JavaScript,Java,Fullstack PHP,Data Science,BBDD'],
             'theme' => ['required', 'string', 'in:All,Components,UseState & UseEffect,Eventos,Renderizado condicional,Listas,Estilos,Debugging,React Router'],

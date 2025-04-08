@@ -25,10 +25,12 @@
                                 ],
                                 "properties": {
                                     "github_id": {
+                                        "description": "GitHub ID of the user creating the bookmark",
                                         "type": "integer",
                                         "example": 6729608
                                     },
                                     "resource_id": {
+                                        "description": "ID of the resource being bookmarked by the user",
                                         "type": "integer",
                                         "example": 10
                                     }
@@ -565,6 +567,109 @@
                 }
             }
         },
+        "/api/resources/{resource}": {
+            "put": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Update a resource",
+                "description": "Update an existing resource with validation",
+                "operationId": "2fb72cef844f47cbfbad3db9664d992c",
+                "parameters": [
+                    {
+                        "name": "resource",
+                        "in": "path",
+                        "description": "ID of the resource to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "title",
+                                    "description",
+                                    "url"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "type": "integer",
+                                        "example": 6729608
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Laravel Best Practices"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "A collection of best practices for Laravel development"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://laravelbestpractices.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Resource updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "The title field is required.",
+                                                    "Title must be at least 5 characters.",
+                                                    "Title must not exceed 255 characters."
+                                                ],
+                                                "description": [
+                                                    "The description field is required.",
+                                                    "Description must be at least 10 characters.",
+                                                    "Description must not exceed 1000 characters."
+                                                ],
+                                                "url": [
+                                                    "The url field is required.",
+                                                    "The url format is invalid."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/roles": {
             "post": {
                 "tags": [
@@ -779,12 +884,12 @@
                         "type": "integer",
                         "example": 12345
                     },
-                    "description": {
+                    "title": {
                         "type": "string",
                         "example": "Lorem Ipsum ...",
                         "nullable": true
                     },
-                    "title": {
+                    "description": {
                         "type": "string",
                         "example": "Lorem Ipsum ...",
                         "nullable": true
@@ -855,6 +960,7 @@
                 "type": "object"
             },
             "Role": {
+                "title": "Role",
                 "description": "Role object representing a user's role and associated GitHub ID",
                 "properties": {
                     "github_id": {
@@ -866,6 +972,16 @@
                         "description": "The role of the user",
                         "type": "string",
                         "example": "student"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
                     }
                 },
                 "type": "object"

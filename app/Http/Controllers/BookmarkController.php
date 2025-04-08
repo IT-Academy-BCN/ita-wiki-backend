@@ -20,8 +20,8 @@ class BookmarkController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"github_id","resource_id"},
-     *             @OA\Property(property="github_id", type="integer", example=6729608),
-     *             @OA\Property(property="resource_id", type="integer", example=10)
+     *             @OA\Property(property="github_id", type="integer", example=6729608, description="GitHub ID of the user creating the bookmark"),
+     *             @OA\Property(property="resource_id", type="integer", example=10, description="ID of the resource being bookmarked by the user")
      *         )
      *     ),
      *     @OA\Response(
