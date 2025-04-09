@@ -19,6 +19,6 @@ class RoleSeeder extends Seeder
             'role' => 'student',
         ]);
 
-        Role::factory(20)->create();
+        Role::factory()->count(20)->create();
     }
 }
