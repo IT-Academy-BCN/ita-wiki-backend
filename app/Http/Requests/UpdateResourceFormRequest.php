@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -15,13 +16,14 @@ class UpdateResourceFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        /*
         $resource = $this->route('resource');
-        return $resource && $this->input('github_id') == $resource->github_id;
-        */
-        // Code commented above returns 500 instead of 403 (?!) but seems to be correct (postman trials)... We probably need a session model that extends Authenticable (github_id and token)
-        // (works but also breaks tets)
-        return true;
+        $githubId = $this->input('github_id');
+
+        $isOwner = $resource && $githubId == $resource->github_id;
+        $userRole = Role::where('github_id', $githubId)->value('role');
+        $isAdmin = in_array($userRole, ['superadmin', 'admin']);
+
+        return $isOwner || $isAdmin;
     }
 
     /**
