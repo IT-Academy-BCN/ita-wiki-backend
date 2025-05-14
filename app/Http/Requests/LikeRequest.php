@@ -50,4 +50,15 @@ class LikeRequest extends FormRequest
 
         return $rules;
     }
+
+    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator): void
+    {
+        if ($this->expectsJson()) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                response()->json(['errors' => $validator->errors()], 422)
+            );
+        }
+
+        parent::failedValidation($validator);
+    }
 }
