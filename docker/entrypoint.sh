@@ -33,9 +33,14 @@ if [ "$APP_ENV" = "development" ]; then
     echo "Running fresh migrations and seeding..."
     php artisan migrate:fresh --seed --force
 else
-    echo "Running standard migrations..."
-    php artisan migrate --force
-    php artisan db:seed --force
+echo "Running standard migrations..."
+    if php artisan migrate --force; then
+        echo "Running seeders..."
+        php artisan db:seed --force
+    else
+        echo "Migration failed! Skipping seeders."
+        exit 1
+    fi
 fi
 
 echo "Generating application key..."
