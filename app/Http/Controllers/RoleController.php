@@ -224,7 +224,7 @@ class RoleController extends Controller
     */
 
 
-    public function roleSelfAssignment(Request $request)
+    public function roleSelfAssignment(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'github_id' => new GithubIdRule(),
