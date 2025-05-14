@@ -47,7 +47,7 @@ class BookmarkController extends Controller
      * )
     */
 
-    public function createStudentBookmark(BookmarkRequest $request)
+    public function createStudentBookmark(BookmarkRequest $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validated();
         $existingBookmark = Bookmark::where('github_id', $validated['github_id'])
@@ -95,7 +95,7 @@ class BookmarkController extends Controller
      * )
     */
 
-    public function deleteStudentBookmark(BookmarkRequest $request)
+    public function deleteStudentBookmark(BookmarkRequest $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validated();
         $bookmark = Bookmark::where('github_id', $validated['github_id'])
@@ -131,7 +131,7 @@ class BookmarkController extends Controller
      * )
     */
 
-    public function getStudentBookmarks(BookmarkRequest $request)
+    public function getStudentBookmarks(BookmarkRequest $request): \Illuminate\Http\JsonResponse
     {
         $bookmarks = Bookmark::where('github_id', $request->validated('github_id'))->get();
         return response()->json($bookmarks, 200);
