@@ -47,7 +47,11 @@ jobs:
         run: php artisan key:generate
 
       - name: Wait for MySQL to be Ready
-        run: sleep 15
+        run: |
+          until mysqladmin ping -h"127.0.0.1" -P"3306" -u"user" -p"password" --silent; do
+            echo "MySQL no está listo - esperando..."
+            sleep 3
+          done
 
       - name: Run Migrations
         env:
