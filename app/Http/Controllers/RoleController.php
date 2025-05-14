@@ -153,7 +153,7 @@ class RoleController extends Controller
     * )
     */
 
-    public function getRoleByGithubId(Request $request)
+    public function getRoleByGithubId(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'github_id' => 'required|integer'
