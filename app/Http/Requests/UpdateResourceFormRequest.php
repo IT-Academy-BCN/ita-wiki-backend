@@ -33,19 +33,6 @@ class UpdateResourceFormRequest extends FormRequest
     {
         return [
             'github_id' => ['required', 'integer', 'gt:0'],
-            // Code below works but is not the way to do it, we should use authorize() above
-            /*
-            'github_id' => [
-                new GithubIdRule(),
-                new RoleStudentRule(),
-                function ($attribute, $value, $fail) {
-                    $resource = $this->route('resource');
-                    if (!$resource || $value != $resource->github_id) {
-                        $fail('You are not authorized to update this resource.');
-                    }
-                }
-            ],
-            */
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['nullable', 'string', 'min:10', 'max:1000'],
             'url' => ['required', 'url'],
@@ -66,7 +53,7 @@ class UpdateResourceFormRequest extends FormRequest
         }
 
         parent::failedValidation($validator);
-    } 
+    }
 }
 
 
