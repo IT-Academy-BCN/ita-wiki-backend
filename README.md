@@ -80,3 +80,4 @@ Xavier R
 Sergio López
 Frank Pulido (@frankpulido)
 
+Raquel Patiño
