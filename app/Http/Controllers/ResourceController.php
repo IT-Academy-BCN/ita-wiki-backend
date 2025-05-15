@@ -60,8 +60,8 @@ class ResourceController extends Controller
      *     )
      * )
      */
-    
-    public function store(StoreResourceRequest $request)
+
+    public function store(StoreResourceRequest $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validated();
         $resource = Resource::create($validated);
@@ -85,7 +85,7 @@ class ResourceController extends Controller
      * )
      */
 
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $resources = Resource::all();
         return response()->json($resources, 200);

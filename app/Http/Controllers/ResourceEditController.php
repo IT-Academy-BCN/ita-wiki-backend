@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\UpdateResourceFormRequest;
 use App\Models\Resource;
-
 
 class ResourceEditController extends Controller
 {
@@ -59,7 +59,7 @@ class ResourceEditController extends Controller
      * )
     */
 
-    public function update(UpdateResourceFormRequest $request, Resource $resource)
+    public function update(UpdateResourceFormRequest $request, Resource $resource): \Illuminate\Http\JsonResponse
     {
         //Obtenemos los datos validados
         $validated = $request->validated();

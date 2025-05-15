@@ -25,11 +25,13 @@ class LikeRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    
     protected function prepareForValidation()
     {
-        if ($this->route('github_id')) {
-            $this->merge(['github_id' => $this->route('github_id')]);
+        $githubId = $this->route('github_id');
+        if ($githubId !== null) {
+            $this->merge(['github_id' => $githubId]);
+        } elseif (!$this->has('github_id')) {
+            $this->merge(['github_id' => null]);
         }
     }
 
@@ -47,5 +49,16 @@ class LikeRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function failedValidation(Validator $validator): void
+    {
+        if ($this->expectsJson()) {
+            throw new HttpResponseException(
+                response()->json(['errors' => $validator->errors()], 422)
+            );
+        }
+
+        parent::failedValidation($validator);
     }
 }

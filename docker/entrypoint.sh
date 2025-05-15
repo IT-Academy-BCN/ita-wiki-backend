@@ -33,17 +33,28 @@ if [ "$APP_ENV" = "development" ]; then
     echo "Running fresh migrations and seeding..."
     php artisan migrate:fresh --seed --force
 else
-    echo "Running standard migrations..."
-    php artisan migrate --force
-    php artisan db:seed --force
+echo "Running standard migrations..."
+    if php artisan migrate --force; then
+        echo "Running seeders..."
+        php artisan db:seed --force
+    else
+        echo "Migration failed! Skipping seeders."
+        exit 1
+    fi
 fi
 
 echo "Generating application key..."
 php artisan key:generate --force
 
 echo "Caching configuration..."
-php artisan config:cache
-php artisan route:cache
+if [ "$APP_ENV" != "development" ]; then
+    echo "Caching configuration..."
+    php artisan config:cache
+    php artisan route:cache
+else
+    echo "Skipping cache in development environment..."
+fi
+
 if [ -L /var/www/html/public/storage ]; then
     echo "Removing existing storage link..."
     rm /var/www/html/public/storage

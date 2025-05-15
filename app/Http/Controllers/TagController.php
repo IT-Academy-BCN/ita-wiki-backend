@@ -4,7 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\Tag;
 use App\Models\Resource;
 
@@ -27,7 +27,7 @@ class TagController extends Controller
      * )
     */
 
-    public function index()
+    public function index(): JsonResponse
     {
         $tags = Tag::all();
         return response()->json($tags, 200);
@@ -53,7 +53,7 @@ class TagController extends Controller
      * )
     */
 
-    public function getTagsFrequency()
+    public function getTagsFrequency(): JsonResponse
     {
         $frequencies = Resource::all()
             ->pluck('tags')
@@ -61,7 +61,7 @@ class TagController extends Controller
             ->flatten()
             ->countBy()
             ->all();
-        
+
         return response()->json($frequencies, 200);
     }
 
@@ -91,7 +91,7 @@ class TagController extends Controller
      * )
     */
 
-    public function getCategoryTagsFrequency()
+    public function getCategoryTagsFrequency(): JsonResponse
     {
         $categorizedResources = Resource::all()->groupBy('category');
         foreach ($categorizedResources as $category => $resources) {
