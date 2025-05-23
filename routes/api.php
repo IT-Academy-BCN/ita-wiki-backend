@@ -41,7 +41,7 @@ Route::get('/tags/frequency', [TagController::class, 'getTagsFrequency'])->name(
 
 Route::get('/tags/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
 
-
+Route::get('/tags/by-category', [TagController::class, 'getCategoryTagsId'])->name('category.tags.id');
 
 
 // FEATURE FLAGS ENDPOINTS

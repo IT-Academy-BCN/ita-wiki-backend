@@ -68,4 +68,10 @@ class TagControllerTest extends TestCase
         $response = $this->get(route('category.tags.frequency'));
         $response->assertStatus(200);
     }
+
+      public function testCanGetCategoryTagsId(): void
+    {
+        $response = $this->get('/api/tags/by-category');
+        $response->assertStatus(200);
+    }
 }

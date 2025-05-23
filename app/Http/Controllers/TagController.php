@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Models\Resource;
+use Illuminate\Http\JsonResponse;
+
 
 class TagController extends Controller
 {
@@ -106,4 +108,47 @@ class TagController extends Controller
 
         return response()->json($frequencies, 200);
     }
+/**
+     * @OA\Get(
+     *     path="/api/tags/by-category",
+     *     summary="Get tag IDs grouped by category",
+     *     tags={"Tags"},
+     *     description="Returns the IDs of tags used in resources, grouped by resource category. This does not require a pivot table and is based on matching tag names from a JSON column.",
+     *     @OA\Response(
+     *         response=200,
+     *         description="An object with category names as keys and arrays of tag IDs as values",
+     *         @OA\JsonContent(
+     *              type="object",
+     *              example={
+     *                  "Fullstack PHP": {1, 5, 6},
+     *                  "React": {3, 7}
+     *              }
+     *         )
+     *     )
+     * )
+     */
+    public function getCategoryTagsId () : JsonResponse
+    {
+         $resourcesByCategory = Resource::all()->groupBy('category');
+        $tagsByCategory = [];
+
+    foreach ($resourcesByCategory as $category => $resources) {
+        $tagNames = $resources
+            ->pluck('tags')     
+            ->filter()
+            ->flatten()        
+            ->unique()
+            ->values();
+            
+
+        $tagIds = Tag::whereIn('name', $tagNames)->pluck('id')->all();
+        
+        $tagsByCategory[$category] = $tagIds;
+    }
+
+    return response()->json($tagsByCategory, 200);
+
+    }
+
+    
 }

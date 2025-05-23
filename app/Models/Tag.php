@@ -28,4 +28,6 @@ class Tag extends Model
     protected $casts = [
         'name' => 'string',
     ];
+
+  
 }
