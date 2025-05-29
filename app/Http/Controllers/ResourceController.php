@@ -4,8 +4,9 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreResourceRequest;
 use App\Models\Resource;
+use App\Http\Requests\StoreResourceRequest;
+use App\Http\Requests\StoreResourceV2Request;
 
     /**
      * @OA\Info(
@@ -21,9 +22,11 @@ class ResourceController extends Controller
     /**
      * @OA\Post(
      *     path="/api/resources",
-     *     summary="Create a new resource",
+     *     summary="Create a new resource (deprecated, use /api/v2/resources instead)",
+     *      deprecated= true,
      *     tags={"Resources"},
-     *     description="Creates a new resource and returns the created resource",
+     *     description="This endpoint is deprecated and will be removed soon. Please use the new endpoint /api/v2/resources instead.
+     *      Creates a new resource and returns the created resource",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -62,6 +65,46 @@ class ResourceController extends Controller
      */
     
     public function store(StoreResourceRequest $request)
+    {
+        $validated = $request->validated();
+        $resource = Resource::create($validated);
+        return response()->json($resource, 201);
+    }
+
+
+
+/**
+ * @OA\Post(
+ *     path="/api/v2/resources",
+ *     summary="Create a new resource using tag IDs",
+ *     tags={"Resources"},
+ *     description="Creates a resource. This version expects an array of tag IDs instead of tag names.",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"github_id", "title", "url", "category", "type"},
+ *             @OA\Property(property="github_id", type="integer", example=123456),
+ *             @OA\Property(property="title", type="string", example="Aprende Laravel en 10 días"),
+ *             @OA\Property(property="description", type="string", example="Curso completo de Laravel para principiantes."),
+ *             @OA\Property(property="url", type="string", format="url", example="https://miweb.com/laravel"),
+ *             @OA\Property(property="category", type="string", example="Fullstack PHP"),
+ *             @OA\Property(property="tags", type="array", @OA\Items(type="integer"), example={1, 3, 5}),
+ *             @OA\Property(property="type", type="string", example="Video")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Resource created successfully",
+ *         @OA\JsonContent(ref="#/components/schemas/Resource")
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error"
+ *     )
+ * )
+ */
+
+     public function storeResource(StoreResourceV2Request $request)
     {
         $validated = $request->validated();
         $resource = Resource::create($validated);

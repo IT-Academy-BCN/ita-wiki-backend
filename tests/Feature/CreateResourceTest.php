@@ -4,11 +4,12 @@ declare (strict_types= 1);
 
 namespace Tests\Feature;
 
-use App\Models\Resource;
+use App\Models\Tag;
+use Tests\TestCase;
 use App\Models\Role;
+use App\Models\Resource;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Tests\TestCase;
 
 class CreateResourceTest extends TestCase
 {
@@ -22,10 +23,30 @@ class CreateResourceTest extends TestCase
             'github_id' => $role->github_id,
             //'tags' => null
         ]);
+       
+    }
+
+    private function GetResourceDataTagsId(): array
+    {
+        $role = Role::factory()->create(['role' => 'student']);
+        $tagIds = Tag::inRandomOrder()->take(3)->pluck('id')->toArray();
+
+        return Resource::factory()->raw([
+            'github_id' => $role->github_id,
+            'tags' => $tagIds // Assuming these IDs exist in the tags table
+        ]);
+    }
+
+    public function testItCanCreateAResourceWithTagsId(): void
+    {
+        $response = $this->postJson(route('resources.store.v2'), $this->GetResourceDataTagsId());
+
+        $response->assertStatus(201);
     }
 
     public function testItCanCreateAResource(): void
     {
+        
         $response = $this->postJson(route('resources.store'), $this->GetResourceData());
 
         $response->assertStatus(201);
@@ -53,6 +74,7 @@ class CreateResourceTest extends TestCase
         });
     }
 
+  
         
     public static function resourceValidationProvider(): array
     {

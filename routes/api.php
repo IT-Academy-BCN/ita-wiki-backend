@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/resources', [ResourceController::class, 'store'])->name('resources.store');
 
+Route::post('/v2/resources', [ResourceController::class, 'storeResource'])->name('resources.store.v2');
+
 Route::get('/resources', [ResourceController::class, 'index'])->name('resources');
 
 Route::post('/login', [RoleController::class, 'getRoleByGithubId'])->name('login');

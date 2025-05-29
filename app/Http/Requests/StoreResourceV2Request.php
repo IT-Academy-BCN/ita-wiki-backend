@@ -9,10 +9,10 @@ use Illuminate\Validation\Rule;
 use App\Rules\GithubIdRule;
 use App\Rules\RoleStudentRule;
 
-class StoreResourceRequest extends FormRequest
+class StoreResourceV2Request extends FormRequest
 {
 
-    //to be deprecated in the future, use StoreResourceV2Request instead
+    
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -38,7 +38,7 @@ class StoreResourceRequest extends FormRequest
             'url' => ['required', 'url'],
             'category' => ['required', 'string', 'in:Node,React,Angular,JavaScript,Java,Fullstack PHP,Data Science,BBDD'],
             'tags' => ['nullable', 'array', 'max:5'],
-            'tags.*' => ['string', 'distinct', Rule::exists('tags', 'name')],
+            'tags.*' => ['integer', 'distinct', Rule::exists('tags', 'id')],
             'type' =>['required', 'string', 'in:Video,Cursos,Blog']
         ];
     }  
