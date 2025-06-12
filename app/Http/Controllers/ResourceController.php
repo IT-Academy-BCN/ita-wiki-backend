@@ -4,6 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ShowResourceRequest;
 use App\Models\Resource;
 use App\Http\Requests\StoreResourceRequest;
 use App\Http\Requests\StoreResourceV2Request;
@@ -132,6 +133,56 @@ class ResourceController extends Controller
     {
         $resources = Resource::all();
         return response()->json($resources, 200);
+    }
+
+    /**
+     * @OA\Get(
+     *  path="/api/v2/resources",
+     *  summary="Search resources by title, description, URL, category, or type",
+     *  tags={"Resources"},
+     *  description="Returns resources matching the search term or all resources if no search term is provided",
+     *  @OA\Parameter(
+     *      name="search",
+     *      in="query",
+     *      required=false,
+     *      @OA\Schema(type="string", example="JavaScript")
+     *  ),
+     *  @OA\Response(
+     *      response=200,
+     *      description="List of resources matching the search term or all resources if no search term is provided",
+     *      @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Resource"))
+     *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="No resources found"
+     *  )
+     * )
+     */
+    public function showResource (ShowResourceRequest $request){
+
+        $validated= $request->validated();
+        $searchTerm = $validated['search'] ?? null;
+        
+        if ($searchTerm && trim($searchTerm) !== '') {
+        $resources = Resource::where('title', 'like', '%' . $searchTerm . '%')
+            ->orWhere('description', 'like', '%' . $searchTerm . '%')
+            ->orWhere('url', 'like', '%' . $searchTerm . '%')
+            ->orWhere('category', 'like', '%' . $searchTerm . '%')
+            ->orWhere('type', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        if ($resources->isEmpty()) {
+            return response()->json(['message' => 'No resources found'], 404);
+        }
+
+        return response()->json($resources, 200);
+    }
+
+    // Si no hay search, devuelve todos
+    $resources = Resource::all();
+    return response()->json($resources, 200);
+
+
     }
 
 }
