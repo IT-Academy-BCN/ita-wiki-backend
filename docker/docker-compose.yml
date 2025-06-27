@@ -26,6 +26,7 @@ services:
         volumes:
             - ../:/var/www/html
             - ./entrypoint.sh:/usr/local/bin/entrypoint.sh
+
         networks:
             - app-network
 
