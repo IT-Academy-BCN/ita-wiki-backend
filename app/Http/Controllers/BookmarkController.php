@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BookmarkRequest;
 use App\Models\Bookmark;
 
+/**
+ * @deprecated 
+ */
 class BookmarkController extends Controller
 {
     /**

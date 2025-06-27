@@ -6,6 +6,170 @@
         "version": "1.0.0.0"
     },
     "paths": {
+        "/api/bookmarks-node": {
+            "post": {
+                "tags": [
+                    "BookmarksNode"
+                ],
+                "summary": "Create a bookmark (node_id version)",
+                "description": "Creates a new bookmark for a user identified by node_id.",
+                "operationId": "197fdcce0137d184e617ade7567e12ca",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "node_id",
+                                    "resource_node_id"
+                                ],
+                                "properties": {
+                                    "node_id": {
+                                        "type": "string",
+                                        "example": "MDQ6VXNlcj58922="
+                                    },
+                                    "resource_node_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookmarkNode"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bookmark already exists."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "BookmarksNode"
+                ],
+                "summary": "Delete a bookmark (node_id version)",
+                "description": "Deletes a bookmark for a user identified by node_id.",
+                "operationId": "e0f2d96fd2592b3ae30b10a42e4079e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "node_id",
+                                    "resource_node_id"
+                                ],
+                                "properties": {
+                                    "node_id": {
+                                        "type": "string",
+                                        "example": "MDQ6VXNlcj58922="
+                                    },
+                                    "resource_node_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bookmark deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bookmark not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/bookmarks-node/{node_id}": {
+            "get": {
+                "tags": [
+                    "BookmarksNode"
+                ],
+                "summary": "Get all bookmarks for a student (node_id version)",
+                "description": "Returns all bookmarks for the given node_id.",
+                "operationId": "b43c90787f528edd685e5e0e281bc326",
+                "parameters": [
+                    {
+                        "name": "node_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "MDQ6VXNlcj8="
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BookmarkNode"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/roles-node": {
             "put": {
                 "tags": [
@@ -263,6 +427,103 @@
                                             "type": "object",
                                             "example": null,
                                             "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/feature-flags/role-self-assignment-node": {
+            "put": {
+                "tags": [
+                    "RolesNode"
+                ],
+                "summary": "Role Self Assignment Node",
+                "description": "Updates a role using the provided GitHub node_id. If the role does not exist, it returns an error.",
+                "operationId": "5b8285921a6c2150c4d6fe312e21c325",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "node_id",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "node_id": {
+                                        "type": "string",
+                                        "example": "MDQ6VXNlcjY3Mjk2MDg="
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El Rol se ha actualizado."
+                                        },
+                                        "role": {
+                                            "properties": {
+                                                "node_id": {
+                                                    "type": "string",
+                                                    "example": "MDQ6VXNlcjY3Mjk2MDg="
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized: The feature flag for role self-assignment is disabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La autoasignación de roles ha sido desactivada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La petición contiene un node_id inexistente en nuestro sistema."
                                         }
                                     },
                                     "type": "object"
@@ -1573,6 +1834,36 @@
                 },
                 "type": "object"
             },
+            "BookmarkNode": {
+                "title": "BookmarkNode",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 9
+                    },
+                    "node_id": {
+                        "description": "Foreign key representing the GitHub node_id of the user",
+                        "type": "string",
+                        "example": "MDQ6VXNlcjY3Mjk2MDg="
+                    },
+                    "resource_node_id": {
+                        "description": "Foreign key representing the ID of the bookmarked resource in resources_node",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "Like": {
                 "title": "Like",
                 "properties": {
@@ -1613,6 +1904,89 @@
                     "github_id": {
                         "type": "integer",
                         "example": 12345
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Lorem Ipsum ...",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Lorem Ipsum ...",
+                        "nullable": true
+                    },
+                    "url": {
+                        "type": "string",
+                        "format": "url",
+                        "example": "https://www.hola.com",
+                        "nullable": true
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "Node",
+                            "React",
+                            "Angular",
+                            "JavaScript",
+                            "Java",
+                            "Fullstack PHP",
+                            "Data Science",
+                            "BBDD"
+                        ],
+                        "example": "Node"
+                    },
+                    "tags": {
+                        "description": "Array of tags",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "kubernetes",
+                            "sql",
+                            "azure"
+                        ]
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Video",
+                            "Cursos",
+                            "Blog"
+                        ],
+                        "example": "Video"
+                    },
+                    "bookmark_count": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "like_count": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ResourceNode": {
+                "title": "ResourceNode",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "node_id": {
+                        "type": "string",
+                        "example": "MDQ6VXNlcjY3Mjk2MDg="
                     },
                     "title": {
                         "type": "string",
@@ -1764,10 +2138,39 @@
                     }
                 },
                 "type": "object"
+            },
+            "TagNode": {
+                "title": "TagNode",
+                "description": "Tags used in resources_node",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "debugging"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    }
+                },
+                "type": "object"
             }
         }
     },
     "tags": [
+        {
+            "name": "BookmarksNode",
+            "description": "BookmarksNode"
+        },
         {
             "name": "RolesNode",
             "description": "RolesNode"

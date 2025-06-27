@@ -11,6 +11,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\Api\RoleNodeController;
 use App\Http\Controllers\ResourceEditController;
+use App\Http\Controllers\Api\BookmarkNodeController;
 
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect']);
 Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback']);
@@ -58,8 +59,15 @@ Route::put('/feature-flags/role-self-assignment', [RoleController::class, 'roleS
 
 
 
-
-//new github_id to node_id transition routes
+//new github_id to node_id transition ENDPOINTS
 Route::post('/roles-node', [RoleNodeController::class, 'createRoleNode'])->name('roles-node.create');
 Route::put('/roles-node',  [RoleNodeController::class, 'updateRoleNode'])->name('roles-node.update');
 Route::post('/login-node', [RoleNodeController::class, 'getRoleByNodeId'])->name('login-node');
+
+//BOOKMARK ENDPOINTS
+Route::post('/bookmarks-node',   [BookmarkNodeController::class, 'createStudentBookmarkNode'])->name('bookmark-node.create');
+Route::delete('/bookmarks-node', [BookmarkNodeController::class, 'deleteStudentBookmarkNode'])->name('bookmark-node.delete');
+Route::get('/bookmarks-node/{node_id}', [BookmarkNodeController::class, 'getStudentBookmarksNode'])->name('bookmarks-node');
+
+//FEATURE FLAGS ENDPOINTS for node
+Route::put('/feature-flags/role-self-assignment-node', [RoleNodeController::class, 'roleSelfAssignmentNode'])->name('feature-flags.role-self-assignment-node');

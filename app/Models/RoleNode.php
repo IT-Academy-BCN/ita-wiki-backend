@@ -31,17 +31,19 @@ class RoleNode extends Model
         'role'
     ];
 
+   
+    public function resourcesNode()
+    {
+        return $this->hasMany(ResourceNode::class,  'role_node_id', 'node_id');
+    }
+
+    public function bookmarksNode()
+    {
+        return $this->hasMany(BookmarkNode::class,  'role_node_id', 'node_id');
+    }
+
+    
     //relationships (pending) to be implemented as those model classes are created
-    // public function resourcesNode()
-    // {
-    //     return $this->hasMany(resourcesNode::class,  'role_node_id', 'node_id');
-    // }
-
-    // public function bookmarksNode()
-    // {
-    //     return $this->hasMany(bookmarksNode::class,  'role_node_id', 'node_id');
-    // }
-
     // public function likesNode()
     // {
     //     return $this->hasMany(likesNode::class,  'role_node_id', 'node_id');
