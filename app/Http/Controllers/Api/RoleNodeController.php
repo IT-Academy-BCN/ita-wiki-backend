@@ -7,11 +7,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateRoleNodeRequest;
 use App\Http\Requests\UpdateRoleNodeRequest;
-use App\Models\Role;
+use App\Models\RoleNode;
 use App\Services\CreateRoleNodeService;
 use App\Services\UpdateRoleNodeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class RoleNodeController extends Controller
 {
@@ -189,11 +190,85 @@ class RoleNodeController extends Controller
         ], 200);
     }
 
-    //to be added as the transition advances
-    // Feature Flag : Role Self Assignment
-    public function roleSelfAssignment(Request $request)
+    /**
+     * @OA\Put(
+     *     path="/api/feature-flags/role-self-assignment-node",
+     *     summary="Role Self Assignment Node",
+     *     tags={"RolesNode"},
+     *     description="Updates a role using the provided GitHub node_id. If the role does not exist, it returns an error.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"node_id", "role"},
+     *             @OA\Property(property="node_id", type="string", example="MDQ6VXNlcjY3Mjk2MDg="),
+     *             @OA\Property(property="role", type="string", example="admin")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Role updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="El Rol se ha actualizado."),
+     *             @OA\Property(
+     *                 property="role",
+     *                 type="object",
+     *                 @OA\Property(property="node_id", type="string", example="MDQ6VXNlcjY3Mjk2MDg="),
+     *                 @OA\Property(property="role", type="string", example="admin")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized: The feature flag for role self-assignment is disabled",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="La autoasignación de roles ha sido desactivada.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="La petición contiene un node_id inexistente en nuestro sistema.")
+     *         )
+     *     )
+     * )
+     */
+    public function roleSelfAssignmentNode(Request $request)
     {
-        //
+
+        $validated = $request->validate([
+            'node_id' => ['required', 'string', new \App\Rules\NodeIdRule()],
+            'role'    => ['required', 'string', 'in:superadmin,mentor,admin,student'],
+        ]);
+
+        $role = \App\Models\RoleNode::where('node_id', $validated['node_id'])->first();
+
+        if (! $role) {
+            return response()->json([
+                'message' => 'The request contains a node_id that does not exist in our system.',
+            ], 404);
+        }
+
+        // Checking a global feature flag
+        if (! Config::get('feature_flags.allow_role_self_assignment')) {
+            return response()->json(['message' => 'Role self-assignment has been disabled.'], 403);
+        }
+
+        $role->role = $validated['role'];
+        $role->save();
+
+        return response()->json([
+            'message' => 'The role has been updated.',
+            'role'    => [
+                'node_id' => $role->node_id,
+                'role'    => $role->role,
+            ],
+        ], 200);
+
     }
 
 }

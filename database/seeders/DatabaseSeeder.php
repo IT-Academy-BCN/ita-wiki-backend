@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Database\Seeders;
 
@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RoleSeeder::class,        RoleNodeSeeder::class, // for node_id transition
-            TagSeeder::class,
-            ResourceSeeder::class,
-            BookmarkSeeder::class,
+            RoleSeeder::class,        RoleNodeSeeder::class,      // for node_id transition
+            TagSeeder::class,         TagNodeSeeder::class,       //for node_id transition
+            ResourceSeeder::class,    ResourceNodeSeeder::class,  // for node_id transition
+            BookmarkSeeder::class,    BookmarkNodeSeeder::class,  // for node_id transition
             LikeSeeder::class
         ]);
     
