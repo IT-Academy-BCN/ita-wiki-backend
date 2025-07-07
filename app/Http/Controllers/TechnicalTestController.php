@@ -11,8 +11,20 @@ use App\Models\TechnicalTest;
  *     description="API Endpoints para gestión de pruebas técnicas"
  * )
  */
-class TechnicalTestController extends Controller
+
+/* Basic index() to provide data to Frontend developers. 
+*  to be completed whith filters when basic listing feature is 
+*  tested and working
+*/
+ class TechnicalTestController extends Controller
 {
+    public function index()
+    {
+        return response()->json([
+            TechnicalTest::orderBy('created_at', 'desc')->get()
+        ]);
+    }
+
     /**
      * @OA\Post(
      *     path="/api/technicaltests",
@@ -73,4 +85,6 @@ class TechnicalTestController extends Controller
             'data' => $technicalTest
         ], 201);
     }
+
+   
 }
