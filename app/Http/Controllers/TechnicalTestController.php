@@ -20,9 +20,9 @@ use App\Models\TechnicalTest;
 {
     public function index()
     {
-        return response()->json([
+        return response()->json(
             TechnicalTest::orderBy('created_at', 'desc')->get()
-        ]);
+        );
     }
 
     /**
