@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\IndexTechnicalTestRequest;
 use App\Http\Requests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
 
@@ -18,9 +18,9 @@ use Illuminate\Http\Request;
 *  to be completed whith filters when basic listing feature is 
 *  tested and working
 */
- class TechnicalTestController extends Controller
+class TechnicalTestController extends Controller
 {
-    public function index(Request $request)
+    public function index(IndexTechnicalTestRequest $request)
     {
         $query = TechnicalTest::query();
 
@@ -52,6 +52,7 @@ use Illuminate\Http\Request;
 
         return response()->json([
             'data' => $technicalTests,
+            'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
             'filters' => [
                 'available_languages' => ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'],
                 'applied_filters' => $request->only(['search', 'language' ,'description', 'tag', 'date_from', 'date_to'])        
