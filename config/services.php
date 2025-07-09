@@ -15,9 +15,9 @@ return [
     */
     
     'github' => [
-    'client_id' => env($isProd ? 'GITHUB_CLIENT_ID_PROD' : 'GITHUB_CLIENT_ID_LOCAL'),
-    'client_secret' => env($isProd ? 'GITHUB_CLIENT_SECRET_PROD' : 'GITHUB_CLIENT_SECRET_LOCAL'),
-    'redirect' => env($isProd ? 'GITHUB_REDIRECT_URI_PROD' : 'GITHUB_REDIRECT_URI_LOCAL'),
+    'client_id' => env('OAUTH_CLIENT_ID'),
+    'client_secret' => env('OAUTH_CLIENT_SECRET'),
+    'redirect' => env('GITHUB_REDIRECT_URI'),
     ],
 
     'postmark' => [
