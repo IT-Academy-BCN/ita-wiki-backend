@@ -14,12 +14,12 @@ class IndexTechnicalTestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => 'nullable|string|max:255',
-            'language' => 'nullable|string|in:PHP,JavaScript,Java,React,TypeScript,Python,SQL',
-            'description' => 'nullable|string|max:1000',
-            'tag' => 'nullable|array|max:50',
-            'date_from' => 'nullable|date|date_format:d-m-Y',
-            'date_to' => 'nullable|date|date_format:d-m-Y|after_or_equal:date_from',
+            'search' => 'sometimes|string|max:255',
+            'language' => 'sometimes|string|in:PHP,JavaScript,Java,React,TypeScript,Python,SQL',
+            'description' => 'sometimes|string|max:1000',
+            'tag' => 'sometimes|array|max:50',
+            'date_from' => 'sometimes|date|date_format:d-m-Y',
+            'date_to' => 'sometimes|date|date_format:d-m-Y|after_or_equal:date_from',
         ];
     }
 
