@@ -13,7 +13,8 @@
         "darkaonline/l5-swagger": "^9.0",
         "laravel/framework": "^11.31",
         "laravel/socialite": "^5.8",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "spatie/laravel-permission": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
