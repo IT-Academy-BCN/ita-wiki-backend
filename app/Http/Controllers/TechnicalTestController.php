@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\IndexTechnicalTestRequest;
 use App\Http\Requests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
+
+use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
@@ -11,8 +13,41 @@ use App\Models\TechnicalTest;
  *     description="API Endpoints para gestión de pruebas técnicas"
  * )
  */
+
+/* Basic index() to provide data to Frontend developers. 
+*  to be completed whith filters when basic listing feature is 
+*  tested and working
+*/
 class TechnicalTestController extends Controller
 {
+    public function index(IndexTechnicalTestRequest $request)
+    {
+        $query = TechnicalTest::query();
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('language')) {
+            $query->where('language', $request->language);
+        }
+
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->description . '%');
+        }
+         
+        $technicalTests = $query->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'data' => $technicalTests,
+            'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
+            'filters' => [
+                'available_languages' => ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'],
+                'applied_filters' => $request->only(['search', 'language' ,'description'])        
+            ] 
+        ]);
+    }
+
     /**
      * @OA\Post(
      *     path="/api/technicaltests",
@@ -73,4 +108,6 @@ class TechnicalTestController extends Controller
             'data' => $technicalTest
         ], 201);
     }
+
+   
 }

@@ -64,3 +64,7 @@ Route::get('/tags-node/by-category', [TagNodeController::class, 'getCategoryTags
 
 
 //RESOURCESNODE ENDPOINTS
+
+
+//TECHNICAL TESTS ENDPOINTS
+Route::get('/technicaltests', [TechnicalTestController::class, 'index'])->name('technicaltests.index');
