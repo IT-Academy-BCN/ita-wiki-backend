@@ -35,19 +35,7 @@ class TechnicalTestController extends Controller
         if ($request->filled('description')) {
             $query->where('description', 'like', '%' . $request->description . '%');
         }
-
-        if ($request->filled('tag')) {
-            $query->whereJsonContains('tags', $request->tag);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->where('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->where('created_at', '<=', $request->date_to);
-        }
-    
+         
         $technicalTests = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
@@ -55,7 +43,7 @@ class TechnicalTestController extends Controller
             'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
             'filters' => [
                 'available_languages' => ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'],
-                'applied_filters' => $request->only(['search', 'language' ,'description', 'tag', 'date_from', 'date_to'])        
+                'applied_filters' => $request->only(['search', 'language' ,'description'])        
             ] 
         ]);
     }
