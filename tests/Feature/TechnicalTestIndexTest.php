@@ -27,9 +27,7 @@ class TechnicalTestIndexTest extends TestCase
 
        $response = $this->get('/api/technicaltests');  
        
-       file_put_contents('storage/app/cc/technical_test.json', json_encode($response->json(), JSON_PRETTY_PRINT));
-     
-        $response->assertStatus(200)
+       $response->assertStatus(200)
             ->assertJsonCount(3, 'data')
              ->assertJsonStructure([
                 'data' => [
