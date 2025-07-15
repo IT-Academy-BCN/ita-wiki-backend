@@ -19,6 +19,7 @@ class StoreTechnicalTestRequest extends FormRequest
             'description' => 'nullable|string|max:1000',
             'tags' => 'nullable|array|max:5',
             'tags.*' => 'string|max:50',
+            'file' => 'nullable|file|mimes:pdf|max:10240', 
         ];
     }
 
@@ -32,6 +33,9 @@ class StoreTechnicalTestRequest extends FormRequest
             'language.in' => 'El lenguaje seleccionado no es válido.',
             'description.max' => 'La descripción no puede exceder 1000 caracteres.',
             'tags.max' => 'No puedes agregar más de 5 tags.',
+            'file.file' => 'El archivo debe ser válido.',
+            'file.mimes' => 'El archivo debe ser un PDF.',
+            'file.max' => 'El archivo no puede exceder 10MB.',
         ];
     }
 }

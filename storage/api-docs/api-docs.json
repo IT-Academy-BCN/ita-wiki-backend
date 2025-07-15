@@ -2162,13 +2162,13 @@
                     "Technical Tests"
                 ],
                 "summary": "Crear una nueva prueba técnica",
-                "description": "Crea una nueva prueba técnica en el sistema",
+                "description": "Crea una nueva prueba técnica en el sistema. Permite adjuntar un archivo PDF opcional.",
                 "operationId": "6fe54ab6666dbe0210d5fb53c31b290c",
                 "requestBody": {
-                    "description": "Datos de la prueba técnica",
+                    "description": "Datos de la prueba técnica y archivo opcional",
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "title",
@@ -2210,6 +2210,11 @@
                                             "backend"
                                         ],
                                         "nullable": true
+                                    },
+                                    "file": {
+                                        "description": "Archivo PDF opcional",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2255,6 +2260,18 @@
                                                         "php",
                                                         "backend"
                                                     ]
+                                                },
+                                                "file_path": {
+                                                    "type": "string",
+                                                    "example": "technical-tests/1625678900_prueba.pdf"
+                                                },
+                                                "file_original_name": {
+                                                    "type": "string",
+                                                    "example": "prueba.pdf"
+                                                },
+                                                "file_size": {
+                                                    "type": "integer",
+                                                    "example": 102400
                                                 },
                                                 "created_at": {
                                                     "type": "string",
