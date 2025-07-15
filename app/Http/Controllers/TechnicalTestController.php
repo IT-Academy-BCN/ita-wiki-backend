@@ -5,21 +5,125 @@ use App\Http\Requests\IndexTechnicalTestRequest;
 use App\Http\Requests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
 
-use Illuminate\Http\Request;
-
 /**
  * @OA\Tag(
  *     name="Technical Tests",
- *     description="API Endpoints para gestión de pruebas técnicas"
+ *     description="API Endpoints for Technical Tests"
  * )
  */
 
-/* Basic index() to provide data to Frontend developers. 
-*  to be completed whith filters when basic listing feature is 
-*  tested and working
-*/
 class TechnicalTestController extends Controller
 {
+    /**
+     * @OA\Get(
+     *      path="/api/technicaltests",
+     *      summary = "List technical tests with or w/out filters",
+     *      description="Lists available technical test with options to filter by laguage and any part of the title and the description",
+     *      operationId="getTechnicalTests",
+     *      tags={"Technical Tests"},
+     *    
+     *      @OA\Parameter(
+     *          name="search",
+     *          in="query",
+     *          description="Search by tittle",
+     *          required=false,
+     *          @OA\Schema(type="String", example="Basic PHP exam"),
+     *      ),
+     *      @OA\Parameter(
+     *          name="language",
+     *          in="query",
+     *          description="Filter by language",
+     *          required=false,
+     *          @OA\Schema(type="String", enum={"PHP", "JavaScript", "Java", "React", "TypeScript", "Python", "SQL"}),
+     *      ),
+     *      @OA\Parameter(
+     *          name="description",
+     *          in="query",
+     *          description="Search by any part of the description",
+     *          required=false,
+     *          @OA\Schema(type="String", example="SOLID"),
+     *      ),
+     * 
+     *      @OA\Response(
+     *          response=200,
+     *          description="Technical Tests succeslfully listed",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(property="id", type="integer", example=123),
+     *                      @OA\Property(property="github_id", type="integer", example=6729608, nullable=true),
+     *                      @OA\Property(property="node_id", type="string", example="MDQ6VXNlcjY3Mjk2MDg=", nullable=true),
+     *                      @OA\Property(property="title", type="string", example="Basic PHP exam"),
+     *                      @OA\Property(property="language", type="string", example="PHP"),
+     *                      @OA\Property(property="description", type="string", example="Solve this exam paying atention to SOLID principles"),
+     *                      @OA\Property(property="file_path", type="string", example="technical_tests/exam.pdf", nullable=true),
+     *                      @OA\Property(property="file_original_name", type="string", example="exam.pdf", nullable=true),
+     *                      @OA\Property(property="file_size", type="integer", example=1024, nullable=true),
+     *                      @OA\Property(property="tags", type="array", 
+     *                              @OA\Items(type="string"), example={"php", "backend"}, nullable=true),
+     *                      @OA\Property(property="bookmark_count", type="integer", example=5),
+     *                      @OA\Property(property="like_count", type="integer", example=12),
+     *                      @OA\Property(property="created_at", type="string", format="date-time"),
+     *                      @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                      @OA\Property(property="deleted_at", type="string", format="date-time", nullable=true)
+     *                  )         
+     *              ),
+     *              @OA\Property(property="message", type="string", nullable=true, example="No se han encontrado tests con esos criterios"),
+     *              @OA\Property(
+     *                  property="filters",
+     *                  type="object",
+     *                  @OA\Property(property="available_languages", type="array", @OA\Items(type="string"), example={"PHP", "JavaScript", "Java", "React", "TypeScript", "Python", "SQL"}),
+     *                  @OA\Property(property="applied_filters", type="object", example={"search": "Examen de PHP básico", "language": "PHP"})
+     *              )
+     *          )
+     *      ),
+     * 
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                  property="message", 
+     *                  type="string", 
+     *                  example="El título no debe exceder los 255 caracteres."
+     *             ),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="search", 
+     *                      type="array", 
+     *                      @OA\Items(type="string"), 
+     *                      example={"El título no debe exceder los 255 caracteres."}
+     *                 ),
+     *                 @OA\Property(
+     *                      property="language", 
+     *                      type="array", 
+     *                      @OA\Items(type="string"), 
+     *                      example={"El lenguaje seleccionado no es válido."}
+     *                 ),
+     *                 @OA\Property(
+     *                      property="description", 
+     *                      type="array", 
+     *                      @OA\Items(type="string"), 
+     *                      example={"El campo descripción no debe exceder los 1000 caracteres."}
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     *)
+     * 
+     */
     public function index(IndexTechnicalTestRequest $request)
     {
         $query = TechnicalTest::query();

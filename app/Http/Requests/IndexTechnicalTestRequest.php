@@ -23,6 +23,7 @@ class IndexTechnicalTestRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'search.max' => 'El título no debe exceder los 255 caracteres.',            
             'language.in' => 'El lenguaje seleccionado no es válido.',
             'description.max' => 'El campo descripción no debe exceder los 1000 caracteres.',            
         ];
