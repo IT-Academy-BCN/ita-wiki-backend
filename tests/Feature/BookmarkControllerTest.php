@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\Role;
 use App\Models\Resource;
 use App\Models\Bookmark;
+use Spatie\Permission\Models\Role as SpatieRole;
 
 class BookmarkControllerTest extends TestCase
 {
@@ -19,9 +20,14 @@ class BookmarkControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->student = Role::factory()->create([
+        SpatieRole::findOrCreate('student', 'web');
+        $this->student = \App\Models\User::factory()->create([
             'github_id' => 9871315,
-            'role' => 'student'
+        ]);
+        $this->student->assignRole('student');
+        \App\Models\Role::create([
+            'github_id' => $this->student->github_id,
+            'role' => 'student',
         ]);
 
         $this->resources = Resource::factory(10)->create();

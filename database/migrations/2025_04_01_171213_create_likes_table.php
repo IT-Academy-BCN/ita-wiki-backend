@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('github_id')->unsigned();
             $table->foreign('github_id')
                 ->references('github_id')
-                ->on('roles')
+                ->on('user_roles')
                 ->onUpdate('cascade') // Updates if github_id is modified in roles
                 ->onDelete('restrict'); // Stays if github_id is destroyed in roles
             $table->bigInteger('resource_id')->unsigned();

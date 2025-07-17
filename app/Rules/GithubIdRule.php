@@ -19,7 +19,7 @@ class GithubIdRule implements ValidationRule
     {
         $validator = Validator::make(
             [$attribute => $value],
-            [$attribute => ['required', 'integer', 'min:1', 'exists:roles,github_id']]
+            [$attribute => ['required', 'integer', 'min:1', 'exists:users,github_id']]
         );
 
         if ($validator->fails()) {

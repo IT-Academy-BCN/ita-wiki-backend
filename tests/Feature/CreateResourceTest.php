@@ -17,22 +17,41 @@ class CreateResourceTest extends TestCase
 
     private function GetResourceData(): array
     {
-        $role = Role::factory()->create(['role' => 'student']);
-
-        return Resource::factory()->raw([
-            'github_id' => $role->github_id,
+        // Crear el rol en Spatie si no existe
+        \Spatie\Permission\Models\Role::findOrCreate('student', 'web');
+        // Crear el usuario
+        $user = \App\Models\User::factory()->create([
+            'github_id' => random_int(100000, 999999),
+        ]);
+        // Asignar el rol con Spatie
+        $user->assignRole('student');
+        // Crear el registro en user_roles
+        \App\Models\Role::create([
+            'github_id' => $user->github_id,
+            'role' => 'student',
+        ]);
+        return \App\Models\Resource::factory()->raw([
+            'github_id' => $user->github_id,
             //'tags' => null
         ]);
-       
     }
 
     private function GetResourceDataTagsId(): array
     {
-        $role = Role::factory()->create(['role' => 'student']);
-        $tagIds = Tag::inRandomOrder()->take(3)->pluck('id')->toArray();
-
-        return Resource::factory()->raw([
-            'github_id' => $role->github_id,
+        \Spatie\Permission\Models\Role::findOrCreate('student', 'web');
+        $user = \App\Models\User::factory()->create([
+            'github_id' => random_int(100000, 999999),
+        ]);
+      
+        $user->assignRole('student');
+      
+        \App\Models\Role::create([
+            'github_id' => $user->github_id,
+            'role' => 'student',
+        ]);
+        $tagIds = \App\Models\Tag::inRandomOrder()->take(3)->pluck('id')->toArray();
+        return \App\Models\Resource::factory()->raw([
+            'github_id' => $user->github_id,
             'tags' => $tagIds // Assuming these IDs exist in the tags table
         ]);
     }
@@ -68,7 +87,7 @@ class CreateResourceTest extends TestCase
         $response = $this->postJson(route('resources.store'), $data);
 
         $response->assertStatus(422)
-        // This verifies that the field $fieldName exists in the response and has at least one error message.
+
         ->assertJsonPath($fieldName, function ($errors) {
             return is_array($errors) && count($errors) > 0;
         });

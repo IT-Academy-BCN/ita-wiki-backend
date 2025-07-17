@@ -231,31 +231,29 @@ class RoleController extends Controller
     public function roleSelfAssignment(Request $request)
     {
         $validated = $request->validate([
-            'github_id' => new GithubIdRule(),
+            'github_id' => 'required|integer|exists:users,github_id',
             'role' => ['required', 'string', 'in:superadmin,mentor,admin,student']
         ]);
 
-        $role = Role::where('github_id', $validated['github_id'])->first();
+        $user = \App\Models\User::where('github_id', $validated['github_id'])->first();
 
-        if (!$role) {
+        if (!$user) {
             return response()->json([
                 'message' => 'La petición contiene un github_id inexistente en nuestro sistema.'
             ], 404);
         }
 
-        // Check global feature flag
-        if (!Config::get('feature_flags.allow_role_self_assignment')) {
+        if (!\Illuminate\Support\Facades\Config::get('feature_flags.allow_role_self_assignment')) {
             return response()->json(['message' => 'La autoasignación de roles ha sido desactivada.'], 403);
         }
 
-        $role->role = $validated['role'];
-        $role->save();
+        $user->syncRoles([$validated['role']]);
 
         return response()->json([
             'message' => 'El Rol se ha actualizado.',
             'role' => [
-               'github_id' => $role->github_id,
-               'role' => $role->role
+               'github_id' => $user->github_id,
+               'role' => $validated['role']
             ]
         ], 200);
     }

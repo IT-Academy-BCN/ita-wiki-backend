@@ -5,9 +5,11 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\User;
 use App\Models\Resource;
 use App\Models\Like;
+use Spatie\Permission\Models\Role as SpatieRole;
+use Illuminate\Support\Facades\DB;
 
 class LikeControllerTest extends TestCase
 {
@@ -19,12 +21,22 @@ class LikeControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->student = Role::factory()->create([
+        SpatieRole::findOrCreate('student', 'web');
+        $this->student = User::factory()->create([
             'github_id' => 9871315,
-            'role' => 'student'
+        ]);
+        $this->student->assignRole('student');
+
+        DB::table('user_roles')->insert([
+            'github_id' => $this->student->github_id,
+            'role' => 'student',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        $this->resources = Resource::factory(10)->create();
+        $this->resources = Resource::factory(10)->create([
+            'github_id' => $this->student->github_id,
+        ]);
 
         $this->likes = [
             Like::create([

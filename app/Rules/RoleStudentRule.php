@@ -4,7 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Rules;
 
-use App\Models\Role;
+use App\Models\User;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -17,8 +17,8 @@ class RoleStudentRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $role = Role::where('github_id', $value)->first();
-        if (!$role || $role->role !== 'student') {
+        $user = User::where('github_id', $value)->first();
+        if (!$user || !$user->hasRole('student')) {
             $fail('The github_id must belong to a student role.');
         }
     }

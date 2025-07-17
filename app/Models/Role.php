@@ -22,7 +22,7 @@ class Role extends Model
     /** @use HasFactory<\Database\Factories\RoleFactory> */
     use HasFactory;
 
-    protected $table = 'roles';
+    protected $table = 'user_roles';
     protected $fillable = [
         'github_id',
         'role'

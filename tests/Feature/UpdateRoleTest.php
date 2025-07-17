@@ -1,11 +1,12 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class UpdateRoleTest extends TestCase
 {
@@ -17,22 +18,24 @@ class UpdateRoleTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->student = Role::factory()->create([
-            'github_id' => 123456,
-            'role' => 'student'
-        ]);
-        $this->mentor = Role::factory()->create([
-            'github_id' => 234567,
-            'role' => 'mentor'
-        ]);
-        $this->admin = Role::factory()->create([
-            'github_id' => 345678,
-            'role' => 'admin'
-        ]);
-        $this->superadmin = Role::factory()->create([
-            'github_id' => 456789,
-            'role' => 'superadmin'
-        ]);
+
+        // Crea los roles si no existen
+        foreach (['student', 'mentor', 'admin', 'superadmin'] as $role) {
+            Role::findOrCreate($role);
+        }
+
+        // Crea usuarios y asigna roles
+        $this->student = User::factory()->create(['github_id' => 123456]);
+        $this->student->assignRole('student');
+
+        $this->mentor = User::factory()->create(['github_id' => 234567]);
+        $this->mentor->assignRole('mentor');
+
+        $this->admin = User::factory()->create(['github_id' => 345678]);
+        $this->admin->assignRole('admin');
+
+        $this->superadmin = User::factory()->create(['github_id' => 456789]);
+        $this->superadmin->assignRole('superadmin');
     }
 
     public function testCanUpdateRoleToLower(): void
@@ -43,10 +46,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'mentor'
         ])->assertStatus(200);
 
-        $this->assertDatabaseHas('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'mentor'
-        ]);
+        $this->assertTrue($this->student->fresh()->hasRole('mentor'));
     }
 
     public function testCannotUpdateHigherRankedRole(): void
@@ -57,10 +57,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'student'
         ])->assertStatus(403);
 
-        $this->assertDatabaseHas('roles', [
-            'github_id' => $this->admin->github_id,
-            'role' => 'admin'
-        ]);
+        $this->assertTrue($this->admin->fresh()->hasRole('admin'));
     }
 
     public function testCannotUpdateRoleToEqual(): void
@@ -71,10 +68,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'superadmin'
         ])->assertStatus(403);
 
-        $this->assertDatabaseMissing('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'superadmin'
-        ]);
+        $this->assertFalse($this->student->fresh()->hasRole('superadmin'));
     }
 
     public function testCannotUpdateRoleToHigher(): void
@@ -85,10 +79,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'admin'
         ])->assertStatus(403);
 
-        $this->assertDatabaseMissing('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'admin'
-        ]);
+        $this->assertFalse($this->student->fresh()->hasRole('admin'));
     }
 
     public function testCannotUpdateRoleToNonExistent(): void
@@ -99,10 +90,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'nonexistent'
         ])->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'nonexistent'
-        ]);
+        $this->assertFalse($this->student->fresh()->hasRole('nonexistent'));
     }
 
     public function testCannotUpdateRoleWithNonExistentAuthorized(): void
@@ -113,9 +101,6 @@ class UpdateRoleTest extends TestCase
             'role' => 'mentor'
         ])->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'mentor'
-        ]);
+        $this->assertFalse($this->student->fresh()->hasRole('mentor'));
     }
 }

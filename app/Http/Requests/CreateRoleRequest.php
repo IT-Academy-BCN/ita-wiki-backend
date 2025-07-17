@@ -24,8 +24,8 @@ class CreateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'authorized_github_id' => ['required', 'int', 'gt:0', 'exists:roles,github_id'],
-            'github_id' => ['required', 'int', 'gt:0', 'unique:roles,github_id'],   
+            'authorized_github_id' => ['required', 'int', 'gt:0', 'exists:users,github_id'],
+            'github_id' => ['required', 'int', 'gt:0', 'unique:users,github_id'],   
             'role' => ['required', 'string', 'in:superadmin,mentor,admin,student'],
         ];
     }   

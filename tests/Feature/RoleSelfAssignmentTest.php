@@ -5,7 +5,8 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\User;
+use Spatie\Permission\Models\Role as SpatieRole;
 
 class RoleSelfAssignmentTest extends TestCase
 {
@@ -16,10 +17,14 @@ class RoleSelfAssignmentTest extends TestCase
         parent::setUp();
         config(['feature_flags.allow_role_self_assignment' => true]);
 
-        $this->student = Role::factory()->create([
+        foreach (['student', 'mentor', 'admin', 'superadmin'] as $role) {
+            SpatieRole::findOrCreate($role, 'web');
+        }
+
+        $this->student = User::factory()->create([
             'github_id' => random_int(1001, 9999999),
-            'role' => 'student'
         ]);
+        $this->student->assignRole('student');
     }
 
     public function testCanSelfAssignRole(): void
@@ -31,9 +36,11 @@ class RoleSelfAssignmentTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'mentor'
+        $this->assertTrue($this->student->fresh()->hasRole('mentor'));
+        $this->assertDatabaseHas('model_has_roles', [
+            'model_id' => $this->student->id,
+            'role_id' => SpatieRole::findByName('mentor')->id,
+            'model_type' => User::class,
         ]);
     }
 
@@ -46,14 +53,12 @@ class RoleSelfAssignmentTest extends TestCase
 
         $response->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'nonexistent'
-        ]);
-
-        $this->assertDatabaseHas('roles', [
-            'github_id' => $this->student->github_id,
-            'role' => 'student'
+        $this->assertFalse($this->student->fresh()->hasRole('nonexistent'));
+        $this->assertTrue($this->student->fresh()->hasRole('student'));
+        $this->assertDatabaseHas('model_has_roles', [
+            'model_id' => $this->student->id,
+            'role_id' => SpatieRole::findByName('student')->id,
+            'model_type' => User::class,
         ]);
     }
 }
