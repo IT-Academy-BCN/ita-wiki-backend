@@ -1,4 +1,6 @@
-FROM php:8.2-fpm AS php-stage
+FROM php:8.2-fpm
+
+# Set working directory
 WORKDIR /var/www/html
 
 # Install system dependencies
@@ -19,19 +21,23 @@ RUN if ! pecl list | grep -q xdebug; then pecl install xdebug && docker-php-ext-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Copy the entrypoint and grant execution permissions
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+# Copy application code (mas adelante se pueden copiar solo los archivos necesarios para el proyecto)
+COPY . .
+
+# Set permissions for storage and bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
+
+# Copy Nginx configuration
+COPY ./docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+# Copy entrypoint script and make it executable
+COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Use the entrypoint
+# Expose port and set entrypoint
+EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Expose the PHP-FPM port
-EXPOSE 9000
-
-# Nginx image
-FROM nginx:latest AS nginx-stage
-COPY ./nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 8000
-CMD ["nginx", "-g", "daemon off;"]
+# Start PHP-FPM and Nginx
+CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
