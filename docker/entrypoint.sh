@@ -13,9 +13,6 @@ if [ -f /var/www/html/bootstrap/cache/config.php ]; then
     rm /var/www/html/bootstrap/cache/config.php
 fi
 
-echo "Installing Composer dependencies..."
-composer install
-
 if [ ! -f /var/www/html/.env ]; then
     echo "[WARNING] - .env File Not Found! Using .env.docker File as .env"
     cp /var/www/html/.env.docker /var/www/html/.env
