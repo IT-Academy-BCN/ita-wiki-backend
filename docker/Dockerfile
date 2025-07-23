@@ -7,7 +7,7 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     libonig-dev libxml2-dev libicu-dev libssl-dev git zip unzip \
-    default-mysql-client && \
+    default-mysql-client nginx && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo pdo_mysql mbstring bcmath gd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -21,8 +21,16 @@ RUN if ! pecl list | grep -q xdebug; then pecl install xdebug && docker-php-ext-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Copy application code (mas adelante se pueden copiar solo los archivos necesarios para el proyecto)
-COPY . .
+# Copy only necessary application files
+COPY app app/
+COPY bootstrap bootstrap/
+COPY config config/
+COPY database database/
+COPY public public/
+COPY resources resources/
+COPY routes routes/
+COPY storage storage/
+COPY artisan composer.json composer.lock ./
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data storage bootstrap/cache && \

@@ -50,5 +50,12 @@ echo "Generating storage link..."
 php artisan storage:link
 chmod -R u+w storage
 
-echo "Starting PHP-FPM..."
-exec php-fpm
+# Generate API documentation
+echo "Generating API documentation..."
+php artisan l5-swagger:generate
+
+echo "Starting PHP-FPM and Nginx..."
+exec sh -c "php-fpm & nginx -g 'daemon off;'"
+
+
+
