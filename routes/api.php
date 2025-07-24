@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\BookmarkNodeController;
 
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect']);
 Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback']);
+Route::get('/auth/github/user', [GitHubAuthController::class, 'user']);
 Route::post('/resources', [ResourceController::class, 'store'])->name('resources.store');
 Route::post('/v2/resources', [ResourceController::class, 'storeResource'])->name('resources.store.v2');
 Route::get('/resources', [ResourceController::class, 'index'])->name('resources');
