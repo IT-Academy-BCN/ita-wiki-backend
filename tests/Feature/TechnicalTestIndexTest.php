@@ -7,6 +7,7 @@ use App\Models\BookmarkNode;
 use Database\Factories\TechnicalTestFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Enums\LanguageEnum;
 
 
 class TechnicalTestIndexTest extends TestCase
@@ -60,13 +61,13 @@ class TechnicalTestIndexTest extends TestCase
     {
         TechnicalTest::factory()->create([
             'title' => 'Test PHP',
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
             'description' => 'Test de PHP.',
         ]);
 
         TechnicalTest::factory()->create([
             'title' => 'Test Python',
-            'language' => 'Python',
+            'language' => LanguageEnum::Python->value,
             'description' => 'Test de Python.',
         ]);
 
@@ -75,12 +76,12 @@ class TechnicalTestIndexTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment([
                 'title' => 'Test PHP',
-                'language' => 'PHP',
+                'language' => LanguageEnum::PHP->value,
                 'description' => 'Test de PHP.',
             ])
             ->assertJsonFragment([               
                 'title' => 'Test Python',
-                'language' => 'Python',
+                'language' => LanguageEnum::Python->value,
                 'description' => 'Test de Python.',
             ]);
     }
@@ -89,22 +90,22 @@ class TechnicalTestIndexTest extends TestCase
     {
         TechnicalTest::factory()->create([
                 'title' => 'Test PHP',
-                'language' => 'PHP',
+                'language' => LanguageEnum::PHP->value,
                 'description' => 'Test de PHP.'
         ]);
         TechnicalTest::factory()->create([
             'title' => 'Test Python',
-            'language' => 'Python',
+            'language' => LanguageEnum::Python->value,
             'description' => 'Test de Python.',
         ]);
 
-        $response = $this->get('api/technicaltests?language=PHP');
+        $response = $this->get('api/technicaltests?language=' . LanguageEnum::PHP->value);
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data')
             ->assertJsonFragment([
                 'title' => 'Test PHP',
-                'language' => 'PHP',
+                'language' => LanguageEnum::PHP->value,
                 'description' => 'Test de PHP.',
             ]);  
     }
@@ -112,16 +113,16 @@ class TechnicalTestIndexTest extends TestCase
     public function test_can_filter_by_multiple_parameters(): void
     {
         TechnicalTest::factory()->create([
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
             'title' => 'PHP Advanced Test',
         ]);
 
         TechnicalTest::factory()->create([
-            'language' => 'Python',
+            'language' => LanguageEnum::Python->value,
             'title' => 'Python Basic Test'
         ]);
 
-        $response = $this->get('/api/technicaltests?language=PHP&search=Advanced');
+        $response = $this->get('/api/technicaltests?language=' . LanguageEnum::PHP->value . '&search=Advanced');
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data')
@@ -130,9 +131,9 @@ class TechnicalTestIndexTest extends TestCase
 
     public function test_returns_empty_when_no_matches(): void
     {
-        TechnicalTest::factory()->create(['language' => 'PHP']);
+        TechnicalTest::factory()->create(['language' => LanguageEnum::PHP->value]);
 
-        $response = $this->get('api/technicaltests?language=JavaScript');
+        $response = $this->get('api/technicaltests?language=' . LanguageEnum::JavaScript->value);
 
         $response->assertStatus(200)
             ->assertJsonCount(0, 'data')
@@ -152,15 +153,18 @@ class TechnicalTestIndexTest extends TestCase
     }
     
     // No happy path tests
-    public function test_rejects_invalid_language(): void
-    {
-        $response = $this->get('api/technicaltests?language=InvalidLanguage');
+  public function test_rejects_invalid_language(): void
+{
+    $invalidLanguage = 'InvalidLanguage';
+    $this->assertFalse(in_array($invalidLanguage, array_column(LanguageEnum::cases(), 'value')));
 
-        $response->assertStatus(422);
-        $response->assertJsonFragment([
-                'language' => ['El lenguaje seleccionado no es válido.']
-        ]);
-    }
+    $response = $this->get('api/technicaltests?language=' . $invalidLanguage);
+
+    $response->assertStatus(422);
+    $response->assertJsonFragment([
+        'language' => ['El lenguaje seleccionado no es válido.']
+    ]);
+}
 
     
     public function test_rejects_extremely_long_search_string(): void

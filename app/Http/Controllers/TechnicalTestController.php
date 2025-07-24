@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IndexTechnicalTestRequest;
 use App\Http\Requests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
+use App\Enums\LanguageEnum;
 
 /**
  * @OA\Tag(
@@ -18,14 +19,14 @@ class TechnicalTestController extends Controller
      * @OA\Get(
      *      path="/api/technicaltests",
      *      summary = "List technical tests with or w/out filters",
-     *      description="Lists available technical test with options to filter by laguage and any part of the title and the description",
+     *      description="Lists available technical test with options to filter by language and any part of the title and the description",
      *      operationId="getTechnicalTests",
      *      tags={"Technical Tests"},
      *    
      *      @OA\Parameter(
      *          name="search",
      *          in="query",
-     *          description="Search by tittle",
+     *          description="Search by title",
      *          required=false,
      *          @OA\Schema(type="String", example="Basic PHP exam"),
      *      ),
@@ -46,7 +47,7 @@ class TechnicalTestController extends Controller
      * 
      *      @OA\Response(
      *          response=200,
-     *          description="Technical Tests succeslfully listed",
+     *          description="Technical Tests successfully listed",
      *          @OA\JsonContent(
      *              @OA\Property(
      *                  property="data",
@@ -146,7 +147,7 @@ class TechnicalTestController extends Controller
             'data' => $technicalTests,
             'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
             'filters' => [
-                'available_languages' => ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'],
+                'available_languages' => LanguageEnum::values(),
                 'applied_filters' => $request->only(['search', 'language' ,'description'])        
             ] 
         ]);
