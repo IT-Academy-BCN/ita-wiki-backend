@@ -153,15 +153,18 @@ class TechnicalTestIndexTest extends TestCase
     }
     
     // No happy path tests
-    public function test_rejects_invalid_language(): void
-    {
-        $response = $this->get('api/technicaltests?language=InvalidLanguage');
+  public function test_rejects_invalid_language(): void
+{
+    $invalidLanguage = 'InvalidLanguage';
+    $this->assertFalse(in_array($invalidLanguage, array_column(LanguageEnum::cases(), 'value')));
 
-        $response->assertStatus(422);
-        $response->assertJsonFragment([
-                'language' => ['El lenguaje seleccionado no es válido.']
-        ]);
-    }
+    $response = $this->get('api/technicaltests?language=' . $invalidLanguage);
+
+    $response->assertStatus(422);
+    $response->assertJsonFragment([
+        'language' => ['El lenguaje seleccionado no es válido.']
+    ]);
+}
 
     
     public function test_rejects_extremely_long_search_string(): void
