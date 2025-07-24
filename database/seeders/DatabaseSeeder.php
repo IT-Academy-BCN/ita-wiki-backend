@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            UserSeeder::class,
             RoleSeeder::class,        RoleNodeSeeder::class,      // for node_id transition
             TagSeeder::class,         TagNodeSeeder::class,       //for node_id transition
             ResourceSeeder::class,    ResourceNodeSeeder::class,  // for node_id transition
@@ -27,9 +28,5 @@ class DatabaseSeeder extends Seeder
             TechnicalTestSeeder::class,
         ]);
     
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
     }
 }
