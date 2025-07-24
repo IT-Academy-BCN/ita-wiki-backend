@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use App\Enums\LanguageEnum;
 
 class TechnicalTestUploadPdfTest extends TestCase
 {
@@ -18,7 +19,7 @@ class TechnicalTestUploadPdfTest extends TestCase
 
         $payload = [
             'title' => 'Prueba técnica con PDF',
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
             'description' => 'Descripción de prueba',
             'tags' => ['php', 'laravel'],
             'github_id' => 123456,
