@@ -124,6 +124,75 @@ class GitHubOAuthTest extends TestCase
     }
 
     /**
+     * Test para verificar si la ruta está registrada correctamente
+     */
+    public function test_route_is_registered()
+    {
+        $routes = \Route::getRoutes();
+        $authRoutes = collect($routes)->filter(function ($route) {
+            return str_contains($route->uri(), 'auth/github');
+        });
+        
+        dump('Rutas de autenticación encontradas:');
+        foreach ($authRoutes as $route) {
+            dump('URI: ' . $route->uri() . ' | Methods: ' . implode(',', $route->methods()));
+        }
+        
+        $this->assertTrue($authRoutes->count() > 0, 'No se encontraron rutas de autenticación');
+    }
+
+    /**
+     * Test de debug para verificar la ruta específicamente
+     */
+    public function test_debug_route()
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_user_name' => 'testuser',
+            'name' => 'Test User',
+            'email' => 'test_get_' . time() . '@example.com',
+        ]);
+
+        $response = $this->get('/api/auth/github/user?github_id=12345');
+        
+        // Imprimir información de debug
+        dump('Response status: ' . $response->status());
+        dump('Response content: ' . $response->content());
+        
+        // Verificar que el usuario existe en la base de datos
+        $foundUser = User::where('github_id', '12345')->first();
+        dump('User found in DB: ' . ($foundUser ? 'YES' : 'NO'));
+        if ($foundUser) {
+            dump('User github_id: ' . $foundUser->github_id);
+        }
+    }
+
+    /**
+     * Test de debug para verificar la creación del usuario
+     */
+    public function test_debug_user_creation()
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_user_name' => 'testuser',
+            'name' => 'Test User',
+            'email' => 'test_get_' . time() . '@example.com',
+        ]);
+
+        // Verificar que el usuario se creó correctamente
+        $this->assertDatabaseHas('users', [
+            'github_id' => '12345',
+            'github_user_name' => 'testuser',
+            'name' => 'Test User',
+        ]);
+
+        // Verificar que se puede encontrar por github_id
+        $foundUser = User::where('github_id', '12345')->first();
+        $this->assertNotNull($foundUser);
+        $this->assertEquals('12345', $foundUser->github_id);
+    }
+
+    /**
      * Test que verifica que se puede obtener información del usuario por GitHub ID
      */
     public function test_can_get_user_by_github_id()
@@ -195,6 +264,7 @@ class GitHubOAuthTest extends TestCase
     /**
      * Test que verifica que el frontend_url se configura correctamente
      */
+     
     public function test_uses_correct_frontend_url()
     {
         // Configurar un frontend_url personalizado para el test
