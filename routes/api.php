@@ -33,7 +33,7 @@ Route::get('/tags', [TagController::class, 'index'])->name('tags');
 Route::get('/tags/frequency', [TagController::class, 'getTagsFrequency'])->name('tags.frequency');
 Route::get('/tags/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
 Route::get('/tags/by-category', [TagController::class, 'getCategoryTagsId'])->name('category.tags.id');
-Route::post('/technicaltests', [TechnicalTestController::class, 'store']);
+
 // FEATURE FLAGS ENDPOINTS
 Route::put('/feature-flags/role-self-assignment', [RoleController::class, 'roleSelfAssignment'])->name('feature-flags.role-self-assignment');
 
@@ -67,4 +67,5 @@ Route::get('/tags-node/by-category', [TagNodeController::class, 'getCategoryTags
 
 
 //TECHNICAL TESTS ENDPOINTS
-Route::get('/technicaltests', [TechnicalTestController::class, 'index'])->name('technicaltests.index');
+Route::get('/technical-tests', [TechnicalTestController::class, 'index'])->name('technical-tests.index');
+Route::post('/technical-tests', [TechnicalTestController::class, 'store']);

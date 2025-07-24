@@ -27,7 +27,7 @@ class TechnicalTestUploadPdfTest extends TestCase
 
         $file = UploadedFile::fake()->create('prueba.pdf', 100, 'application/pdf');
 
-        $response = $this->postJson('/api/technicaltests', array_merge($payload, [
+        $response = $this->postJson('/api/technical-tests', array_merge($payload, [
             'file' => $file,
         ]));
 

@@ -17,7 +17,7 @@ class TechnicalTestController extends Controller
 {
     /**
      * @OA\Get(
-     *      path="/api/technicaltests",
+     *      path="/api/technical-tests",
      *      summary = "List technical tests with or w/out filters",
      *      description="Lists available technical test with options to filter by language and any part of the title and the description",
      *      operationId="getTechnicalTests",
@@ -155,7 +155,7 @@ class TechnicalTestController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/technicaltests",
+     *     path="/api/technical-tests",
      *     summary="Crear una nueva prueba técnica",
      *     description="Crea una nueva prueba técnica en el sistema. Permite adjuntar un archivo PDF opcional.",
      *     tags={"Technical Tests"},
