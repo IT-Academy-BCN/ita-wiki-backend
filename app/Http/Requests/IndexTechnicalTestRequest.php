@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\LanguageEnum;
 
 class IndexTechnicalTestRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class IndexTechnicalTestRequest extends FormRequest
     {
         return [
             'search' => 'sometimes|string|max:255',
-            'language' => 'sometimes|string|in:PHP,JavaScript,Java,React,TypeScript,Python,SQL',
+            'language' => 'sometimes|string|in:' . implode(',', array_column(LanguageEnum::cases(), 'value')),
             'description' => 'sometimes|string|max:1000',
         ];
     }
