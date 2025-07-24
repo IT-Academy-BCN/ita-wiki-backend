@@ -20,7 +20,12 @@ RUN if ! pecl list | grep -q xdebug; then pecl install xdebug && docker-php-ext-
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-RUN composer install
+
+# Copy composer files first for better caching
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (optimized for production)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy only necessary application files
 COPY app app/
@@ -31,7 +36,7 @@ COPY public public/
 COPY resources resources/
 COPY routes routes/
 COPY storage storage/
-COPY artisan composer.json composer.lock ./
+COPY artisan ./
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data storage bootstrap/cache && \
