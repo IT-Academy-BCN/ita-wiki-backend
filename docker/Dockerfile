@@ -20,6 +20,7 @@ RUN if ! pecl list | grep -q xdebug; then pecl install xdebug && docker-php-ext-
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN composer install
 
 # Copy only necessary application files
 COPY app app/
