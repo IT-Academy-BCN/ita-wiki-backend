@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use App\Enums\LanguageEnum;
 
 class TechnicalTestCreateTest extends TestCase
 {
@@ -15,10 +16,10 @@ class TechnicalTestCreateTest extends TestCase
     {
         $data = [
             'title' => 'Examen PHP Básico',
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
         ];
 
-        $response = $this->postJson('/api/technicaltests', $data);
+        $response = $this->postJson('/api/technical-tests', $data);
 
         $response->assertStatus(201)
                  ->assertJsonStructure([
@@ -35,7 +36,7 @@ class TechnicalTestCreateTest extends TestCase
 
         $this->assertDatabaseHas('technical_tests', [
             'title' => 'Examen PHP Básico',
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
             'description' => null,
         ]);
     }
@@ -44,18 +45,18 @@ class TechnicalTestCreateTest extends TestCase
     {
         $data = [
             'title' => 'Examen Completo JavaScript',
-            'language' => 'JavaScript',
+            'language' => LanguageEnum::JavaScript->value,
             'description' => 'Descripción detallada del examen',
             'tags' => ['javascript', 'frontend', 'react'],
         ];
 
-        $response = $this->postJson('/api/technicaltests', $data);
+        $response = $this->postJson('/api/technical-tests', $data);
 
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('technical_tests', [
             'title' => 'Examen Completo JavaScript',
-            'language' => 'JavaScript',
+            'language' => LanguageEnum::JavaScript->value,
             'description' => 'Descripción detallada del examen',
         ]);
     }
@@ -63,10 +64,10 @@ class TechnicalTestCreateTest extends TestCase
     public function test_title_is_required()
     {
         $data = [
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
         ];
 
-        $response = $this->postJson('/api/technicaltests', $data);
+        $response = $this->postJson('/api/technical-tests', $data);
 
         $response->assertStatus(422)
                  ->assertJsonStructure(['title']);
@@ -78,7 +79,7 @@ class TechnicalTestCreateTest extends TestCase
             'title' => 'Examen sin lenguaje',
         ];
 
-        $response = $this->postJson('/api/technicaltests', $data);
+        $response = $this->postJson('/api/technical-tests', $data);
 
         $response->assertStatus(422)
                  ->assertJsonStructure(['language']);
@@ -87,18 +88,18 @@ class TechnicalTestCreateTest extends TestCase
     public function test_title_must_be_between_5_and_255_characters()
     {
         // Título muy corto
-        $response = $this->postJson('/api/technicaltests', [
+        $response = $this->postJson('/api/technical-tests', [
             'title' => 'abc',
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
         ]);
 
         $response->assertStatus(422)
                  ->assertJsonStructure(['title']);
 
         // Título muy largo
-        $response = $this->postJson('/api/technicaltests', [
+        $response = $this->postJson('/api/technical-tests', [
             'title' => str_repeat('a', 256),
-            'language' => 'PHP',
+            'language' => LanguageEnum::PHP->value,
         ]);
 
         $response->assertStatus(422)
@@ -112,7 +113,7 @@ class TechnicalTestCreateTest extends TestCase
             'language' => 'InvalidLanguage',
         ];
 
-        $response = $this->postJson('/api/technicaltests', $data);
+        $response = $this->postJson('/api/technical-tests', $data);
 
         $response->assertStatus(422)
                  ->assertJsonStructure(['language']);
