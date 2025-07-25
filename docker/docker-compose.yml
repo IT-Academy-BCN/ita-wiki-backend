@@ -1,32 +1,15 @@
 services:
-    webserver:
-        container_name: webserver
+    app:
+        container_name: app
         build:
-            context: .
-            target: nginx-stage
+            context: ..
+            dockerfile: docker/Dockerfile
         ports:
-            - "8000:8000"
+            - "8000:80"
         volumes:
-            - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
             - ../:/var/www/html
-        depends_on:
-            - php
-        networks:
-            - app-network
-
-    php:
-        container_name: php
-        build:
-            context: .
-            target: php-stage
-        restart: unless-stopped
-        working_dir: /var/www/html
         depends_on:
             - mysql
-        volumes:
-            - ../:/var/www/html
-            - ./entrypoint.sh:/usr/local/bin/entrypoint.sh
-
         networks:
             - app-network
 
