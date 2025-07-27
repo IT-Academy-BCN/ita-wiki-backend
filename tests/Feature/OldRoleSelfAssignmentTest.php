@@ -7,7 +7,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\OldRole;
 
-class RoleSelfAssignmentTest extends TestCase
+class OldRoleSelfAssignmentTest extends TestCase
 {
     protected $student;
 

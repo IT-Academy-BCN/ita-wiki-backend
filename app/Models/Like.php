@@ -4,6 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Observers\LikeObserver;
@@ -35,8 +36,8 @@ class Like extends Model
         return $this->belongsTo(Resource::class);
     }
 
-    public function role()
+    public function user()
     {
-        return $this->belongsTo(Role::class, 'github_id', 'github_id');
+        return $this->belongsTo(User::class, 'github_id', 'github_id');
     }
 }

@@ -8,7 +8,7 @@ use App\Models\OldRole;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class RoleStudentRule implements ValidationRule
+class OldRoleStudentRule implements ValidationRule
 {
     /**
      * Run the validation rule.
