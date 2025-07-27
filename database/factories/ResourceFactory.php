@@ -4,7 +4,8 @@ declare (strict_types= 1);
 
 namespace Database\Factories;
 
-use App\Models\Role;
+use App\Models\User;
+use App\Models\OldRole;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,11 +20,12 @@ class ResourceFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        $role = Role::where('role', '=', 'student')
-        ->inRandomOrder()
-        ->first();
-
+    {   /*Antiguo sistema de gestion de permisos. Elminar cuando Spatie esté implementado
+        * 
+            $role = OldRole::where('role', '=', 'student')
+            ->inRandomOrder()
+            ->first();
+        */
         $validTags = Tag::all()->pluck('name')->toArray();
 
         $createdAtDate = $this->faker->dateTimeBetween('-2 years', 'now');
@@ -31,7 +33,7 @@ class ResourceFactory extends Factory
         $updatedAtDate = $this->faker->boolean(50)? $createdAtDate : $this->faker->dateTimeBetween($createdAtDate, 'now');
 
         return [
-            'github_id' => $role->github_id,
+            'github_id' => User::factory()->create()->github_id,
             'title' => $this->faker->sentence(4),
             'description' => $this->faker->sentence(6),
             'url' => $this->faker->url(),

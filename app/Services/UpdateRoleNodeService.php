@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Role;
+
 use App\Models\RoleNode;
 use Illuminate\Http\JsonResponse;
 
