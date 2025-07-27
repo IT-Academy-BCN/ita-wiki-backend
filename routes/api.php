@@ -3,7 +3,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\OldRoleController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
@@ -21,10 +21,10 @@ Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback']);
 
 
 // (Old)Roles Endpoints: in the current permission logic, Roles table refers to Users
-Route::post('/login', [RoleController::class, 'getRoleByGithubId'])->name('login');
-Route::post('/roles', [RoleController::class, 'createRole'])->name('roles.create');
-Route::put('/roles', [RoleController::class, 'updateRole'])->name('roles.update');
-Route::put('/feature-flags/role-self-assignment', [RoleController::class, 'roleSelfAssignment'])->name('feature-flags.role-self-assignment');
+Route::post('/login', [OldRoleController::class, 'getRoleByGithubId'])->name('login');
+Route::post('/roles', [OldRoleController::class, 'createRole'])->name('roles.create');
+Route::put('/roles', [OldRoleController::class, 'updateRole'])->name('roles.update');
+Route::put('/feature-flags/role-self-assignment', [OldRoleController::class, 'roleSelfAssignment'])->name('feature-flags.role-self-assignment');
 
 
 //TECHNICAL TESTS ENDPOINTS

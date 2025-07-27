@@ -4,19 +4,19 @@ declare (strict_types= 1);
 
 namespace Tests\Feature;
 
-use App\Models\Role;
+use App\Models\OldRole;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class CreateRoleTest extends TestCase
+class OldCreateRoleTest extends TestCase
 {
-    private function createRole(string $role): Role
+    private function createRole(string $role): OldRole
     {
-        return Role::create([
+        return OldRole::create([
             'github_id' => random_int(100000, 999999),
             'role' => $role,
         ]);
-    }
+    }x
 
     private function requestCreateRole(int $github_id, string $role)
     {
@@ -112,7 +112,7 @@ class CreateRoleTest extends TestCase
 
     private function GetRoleData(): array
     {
-        return Role::factory()->raw(); 
+        return OldRole::factory()->raw(); 
     }    
 
     #[DataProvider('roleValidationProvider')]
