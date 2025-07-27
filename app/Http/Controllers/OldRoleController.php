@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateRoleRequest;
 use App\Services\CreateRoleService;
 use App\Services\UpdateRoleService;
 use Illuminate\Http\Request;
-use App\Models\Role;
+use App\Models\OldRole;
 use Illuminate\Http\JsonResponse;
 use App\Rules\GithubIdRule;
 use Illuminate\Support\Facades\Config;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @deprecated 
  */
-class RoleController extends Controller
+class OldRoleController extends Controller
 {
     /**
      * @OA\Post(
@@ -162,7 +162,7 @@ class RoleController extends Controller
             'github_id' => 'required|integer'
         ]);
 
-        $role = Role::where('github_id', $validated['github_id'])->first();
+        $role = OldRole::where('github_id', $validated['github_id'])->first();
 
         if (!$role) {
             return response()->json([
@@ -235,7 +235,7 @@ class RoleController extends Controller
             'role' => ['required', 'string', 'in:superadmin,mentor,admin,student']
         ]);
 
-        $role = Role::where('github_id', $validated['github_id'])->first();
+        $role = OldRoleRole::where('github_id', $validated['github_id'])->first();
 
         if (!$role) {
             return response()->json([

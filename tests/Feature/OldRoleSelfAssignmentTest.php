@@ -5,7 +5,7 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\OldRole;
 
 class RoleSelfAssignmentTest extends TestCase
 {
@@ -16,7 +16,7 @@ class RoleSelfAssignmentTest extends TestCase
         parent::setUp();
         config(['feature_flags.allow_role_self_assignment' => true]);
 
-        $this->student = Role::factory()->create([
+        $this->student = OldRole::factory()->create([
             'github_id' => random_int(1001, 9999999),
             'role' => 'student'
         ]);
