@@ -22,7 +22,7 @@ class TechnicalTestIndexTest extends TestCase
         BookmarkNode::truncate();
     }
 
-    public function test_can_get_technical_test_list_with_correct_structure()
+    public function testCanGetTechnicalTestListWithCorrectStructure()
     {
         TechnicalTest::factory(3)->create();
 
@@ -57,7 +57,7 @@ class TechnicalTestIndexTest extends TestCase
             ]);
     }
 
-    public function test_index_returns_correct_values(): void
+    public function testIndexReturnsCorrectValues(): void
     {
         TechnicalTest::factory()->create([
             'title' => 'Test PHP',
@@ -86,7 +86,7 @@ class TechnicalTestIndexTest extends TestCase
             ]);
     }
 
-    public function test_can_filter_by_language(): void
+    public function testCanFilterByLanguage(): void
     {
         TechnicalTest::factory()->create([
                 'title' => 'Test PHP',
@@ -110,7 +110,7 @@ class TechnicalTestIndexTest extends TestCase
             ]);  
     }
 
-    public function test_can_filter_by_multiple_parameters(): void
+    public function testCanFilterByMultipleParameters(): void
     {
         TechnicalTest::factory()->create([
             'language' => LanguageEnum::PHP->value,
@@ -129,7 +129,7 @@ class TechnicalTestIndexTest extends TestCase
             ->assertJsonFragment(['title' => 'PHP Advanced Test']);
     }
 
-    public function test_returns_empty_when_no_matches(): void
+    public function testReturnsEmptyWhenNoMatches(): void
     {
         TechnicalTest::factory()->create(['language' => LanguageEnum::PHP->value]);
 
@@ -143,7 +143,7 @@ class TechnicalTestIndexTest extends TestCase
         ]);
     }
 
-    public function test_returns_all_when_no_filters(): void
+    public function testReturnsAllWhenNoFilters(): void
     {
         TechnicalTest::factory(5)->create();
 
@@ -154,7 +154,7 @@ class TechnicalTestIndexTest extends TestCase
     }
     
     // No happy path tests
-    public function test_rejects_invalid_language(): void
+    public function testRejectsInvalidLanguage(): void
     {
         $invalidLanguage = 'InvalidLanguage';
         $this->assertFalse(in_array($invalidLanguage, array_column(LanguageEnum::cases(), 'value')));
@@ -169,7 +169,7 @@ class TechnicalTestIndexTest extends TestCase
     }
 
     
-    public function test_rejects_extremely_long_search_string(): void
+    public function testRejectsExtremelyLongSearchString(): void
     {
         $longString = str_repeat('a', 1000);
         
@@ -178,7 +178,7 @@ class TechnicalTestIndexTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_handles_special_characters_in_search(): void
+    public function testHandlesSpecialCharactersInSearch(): void
     {
         TechnicalTest::factory()->create(['title' => 'Test with special chars: @#$%']);
         

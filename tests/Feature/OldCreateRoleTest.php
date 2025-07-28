@@ -12,11 +12,12 @@ class OldCreateRoleTest extends TestCase
 {
     private function createRole(string $role): OldRole
     {
+        
         return OldRole::create([
             'github_id' => random_int(100000, 999999),
             'role' => $role,
         ]);
-    }x
+    }
 
     private function requestCreateRole(int $github_id, string $role)
     {
@@ -33,7 +34,7 @@ class OldCreateRoleTest extends TestCase
         
         $this->requestCreateRole($superadmin->github_id, 'admin')
         	->assertStatus(201);
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id'=> 123456,
             'role' => 'admin'
         ]);
@@ -45,7 +46,7 @@ class OldCreateRoleTest extends TestCase
         
         $this->requestCreateRole($admin->github_id, 'mentor')
         	->assertStatus(201);
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id'=> 123456,
             'role' => 'mentor'
         ]);
@@ -58,7 +59,7 @@ class OldCreateRoleTest extends TestCase
         $this->requestCreateRole($mentor->github_id, 'student')
         	->assertStatus(201);
 
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id'=> 123456,
             'role' => 'student'
         ]);
@@ -70,7 +71,7 @@ class OldCreateRoleTest extends TestCase
         
         $this->requestCreateRole($student->github_id, 'mentor')
         	->assertStatus(403);
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id'=> 123456,
             'role' => 'mentor'
         ]);
@@ -82,7 +83,7 @@ class OldCreateRoleTest extends TestCase
         
         $this->requestCreateRole($mentor->github_id, 'admin')
         	->assertStatus(403);
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id'=> 123456,
             'role' => 'admin'
         ]);
@@ -94,7 +95,7 @@ class OldCreateRoleTest extends TestCase
         
         $this->requestCreateRole($admin->github_id, 'superadmin')
         	->assertStatus(403);
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id'=> 123456,
             'role' => 'superadmin'
         ]);
