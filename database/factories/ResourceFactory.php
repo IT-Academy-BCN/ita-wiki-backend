@@ -20,12 +20,12 @@ class ResourceFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {   /*Antiguo sistema de gestion de permisos. Elminar cuando Spatie esté implementado
-        * 
-            $role = OldRole::where('role', '=', 'student')
+    {   
+        // ELIMINAR cuando Spatie se implemente totalmente
+        $role = OldRole::where('role', '=', 'student')
             ->inRandomOrder()
             ->first();
-        */
+        
         $validTags = Tag::all()->pluck('name')->toArray();
 
         $createdAtDate = $this->faker->dateTimeBetween('-2 years', 'now');

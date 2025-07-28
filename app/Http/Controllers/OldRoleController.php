@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 use App\Http\Requests\CreateRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
-use App\Services\CreateRoleService;
-use App\Services\UpdateRoleService;
+use App\Services\OldCreateRoleService;
+use App\Services\OldUpdateRoleService;
 use Illuminate\Http\Request;
 use App\Models\OldRole;
 use Illuminate\Http\JsonResponse;
@@ -60,7 +60,7 @@ class OldRoleController extends Controller
      * )
      */
     
-    public function createRole(CreateRoleRequest $request, CreateRoleService $createRoleService): JsonResponse
+    public function createRole(CreateRoleRequest $request, OldCreateRoleService $createRoleService): JsonResponse
     {
         return $createRoleService($request->validated());
     }
@@ -108,7 +108,7 @@ class OldRoleController extends Controller
     */
     
 
-    public function updateRole(UpdateRoleRequest $request, UpdateRoleService $updateRoleService): JsonResponse
+    public function updateRole(UpdateRoleRequest $request, OldUpdateRoleService $updateRoleService): JsonResponse
     {
         return $updateRoleService($request->validated());
     }
@@ -235,7 +235,7 @@ class OldRoleController extends Controller
             'role' => ['required', 'string', 'in:superadmin,mentor,admin,student']
         ]);
 
-        $role = OldRoleRole::where('github_id', $validated['github_id'])->first();
+        $role = OldRole::where('github_id', $validated['github_id'])->first();
 
         if (!$role) {
             return response()->json([

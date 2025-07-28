@@ -31,7 +31,7 @@ class OldRoleSelfAssignmentTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'mentor'
         ]);
@@ -46,12 +46,12 @@ class OldRoleSelfAssignmentTest extends TestCase
 
         $response->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'nonexistent'
         ]);
 
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'student'
         ]);

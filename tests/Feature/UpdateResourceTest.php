@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Resource;
-use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UpdateResourceTest extends TestCase
 {
+    
+    use RefreshDatabase;
     use WithFaker;
 
     //creamos diferentes resources
@@ -29,14 +32,14 @@ class UpdateResourceTest extends TestCase
     public function testItCanUpdateAResource()
     {
 
-        $role = Role::factory()->create(['github_id' => 12345]);
+        $user = User::factory()->create(['github_id' => 12345]);
 
         
-        $resource = $this->createResource(['github_id' => $role->github_id]);
+        $resource = $this->createResource(['github_id' => $user->github_id]);
 
         // Datos para actualizar
         $data = [
-            'github_id' => $role->github_id, 
+            'github_id' => $user->github_id, 
             'title' => 'Updated title',
             'description' => 'Updated description',
             'url' => 'https://updated-url.com',
