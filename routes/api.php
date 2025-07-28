@@ -38,7 +38,7 @@ Route::get('/resources', [ResourceController::class, 'index'])->name('resources'
 Route::put('/resources/{resource}', [ResourceEditController::class, 'update'])->name('resources.update');
 //Resources Endpoints v2
 Route::post('/v2/resources', [ResourceController::class, 'storeResource'])->name('resources.store.v2');
-Route::get('v2/resources', [ResourceController::class, 'showResource'])->name('showResource');
+Route::get('/V2/resources', [ResourceController::class, 'showResource'])->name('showResource');
 
 
 //Likes Endpoints
