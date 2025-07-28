@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            RoleSeeder::class,        RoleNodeSeeder::class,      // for node_id transition
+            OldRoleSeeder::class,        RoleNodeSeeder::class,      // for node_id transition
             TagSeeder::class,         TagNodeSeeder::class,       //for node_id transition
             ResourceSeeder::class,    ResourceNodeSeeder::class,  // for node_id transition
             BookmarkSeeder::class,    BookmarkNodeSeeder::class,  // for node_id transition

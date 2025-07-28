@@ -4,16 +4,16 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\OldRole;
 
-class RoleControllerTest extends TestCase
+class OldRoleControllerTest extends TestCase
 {
     protected $student;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->student = Role::factory()->create([
+        $this->student = OldRole::factory()->create([
             'github_id' => 123456,
             'role' => 'student'
         ]);

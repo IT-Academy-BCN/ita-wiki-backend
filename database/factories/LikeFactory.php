@@ -5,7 +5,7 @@ declare (strict_types= 1);
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Role;
+use App\Models\User;
 use App\Models\Resource;
 use App\Models\Like;
 
@@ -24,7 +24,7 @@ class LikeFactory extends Factory
 
     public function definition()
     {
-        $students = Role::where('role', 'student')->pluck('github_id');
+        $students = User::pluck('github_id');
         $resources = Resource::pluck('id');
         $combinations = $students->crossJoin($resources);
 

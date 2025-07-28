@@ -4,6 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Observers\BookmarkObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -34,9 +35,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
         return $this->belongsTo(Resource::class);
     }
 
-    public function role()
+    public function user()
     {
-        return $this->belongsTo(Role::class, 'github_id', 'github_id');
+        return $this->belongsTo(User::class, 'github_id', 'github_id');
     }
 }
 

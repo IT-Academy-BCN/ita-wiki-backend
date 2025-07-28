@@ -4,12 +4,15 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use App\Models\Resource;
-use App\Models\Role;
+use App\Models\User;
+use App\Models\OldRole;
 use App\Models\Tag;
 use Tests\TestCase;
 
 class TagControllerTest extends TestCase
 {
+    protected $user;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -26,8 +29,13 @@ class TagControllerTest extends TestCase
             ]);
         }
 
-        Role::factory()->create([
+        $this->user = User::factory()->create([
             'github_id' => 9871315,
+        ]);
+
+        // ELIMINAR cuando Spatie se implemente totalmente 
+        OldRole::factory()->create([
+            'github_id' => $this->user->github_id,
             'role' => 'student'
         ]);
 

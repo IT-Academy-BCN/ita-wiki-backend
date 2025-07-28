@@ -5,10 +5,13 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\OldRole;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UpdateRoleTest extends TestCase
 {
+    use RefreshDatabase;
+    
     protected $student;
     protected $mentor;
     protected $admin;
@@ -17,19 +20,19 @@ class UpdateRoleTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->student = Role::factory()->create([
+        $this->student = OldRole::factory()->create([
             'github_id' => 123456,
             'role' => 'student'
         ]);
-        $this->mentor = Role::factory()->create([
+        $this->mentor = OldRole::factory()->create([
             'github_id' => 234567,
             'role' => 'mentor'
         ]);
-        $this->admin = Role::factory()->create([
+        $this->admin = OldRole::factory()->create([
             'github_id' => 345678,
             'role' => 'admin'
         ]);
-        $this->superadmin = Role::factory()->create([
+        $this->superadmin = OldRole::factory()->create([
             'github_id' => 456789,
             'role' => 'superadmin'
         ]);
@@ -43,7 +46,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'mentor'
         ])->assertStatus(200);
 
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'mentor'
         ]);
@@ -57,7 +60,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'student'
         ])->assertStatus(403);
 
-        $this->assertDatabaseHas('roles', [
+        $this->assertDatabaseHas('old_roles', [
             'github_id' => $this->admin->github_id,
             'role' => 'admin'
         ]);
@@ -71,7 +74,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'superadmin'
         ])->assertStatus(403);
 
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'superadmin'
         ]);
@@ -85,7 +88,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'admin'
         ])->assertStatus(403);
 
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'admin'
         ]);
@@ -99,7 +102,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'nonexistent'
         ])->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'nonexistent'
         ]);
@@ -113,7 +116,7 @@ class UpdateRoleTest extends TestCase
             'role' => 'mentor'
         ])->assertStatus(422);
 
-        $this->assertDatabaseMissing('roles', [
+        $this->assertDatabaseMissing('old_roles', [
             'github_id' => $this->student->github_id,
             'role' => 'mentor'
         ]);

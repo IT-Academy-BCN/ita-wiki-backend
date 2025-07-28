@@ -4,14 +4,14 @@ declare (strict_types= 1);
 
 namespace App\Services;
 
-use App\Models\Role;
+use App\Models\OldRole;
 use Illuminate\Http\JsonResponse;
 
-class UpdateRoleService
+class OldUpdateRoleService
 {
     public function __invoke(array $validated)
     {
-        $authorizedRole = (Role::where('github_id', $validated['authorized_github_id'])->firstOrFail())->role;
+        $authorizedRole = (OldRole::where('github_id', $validated['authorized_github_id'])->firstOrFail())->role;
 
         $githubId = $validated['github_id'];
         $roleToUpdate = $validated['role'];
@@ -28,7 +28,7 @@ class UpdateRoleService
     protected function processRoleUpdate(string $authorizedRole, string $roleToUpdate, int $githubId): JsonResponse
     {
         $authorizedLevel = $this->getRoleLevel($authorizedRole);
-        $currentLevel = $this->getRoleLevel(Role::where('github_id', $githubId)->firstOrFail()->role);
+        $currentLevel = $this->getRoleLevel(OldRole::where('github_id', $githubId)->firstOrFail()->role);
         $updateLevel = $this->getRoleLevel($roleToUpdate);
 
         if ($authorizedLevel <= $currentLevel) {
@@ -43,7 +43,7 @@ class UpdateRoleService
             return response()->json(['message' => 'No puedes actualizar un rol a un orden igual o superior al tuyo.'], 403);
         }
 
-        $role = Role::where('github_id', $githubId)->update([
+        $role = OldRole::where('github_id', $githubId)->update([
             'role' => $roleToUpdate
         ]);
 

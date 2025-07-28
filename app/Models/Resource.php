@@ -47,9 +47,9 @@ class Resource extends Model
         'tags' => 'array'
     ];
 
-    public function role()
+    public function user()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(User::class, 'github_id', 'github_id');
     }
 
     public function bookmarks()

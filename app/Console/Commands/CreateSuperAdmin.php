@@ -4,7 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Console\Commands;
 
-use App\Models\Role;
+use App\Models\OldRole;
 use Illuminate\Console\Command;
 
 class CreateSuperAdmin extends Command
@@ -40,7 +40,7 @@ class CreateSuperAdmin extends Command
             return Command::FAILURE;
         }
 
-        Role::create([
+        OldRole::create([
             'github_id' => $superadmin_github_id,
             'role' => 'superadmin',
         ]);

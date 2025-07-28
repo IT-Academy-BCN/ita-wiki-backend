@@ -5,14 +5,14 @@ declare (strict_types= 1);
 namespace App\Services;
 
 use App\Http\Requests\CreateRoleRequest;
-use App\Models\Role;
+use App\Models\OldRole;
 use Illuminate\Http\JsonResponse;
 
-class CreateRoleService
+class OldCreateRoleService
 {
     public function __invoke(array $validated)
     {
-        $authorizedRole = (Role::where('github_id', $validated['authorized_github_id'])->first())->role;
+        $authorizedRole = (OldRole::where('github_id', $validated['authorized_github_id'])->first())->role;
 
         $githubId = $validated['github_id'];
         $roleToCreate = $validated['role'];
@@ -39,7 +39,7 @@ class CreateRoleService
             return response()->json(['message' => 'No puedes crear un rol igual o superior al tuyo.'], 403);
         }
 
-        $role = Role::create([
+        $role = OldRole::create([
             'github_id' => $githubId,
             'role' => $roleToCreate,
         ]);

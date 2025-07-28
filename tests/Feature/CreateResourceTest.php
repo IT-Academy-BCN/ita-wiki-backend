@@ -6,21 +6,30 @@ namespace Tests\Feature;
 
 use App\Models\Tag;
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\User;
+use App\Models\OldRole;
 use App\Models\Resource;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreateResourceTest extends TestCase
 {
+    use RefreshDatabase;
     use WithFaker;
-
+    
     private function GetResourceData(): array
     {
-        $role = Role::factory()->create(['role' => 'student']);
+        $user = User::factory()->create();
+
+        // ELIMINAR cuando Spatie se implemente totalmente 
+        OldRole::factory()->create([ 
+            'github_id' => $user->github_id,
+            'role' => 'student'
+        ]);
 
         return Resource::factory()->raw([
-            'github_id' => $role->github_id,
+            'github_id' => $user->github_id,
             //'tags' => null
         ]);
        
@@ -28,11 +37,18 @@ class CreateResourceTest extends TestCase
 
     private function GetResourceDataTagsId(): array
     {
-        $role = Role::factory()->create(['role' => 'student']);
+        $user = User::factory()->create();
+
+        // ELIMINAR cuando Spatie se implemente totalmente 
+        OldRole::factory()->create([
+            'github_id' => $user->github_id,
+            'role' => 'student'
+        ]);
+
         $tagIds = Tag::inRandomOrder()->take(3)->pluck('id')->toArray();
 
         return Resource::factory()->raw([
-            'github_id' => $role->github_id,
+            'github_id' => $user->github_id,
             'tags' => $tagIds // Assuming these IDs exist in the tags table
         ]);
     }
