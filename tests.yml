@@ -35,6 +35,7 @@ jobs:
         run: |
           sudo systemctl start mysql
           mysql -e 'CREATE DATABASE testing;' -uroot -proot
+          php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
           php artisan migrate --force
 
       - name: Run Tests
