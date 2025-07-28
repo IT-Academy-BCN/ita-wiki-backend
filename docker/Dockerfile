@@ -24,15 +24,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
-# Copy artisan file before composer install (needed for post-install scripts)
+# Copy artisan and boostrap file before composer install (needed for post-install scripts)
 COPY artisan ./
+COPY bootstrap bootstrap/
 
 # Install PHP dependencies (optimized for production)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy only necessary application files
 COPY app app/
-COPY bootstrap bootstrap/
 COPY config config/
 COPY database database/
 COPY public public/
