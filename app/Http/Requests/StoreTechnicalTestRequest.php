@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\LanguageEnum;
 
 class StoreTechnicalTestRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class StoreTechnicalTestRequest extends FormRequest
     {
         return [
             'title' => 'required|string|min:5|max:255',
-            'language' => 'required|string|in:PHP,JavaScript,Java,React,TypeScript,Python,SQL',
+            'language' => 'required|string|in:'. implode(',', LanguageEnum::values()),
             'description' => 'nullable|string|max:1000',
             'tags' => 'nullable|array|max:5',
             'tags.*' => 'string|max:50',

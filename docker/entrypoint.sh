@@ -13,9 +13,6 @@ if [ -f /var/www/html/bootstrap/cache/config.php ]; then
     rm /var/www/html/bootstrap/cache/config.php
 fi
 
-echo "Installing Composer dependencies..."
-composer install
-
 if [ ! -f /var/www/html/.env ]; then
     echo "[WARNING] - .env File Not Found! Using .env.docker File as .env"
     cp /var/www/html/.env.docker /var/www/html/.env
@@ -53,5 +50,12 @@ echo "Generating storage link..."
 php artisan storage:link
 chmod -R u+w storage
 
-echo "Starting PHP-FPM..."
-exec php-fpm
+# Generate API documentation
+echo "Generating API documentation..."
+php artisan l5-swagger:generate
+
+echo "Starting PHP-FPM and Nginx..."
+exec sh -c "php-fpm & nginx -g 'daemon off;'"
+
+
+

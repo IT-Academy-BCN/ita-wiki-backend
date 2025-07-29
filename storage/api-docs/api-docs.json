@@ -1918,6 +1918,245 @@
             }
         },
         "/api/technicaltests": {
+            "get": {
+                "tags": [
+                    "Technical Tests"
+                ],
+                "summary": "List technical tests with or w/out filters",
+                "description": "Lists available technical test with options to filter by laguage and any part of the title and the description",
+                "operationId": "getTechnicalTests",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by tittle",
+                        "required": false,
+                        "schema": {
+                            "type": "String",
+                            "example": "Basic PHP exam"
+                        }
+                    },
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "description": "Filter by language",
+                        "required": false,
+                        "schema": {
+                            "type": "String",
+                            "enum": [
+                                "PHP",
+                                "JavaScript",
+                                "Java",
+                                "React",
+                                "TypeScript",
+                                "Python",
+                                "SQL"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Search by any part of the description",
+                        "required": false,
+                        "schema": {
+                            "type": "String",
+                            "example": "SOLID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Technical Tests succeslfully listed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 123
+                                                    },
+                                                    "github_id": {
+                                                        "type": "integer",
+                                                        "example": 6729608,
+                                                        "nullable": true
+                                                    },
+                                                    "node_id": {
+                                                        "type": "string",
+                                                        "example": "MDQ6VXNlcjY3Mjk2MDg=",
+                                                        "nullable": true
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Basic PHP exam"
+                                                    },
+                                                    "language": {
+                                                        "type": "string",
+                                                        "example": "PHP"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Solve this exam paying atention to SOLID principles"
+                                                    },
+                                                    "file_path": {
+                                                        "type": "string",
+                                                        "example": "technical_tests/exam.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "file_original_name": {
+                                                        "type": "string",
+                                                        "example": "exam.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "file_size": {
+                                                        "type": "integer",
+                                                        "example": 1024,
+                                                        "nullable": true
+                                                    },
+                                                    "tags": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "example": [
+                                                            "php",
+                                                            "backend"
+                                                        ],
+                                                        "nullable": true
+                                                    },
+                                                    "bookmark_count": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "like_count": {
+                                                        "type": "integer",
+                                                        "example": 12
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se han encontrado tests con esos criterios",
+                                            "nullable": true
+                                        },
+                                        "filters": {
+                                            "properties": {
+                                                "available_languages": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "PHP",
+                                                        "JavaScript",
+                                                        "Java",
+                                                        "React",
+                                                        "TypeScript",
+                                                        "Python",
+                                                        "SQL"
+                                                    ]
+                                                },
+                                                "applied_filters": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "search": "Examen de PHP básico",
+                                                        "language": "PHP"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El título no debe exceder los 255 caracteres."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "search": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "El título no debe exceder los 255 caracteres."
+                                                    ]
+                                                },
+                                                "language": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "El lenguaje seleccionado no es válido."
+                                                    ]
+                                                },
+                                                "description": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "El campo descripción no debe exceder los 1000 caracteres."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Technical Tests"
@@ -2440,6 +2679,10 @@
     },
     "tags": [
         {
+            "name": "Technical Tests",
+            "description": "API Endpoints for Technical Tests"
+        },
+        {
             "name": "BookmarksNode",
             "description": "BookmarksNode"
         },
@@ -2450,15 +2693,6 @@
         {
             "name": "TagsNode",
             "description": "TagsNode"
-        },
-        {
-
-            "name": "Technical Tests",
-            "description": "API Endpoints para gestión de pruebas técnicas"
-        },
-        {
-            "name": "RolesNode",
-            "description": "RolesNode"
         },
         {
             "name": "Bookmarks",
