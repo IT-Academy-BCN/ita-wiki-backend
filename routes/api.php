@@ -33,6 +33,7 @@ Route::post('/technical-tests', [TechnicalTestController::class, 'store']);
 
 
 //Resources Endpoints
+Route::get('/auth/github/user', [GitHubAuthController::class, 'user']);
 Route::post('/resources', [ResourceController::class, 'store'])->name('resources.store');
 Route::get('/resources', [ResourceController::class, 'index'])->name('resources');
 Route::put('/resources/{resource}', [ResourceEditController::class, 'update'])->name('resources.update');
