@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\TechnicalTest;
-use App\Models\BookmarkNode;
 use Database\Factories\TechnicalTestFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,7 +18,6 @@ class TechnicalTestIndexTest extends TestCase
     {
         parent::setUp();
         TechnicalTest::truncate();
-        BookmarkNode::truncate();
     }
 
     public function test_can_get_technical_test_list_with_correct_structure()
@@ -35,7 +33,6 @@ class TechnicalTestIndexTest extends TestCase
                     '*' => [
                         'id',
                         'github_id',
-                        'node_id',
                         'title',
                         'language',
                         'description',

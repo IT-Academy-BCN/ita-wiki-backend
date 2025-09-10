@@ -10,8 +10,7 @@ return new class extends Migration
     {
         Schema::create('technical_tests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('github_id')->nullable()->comment('Usuario creador (FK → roles.github_id) - TEMPORAL');
-            $table->string('node_id')->nullable()->comment('Usuario creador (FK → roles.node_id) - FUTURO');
+            $table->unsignedBigInteger('github_id')->nullable()->comment('Usuario creador (FK → roles.github_id)');
             $table->string('title')->comment('Título del examen');
             $table->enum('language', ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'])->comment('Lenguaje de programación');
             $table->text('description')->nullable()->comment('Descripción detallada (opcional)');
