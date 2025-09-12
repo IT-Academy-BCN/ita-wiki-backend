@@ -88,3 +88,4 @@ Guillem Gaona Borastero
 Michelle Di Terlizzi
 Ivonne Cantor Páez
 Cristina Cardona
+Alex Pasquero
