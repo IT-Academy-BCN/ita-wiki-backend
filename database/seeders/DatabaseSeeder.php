@@ -8,7 +8,6 @@ use App\Models\TechnicalTest;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Database\Seeders\RoleNodeSeeder;
 use Database\Seeders\TechnicalTestSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,10 +19,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            OldRoleSeeder::class,        RoleNodeSeeder::class,      // for node_id transition
-            TagSeeder::class,         TagNodeSeeder::class,       //for node_id transition
-            ResourceSeeder::class,    ResourceNodeSeeder::class,  // for node_id transition
-            BookmarkSeeder::class,    BookmarkNodeSeeder::class,  // for node_id transition
+            OldRoleSeeder::class,        
+            TagSeeder::class,         
+            ResourceSeeder::class,   
+            BookmarkSeeder::class,    
             LikeSeeder::class,
             TechnicalTestSeeder::class,
         ]);

@@ -12,7 +12,6 @@ class TechnicalTest extends Model
 
     protected $fillable = [
         'github_id',
-        'node_id',
         'title',
         'language',
         'description',
