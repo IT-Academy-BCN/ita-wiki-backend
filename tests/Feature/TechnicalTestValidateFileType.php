@@ -11,8 +11,7 @@ class TechnicalTestValidateFileType extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-public function it_cannot_upload_a_non_pdf_file()
+public function test_it_cannot_upload_a_non_pdf_file()
     {
         Storage::fake('local');
 
