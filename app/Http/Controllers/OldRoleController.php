@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 use App\Http\Requests\CreateRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
-use App\Services\CreateRoleService;
-use App\Services\UpdateRoleService;
+use App\Services\OldCreateRoleService;
+use App\Services\OldUpdateRoleService;
 use Illuminate\Http\Request;
-use App\Models\Role;
+use App\Models\OldRole;
 use Illuminate\Http\JsonResponse;
 use App\Rules\GithubIdRule;
 use Illuminate\Support\Facades\Config;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @deprecated 
  */
-class RoleController extends Controller
+class OldRoleController extends Controller
 {
     /**
      * @OA\Post(
@@ -60,7 +60,7 @@ class RoleController extends Controller
      * )
      */
     
-    public function createRole(CreateRoleRequest $request, CreateRoleService $createRoleService): JsonResponse
+    public function createRole(CreateRoleRequest $request, OldCreateRoleService $createRoleService): JsonResponse
     {
         return $createRoleService($request->validated());
     }
@@ -108,7 +108,7 @@ class RoleController extends Controller
     */
     
 
-    public function updateRole(UpdateRoleRequest $request, UpdateRoleService $updateRoleService): JsonResponse
+    public function updateRole(UpdateRoleRequest $request, OldUpdateRoleService $updateRoleService): JsonResponse
     {
         return $updateRoleService($request->validated());
     }
@@ -162,7 +162,7 @@ class RoleController extends Controller
             'github_id' => 'required|integer'
         ]);
 
-        $role = Role::where('github_id', $validated['github_id'])->first();
+        $role = OldRole::where('github_id', $validated['github_id'])->first();
 
         if (!$role) {
             return response()->json([
@@ -235,7 +235,7 @@ class RoleController extends Controller
             'role' => ['required', 'string', 'in:superadmin,mentor,admin,student']
         ]);
 
-        $role = Role::where('github_id', $validated['github_id'])->first();
+        $role = OldRole::where('github_id', $validated['github_id'])->first();
 
         if (!$role) {
             return response()->json([

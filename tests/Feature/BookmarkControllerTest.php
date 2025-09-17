@@ -5,13 +5,15 @@ declare (strict_types= 1);
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\Role;
+use App\Models\User;
+use App\Models\OldRole;
 use App\Models\Resource;
 use App\Models\Bookmark;
 
+
 class BookmarkControllerTest extends TestCase
 {
-    protected $student;
+    protected $user;
     protected $resources;
     protected $bookmarks;
 
@@ -19,8 +21,13 @@ class BookmarkControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->student = Role::factory()->create([
+        $this->user = User::factory()->create([
             'github_id' => 9871315,
+        ]);
+
+        // ELIMINAR cuando Spatie se implemente totalmente 
+        OldRole::factory()->create([
+            'github_id' => $this->user->github_id,
             'role' => 'student'
         ]);
 
@@ -28,22 +35,22 @@ class BookmarkControllerTest extends TestCase
 
         $this->bookmarks = [
             Bookmark::create([
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[0]->id]),
             Bookmark::create([
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[1]->id])
         ];
     }
 
     public function testGetStudentBookmarks(): void
     {
-        $response = $this->get('api/bookmarks/' . $this->student->github_id);
+        $response = $this->get('api/bookmarks/' . $this->user->github_id);
         $response->assertStatus(200)
             ->assertJsonCount(2)
             ->assertJson([
-                ['github_id' => $this->student->github_id, 'resource_id' => $this->resources[0]->id],
-                ['github_id' => $this->student->github_id, 'resource_id' => $this->resources[1]->id]
+                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[0]->id],
+                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[1]->id]
             ]);
     }
 
@@ -58,7 +65,7 @@ class BookmarkControllerTest extends TestCase
         $initial_count = $this->bookmarks[1]->resource->bookmark_count;
 
         $response = $this->delete('api/bookmarks', [
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->bookmarks[1]->resource_id
         ]);
                 
@@ -67,7 +74,7 @@ class BookmarkControllerTest extends TestCase
 
 
         $this->assertDatabaseMissing('bookmarks', [
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->bookmarks[1]->resource_id
         ]);
 
@@ -81,18 +88,18 @@ class BookmarkControllerTest extends TestCase
         $initial_count = $test_increment_resource->bookmark_count;
 
         $response = $this->post('api/bookmarks', [
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[2]->id
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
-                'github_id' => $this->student->github_id,
+                'github_id' => $this->user->github_id,
                 'resource_id' => $this->resources[2]->id,
             ]);
 
         $this->assertDatabaseHas('bookmarks', [
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[2]->id
         ]);
 
@@ -110,7 +117,7 @@ class BookmarkControllerTest extends TestCase
 
     public function testCreateBookmarkForNonexistentResourceFails(): void {
         $response = $this->post('api/bookmarks', [
-            'github_id' => $this->student->github_id,
+            'github_id' => $this->user->github_id,
             'resource_id' => 447012
         ]);
         $response->assertStatus(422);

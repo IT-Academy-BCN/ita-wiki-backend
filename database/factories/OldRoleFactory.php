@@ -4,12 +4,12 @@ declare(strict_types = 1);
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Role;
+use App\Models\OldRole;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
  */
-class RoleFactory extends Factory
+class OldRoleFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,7 +20,7 @@ class RoleFactory extends Factory
     {
         do {
             $githubId = $this->faker->numberBetween(1, 10000000);
-        } while (Role::where('github_id', $githubId)->exists());
+        } while (OldRole::where('github_id', $githubId)->exists());
         return [
             'github_id' => $githubId,
             'role' => $this->faker->randomElement(['admin', 'mentor', 'student']),

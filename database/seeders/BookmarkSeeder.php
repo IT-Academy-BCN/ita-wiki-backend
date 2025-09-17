@@ -8,7 +8,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Bookmark;
 use App\Models\Resource;
-use App\Models\Role;
+use App\Models\User;
 
 class BookmarkSeeder extends Seeder
 {
@@ -19,8 +19,8 @@ class BookmarkSeeder extends Seeder
     public function run()
     {
         // First 3 manually created bookmarks using Role created by Seeder
-        $knownStudentId = 6729608;
-        $knownStudent = Role::where('github_id', $knownStudentId)->firstOrFail();
+        $knownStudentId = 999999999;
+        $knownStudent = User::where('github_id', $knownStudentId)->firstOrFail();
         $resources = Resource::inRandomOrder()->take(3)->get();
         
         foreach ($resources as $resource) {

@@ -17,12 +17,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 *     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-03-17T19:23:41.000000Z")
 * )
 */
-class Role extends Model
+class OldRole extends Model
 {
     /** @use HasFactory<\Database\Factories\RoleFactory> */
     use HasFactory;
 
-    protected $table = 'roles';
+    protected $table = 'old_roles';
     protected $fillable = [
         'github_id',
         'role'
