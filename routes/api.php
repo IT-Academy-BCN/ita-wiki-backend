@@ -9,8 +9,6 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
-use App\Http\Controllers\ResourceEditController;
-
 
 //GitHub Auth Systen Endpoints
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect']);
@@ -31,13 +29,7 @@ Route::post('/technical-tests', [TechnicalTestController::class, 'store']);
 
 //Resources Endpoints
 Route::get('/auth/github/user', [GitHubAuthController::class, 'user']);
-Route::post('/resources', [ResourceController::class, 'store'])->name('resources.store');
-Route::get('/resources', [ResourceController::class, 'index'])->name('resources');
-Route::put('/resources/{resource}', [ResourceEditController::class, 'update'])->name('resources.update');
-
-//Resources Endpoints v2
-Route::post('/v2/resources', [ResourceController::class, 'storeResource'])->name('resources.store.v2');
-Route::get('/v2/resources', [ResourceController::class, 'showResource'])->name('showResource');
+Route::apiResource('resources', ResourceController::class);
 
 
 //Likes Endpoints
@@ -57,7 +49,3 @@ Route::get('/tags/frequency', [TagController::class, 'getTagsFrequency'])->name(
 Route::get('/tags/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
 Route::get('/tags/by-category', [TagController::class, 'getCategoryTagsId'])->name('category.tags.id');
 Route::get('/tags', [TagController::class, 'index'])->name('tags');
-
-//TECHNICAL TESTS ENDPOINTS
-Route::get('/technical-tests', [TechnicalTestController::class, 'index'])->name('technical-tests.index');
-Route::post('/technical-tests', [TechnicalTestController::class, 'store']);
