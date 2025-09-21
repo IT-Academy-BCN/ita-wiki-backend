@@ -11,8 +11,8 @@ use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
 
 //GitHub Auth Systen Endpoints
-Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect']);
-Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback']);
+Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
+Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
 
 
 // (Old)Roles Endpoints: in the current permission logic Roles table refers to Users
@@ -24,11 +24,11 @@ Route::put('/feature-flags/role-self-assignment', [OldRoleController::class, 'ro
 
 //TECHNICAL TESTS ENDPOINTS
 Route::get('/technical-tests', [TechnicalTestController::class, 'index'])->name('technical-tests.index');
-Route::post('/technical-tests', [TechnicalTestController::class, 'store']);
+Route::post('/technical-tests', [TechnicalTestController::class, 'store'])->name('technical-tests.store');
 
 
 //Resources Endpoints
-Route::get('/auth/github/user', [GitHubAuthController::class, 'user']);
+Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
 Route::apiResource('resources', ResourceController::class);
 
 

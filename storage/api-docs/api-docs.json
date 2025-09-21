@@ -384,436 +384,6 @@
                 }
             }
         },
-        "/api/resources": {
-            "get": {
-                "tags": [
-                    "Resources"
-                ],
-                "summary": "Get all resources",
-                "description": "Returns a list of all resources",
-                "operationId": "ee96de2f37d473ea4740b7700ddd1daf",
-                "responses": {
-                    "200": {
-                        "description": "Resource list",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Resource"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Resources"
-                ],
-                "summary": "Create a new resource (deprecated, use /api/v2/resources instead)",
-                "description": "This endpoint is deprecated and will be removed soon. Please use the new endpoint /api/v2/resources instead.\n     *      Creates a new resource and returns the created resource",
-                "operationId": "0da436b1bb56ca9fcbc4523e6be6b1cc",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "title",
-                                    "description",
-                                    "url",
-                                    "category",
-                                    "type"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "description": "GitHub ID of an existing user role creating the resource",
-                                        "type": "integer",
-                                        "example": 6729608
-                                    },
-                                    "title": {
-                                        "description": "Title of the resource",
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "minLength": 5,
-                                        "example": "Laravel Best Practices"
-                                    },
-                                    "description": {
-                                        "description": "Description of the resource (10-1000 characters)",
-                                        "type": "string",
-                                        "maxLength": 1000,
-                                        "minLength": 10,
-                                        "example": "A collection of best practices for Laravel development"
-                                    },
-                                    "url": {
-                                        "description": "URL of the resource",
-                                        "type": "string",
-                                        "format": "url",
-                                        "example": "https://laravelbestpractices.com"
-                                    },
-                                    "category": {
-                                        "description": "Category of the resource",
-                                        "type": "string",
-                                        "enum": [
-                                            "Node",
-                                            "React",
-                                            "Angular",
-                                            "JavaScript",
-                                            "Java",
-                                            "Fullstack PHP",
-                                            "Data Science",
-                                            "BBDD"
-                                        ],
-                                        "example": "React"
-                                    },
-                                    "tags": {
-                                        "description": "Array of tags validated against available options (nullable)",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "oop"
-                                        }
-                                    },
-                                    "type": {
-                                        "description": "Type of the resource",
-                                        "type": "string",
-                                        "enum": [
-                                            "Video",
-                                            "Cursos",
-                                            "Blog"
-                                        ],
-                                        "example": "Video"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Resource created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Resource"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "github_id": [
-                                                    "The github_id field is required.",
-                                                    "The selected github_id is invalid."
-                                                ],
-                                                "title": [
-                                                    "The title field is required.",
-                                                    "Title must be at least 5 characters.",
-                                                    "Title must not exceed 255 characters."
-                                                ],
-                                                "description": [
-                                                    "The description field is required.",
-                                                    "Description must be at least 10 characters.",
-                                                    "Description must not exceed 1000 characters."
-                                                ],
-                                                "url": [
-                                                    "The url field is required.",
-                                                    "The url format is invalid."
-                                                ],
-                                                "category": [
-                                                    "The category field is required.",
-                                                    "The selected category is invalid."
-                                                ],
-                                                "tags": [
-                                                    "The tags field must be an array of strings.",
-                                                    "The selected tags are invalid."
-                                                ],
-                                                "type": [
-                                                    "The type field is required.",
-                                                    "The selected type is invalid."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        },
-        "/api/v2/resources": {
-            "get": {
-                "tags": [
-                    "Resources"
-                ],
-                "summary": "Search resources by title, description, URL, category, or type",
-                "description": "Returns resources matching the search term or all resources if no search term is provided",
-                "operationId": "0612df8cd34b7f736c03701247fe1979",
-                "parameters": [
-                    {
-                        "name": "search",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "JavaScript"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of resources matching the search term or all resources if no search term is provided",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Resource"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "No resources found"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Resources"
-                ],
-                "summary": "Create a new resource using tag IDs",
-                "description": "Creates a resource. This version expects an array of tag IDs instead of tag names.",
-                "operationId": "757ef4fae40deb8850e02c5cd5562271",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "title",
-                                    "url",
-                                    "category",
-                                    "type"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "type": "integer",
-                                        "example": 123456
-                                    },
-                                    "title": {
-                                        "type": "string",
-                                        "example": "Aprende Laravel en 10 días"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Curso completo de Laravel para principiantes."
-                                    },
-                                    "url": {
-                                        "type": "string",
-                                        "format": "url",
-                                        "example": "https://miweb.com/laravel"
-                                    },
-                                    "category": {
-                                        "type": "string",
-                                        "example": "Fullstack PHP"
-                                    },
-                                    "tags": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer"
-                                        },
-                                        "example": [
-                                            1,
-                                            3,
-                                            5
-                                        ]
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "example": "Video"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Resource created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Resource"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                }
-            }
-        },
-        "/api/resources/{resource}": {
-            "put": {
-                "tags": [
-                    "Resources"
-                ],
-                "summary": "Update a resource",
-                "description": "Update an existing resource with validation",
-                "operationId": "2fb72cef844f47cbfbad3db9664d992c",
-                "parameters": [
-                    {
-                        "name": "resource",
-                        "in": "path",
-                        "description": "ID of the resource to update",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "title",
-                                    "description",
-                                    "url"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "type": "integer",
-                                        "example": 6729608
-                                    },
-                                    "title": {
-                                        "type": "string",
-                                        "example": "Laravel Best Practices"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "A collection of best practices for Laravel development"
-                                    },
-                                    "url": {
-                                        "type": "string",
-                                        "format": "url",
-                                        "example": "https://laravelbestpractices.com"
-                                    },
-                                    "tags": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "testing"
-                                        },
-                                        "maxItems": 5,
-                                        "uniqueItems": true,
-                                        "example": [
-                                            "testing",
-                                            "tdd",
-                                            "hooks"
-                                        ],
-                                        "nullable": true
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Resource updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Resource"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "You don't have permission to update this resource."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "title": [
-                                                    "The title field is required.",
-                                                    "Title must be at least 5 characters.",
-                                                    "Title must not exceed 255 characters."
-                                                ],
-                                                "description": [
-                                                    "The description field is required.",
-                                                    "Description must be at least 10 characters.",
-                                                    "Description must not exceed 1000 characters."
-                                                ],
-                                                "url": [
-                                                    "The url field is required.",
-                                                    "The url format is invalid."
-                                                ],
-                                                "tags": [
-                                                    "The tags field must be an array of strings.",
-                                                    "The selected tags are invalid."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/roles": {
             "put": {
                 "tags": [
@@ -821,7 +391,7 @@
                 ],
                 "summary": "Update an existing role",
                 "description": "Allows an authorized user to update the role of a specific GitHub ID.",
-                "operationId": "3fc5b0f68bde4103181fa2305e98d967",
+                "operationId": "0255a7c08de807a69475909c1e5d922b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -911,7 +481,7 @@
                 ],
                 "summary": "Create a new role",
                 "description": "Allows an authorized user to create a new role for a specific GitHub ID.",
-                "operationId": "4131bb39b430bdf2d95b73111d2e126a",
+                "operationId": "9e4d3b87565534585d3dd3a74325846d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1003,7 +573,7 @@
                 ],
                 "summary": "Retrieve a role by GitHub ID",
                 "description": "Fetches a role using the provided GitHub ID. If the role does not exist, it returns an error.",
-                "operationId": "b381f169e17b927e71d392ff0f3d4ce5",
+                "operationId": "c6c35a5c97cb0466a6c7755fa4dacf35",
                 "parameters": [
                     {
                         "name": "github_id",
@@ -1067,7 +637,7 @@
                 ],
                 "summary": "Role Self Assignment",
                 "description": "Updates a role using the provided GitHub ID. If the role does not exist, it returns an error.",
-                "operationId": "6b823bc6608dd65054c546a68628b23a",
+                "operationId": "3bea7b6ce135c13127b47ba1a721e51f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1153,6 +723,209 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/resources": {
+            "get": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Search or list all resources",
+                "description": "Returns resources matching the search term or all resources if no search term is provided",
+                "operationId": "ee96de2f37d473ea4740b7700ddd1daf",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "JavaScript"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Resource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Create a new resource using tag IDs",
+                "description": "Creates a resource. This version expects an array of tag IDs instead of tag names.",
+                "operationId": "0da436b1bb56ca9fcbc4523e6be6b1cc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "title",
+                                    "url",
+                                    "category",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "type": "integer",
+                                        "example": 123456
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Aprende Laravel en 10 días"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Curso completo de Laravel para principiantes."
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://miweb.com/laravel"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Fullstack PHP"
+                                    },
+                                    "tags": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            3,
+                                            5
+                                        ]
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "Video"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Resource created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/resources/{resource}": {
+            "put": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Update a resource",
+                "description": "Update an existing resource with validation",
+                "operationId": "6151c93c02e240dfbf6773224295a59a",
+                "parameters": [
+                    {
+                        "name": "resource",
+                        "in": "path",
+                        "description": "ID of the resource to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "github_id",
+                                    "title",
+                                    "description",
+                                    "url"
+                                ],
+                                "properties": {
+                                    "github_id": {
+                                        "type": "integer",
+                                        "example": 6729608
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Laravel Best Practices"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "A collection of best practices for Laravel development"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://laravelbestpractices.com"
+                                    },
+                                    "tags": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "testing"
+                                        },
+                                        "maxItems": 5,
+                                        "uniqueItems": true,
+                                        "example": [
+                                            "testing",
+                                            "tdd",
+                                            "hooks"
+                                        ],
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Resource updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
                 }
             }
@@ -1340,7 +1113,12 @@
                                                         "type": "integer",
                                                         "example": 6729608,
                                                         "nullable": true
-                                                    },                                                 
+                                                    },
+                                                    "node_id": {
+                                                        "type": "string",
+                                                        "example": "MDQ6VXNlcjY3Mjk2MDg=",
+                                                        "nullable": true
+                                                    },
                                                     "title": {
                                                         "type": "string",
                                                         "example": "Basic PHP exam"
@@ -1726,6 +1504,33 @@
                 },
                 "type": "object"
             },
+            "Role": {
+                "title": "Role",
+                "description": "Role object representing a user's role and associated GitHub ID",
+                "properties": {
+                    "github_id": {
+                        "description": "The GitHub ID of the user",
+                        "type": "integer",
+                        "example": 6729608
+                    },
+                    "role": {
+                        "description": "The role of the user",
+                        "type": "string",
+                        "example": "student"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-17T19:23:41.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "Resource": {
                 "title": "Resource",
                 "properties": {
@@ -1809,33 +1614,6 @@
                 },
                 "type": "object"
             },
-            "Role": {
-                "title": "Role",
-                "description": "Role object representing a user's role and associated GitHub ID",
-                "properties": {
-                    "github_id": {
-                        "description": "The GitHub ID of the user",
-                        "type": "integer",
-                        "example": 6729608
-                    },
-                    "role": {
-                        "description": "The role of the user",
-                        "type": "string",
-                        "example": "student"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-03-17T19:23:41.000000Z"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-03-17T19:23:41.000000Z"
-                    }
-                },
-                "type": "object"
-            },
             "Tag": {
                 "title": "Tag",
                 "description": "Tags used in resources",
@@ -1877,12 +1655,12 @@
             "description": "Likes"
         },
         {
-            "name": "Resources",
-            "description": "Resources"
-        },
-        {
             "name": "Roles",
             "description": "Roles"
+        },
+        {
+            "name": "Resources",
+            "description": "Resources"
         },
         {
             "name": "Tags",
