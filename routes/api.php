@@ -23,8 +23,7 @@ Route::put('/feature-flags/role-self-assignment', [OldRoleController::class, 'ro
 
 
 //TECHNICAL TESTS ENDPOINTS
-Route::get('/technical-tests', [TechnicalTestController::class, 'index'])->name('technical-tests.index');
-Route::post('/technical-tests', [TechnicalTestController::class, 'store'])->name('technical-tests.store');
+Route::apiResource('technical-tests', TechnicalTestController::class)->only(['index', 'store']);
 
 
 //Resources Endpoints
