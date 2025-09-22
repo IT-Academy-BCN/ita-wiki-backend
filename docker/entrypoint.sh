@@ -20,7 +20,7 @@ fi
 
 # Wait for the database to be ready before running migrations
 echo "Waiting for database connection..."
-until mysqladmin ping -h"$DB_HOST" --silent; do
+until mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" --ssl=0 --silent; do
     echo "Database not ready. Retrying in 5 seconds..."
     sleep 5
 done

@@ -32,9 +32,10 @@ COPY public public/
 COPY resources resources/
 COPY routes routes/
 COPY storage storage/
+COPY .env.docker .env.docker
 
 # Install PHP dependencies (optimized for production)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --optimize-autoloader --no-interaction
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data storage bootstrap/cache && \

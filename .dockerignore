@@ -40,4 +40,5 @@ coverage/
 # Environment files (will be copied separately)
 .env
 .env.*
-!.env.example 
+!.env.example
+!.env.docker 
