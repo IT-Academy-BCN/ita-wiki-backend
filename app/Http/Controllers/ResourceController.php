@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ShowResourceRequest;
 use App\Models\Resource;
 use App\Http\Requests\StoreResourceRequest;
-use App\Http\Requests\UpdateResourceFormRequest; // <-- AGGIUNTO
+use App\Http\Requests\UpdateResourceRequest; 
 
 /**
  * @OA\Info(
@@ -133,7 +133,7 @@ class ResourceController extends Controller
      *     )
      * )
     */
-    public function update(UpdateResourceFormRequest $request, Resource $resource)
+    public function update(UpdateResourceRequest $request, Resource $resource)
     {
         //Obtenemos los datos validados
         $validated = $request->validated();
