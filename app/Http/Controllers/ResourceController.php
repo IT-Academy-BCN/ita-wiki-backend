@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ShowResourceRequest;
 use App\Models\Resource;
 use App\Http\Requests\StoreResourceRequest;
-use App\Http\Requests\UpdateResourceFormRequest; // <-- AGGIUNTO
+use App\Http\Requests\UpdateResourceFormRequest;
 
 /**
  * @OA\Info(

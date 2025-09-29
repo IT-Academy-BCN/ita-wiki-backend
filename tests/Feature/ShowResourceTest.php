@@ -13,7 +13,7 @@ class ShowResourceTest extends TestCase
      */
     public function test_user_can_search_for_resources(): void
     {
-        $response = $this->get(route('resources.index') . '?search=Laravel'); // MODIFICATO
+        $response = $this->get(route('resources.index') . '?search=Laravel'); 
 
         $response->assertStatus(200);
     }

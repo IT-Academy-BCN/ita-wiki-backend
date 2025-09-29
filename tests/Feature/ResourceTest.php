@@ -15,7 +15,7 @@ class ResourceTest extends TestCase
      */
     public function test_can_get_list(): void
     {
-        $response = $this->get(route('resources.index')); // MODIFICATO
+        $response = $this->get(route('resources.index')); 
 
         $response->assertStatus(200);
     }
