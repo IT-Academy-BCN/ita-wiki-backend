@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\GithubIdRule;
+use App\Rules\RoleStudentRule;
 
 class BookmarkRequest extends FormRequest
 {
@@ -16,6 +18,13 @@ class BookmarkRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->route('github_id')) {
+            $this->merge(['github_id' => $this->route('github_id')]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +33,10 @@ class BookmarkRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'github_id' => 'required|integer',  
+            'github_id' => [
+                new GithubIdRule(),
+                new RoleStudentRule(),
+            ],
         ];
 
         if ($this->isMethod('post') || $this->isMethod('delete')) {
