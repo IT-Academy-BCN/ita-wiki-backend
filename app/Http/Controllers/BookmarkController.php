@@ -8,11 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BookmarkRequest;
 use App\Models\Bookmark;
 use App\Services\BookmarkService;
-use App\Models\User;
+use Exception;
 
-/**
- * @deprecated 
- */
 class BookmarkController extends Controller
 {
     private BookmarkService $bookmarkService;
@@ -61,13 +58,8 @@ class BookmarkController extends Controller
 
     public function createStudentBookmark(BookmarkRequest $request)
     {
-        $user = User::where('github_id', $request->github_id)->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found.'], 404);
-        }
-
         try {
-            $bookmark = $this->bookmarkService->createBookmark($user->id, $request->resource_id);
+            $bookmark = $this->bookmarkService->createBookmark($request->github_id, $request->resource_id);
             return response()->json($bookmark, 201);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -107,14 +99,9 @@ class BookmarkController extends Controller
 
     public function deleteStudentBookmark(BookmarkRequest $request)
     {
-        $user = User::where('github_id', $request->github_id)->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found.'], 404);
-        }
-
         try {
-            $this->bookmarkService->deleteBookmark($user->id, $request->resource_id);
-            return response()->json(['message' => 'Bookmark deleted successfully.'], 200);
+            $this->bookmarkService->deleteBookmark($request->github_id, $request->resource_id);
+            return response()->json(['message' => 'Bookmark deleted successfully'], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
         }
@@ -145,12 +132,7 @@ class BookmarkController extends Controller
 
     public function getStudentBookmarks($github_id)
     {
-        $user = User::where('github_id', $github_id)->first();
-        if (!$user) {
-            return response()->json([], 200);
-        }
-
-        $bookmarks = Bookmark::where('user_id', $user->id)->get();
+        $bookmarks = Bookmark::where('github_id', $github_id)->get();
         return response()->json($bookmarks, 200);
     }
 }

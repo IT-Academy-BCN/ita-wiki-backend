@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\LikeService;
 use App\Http\Requests\LikeRequest;
+use App\Models\Like;
+use Exception;
 
 class LikeController extends Controller
 {
@@ -56,7 +58,7 @@ class LikeController extends Controller
     public function createStudentLike(LikeRequest $request)
     {
         try {
-            $like = $this->likeService->createLike(auth()->id(), $request->resource_id);
+            $like = $this->likeService->createLike($request->github_id, $request->resource_id);
             return response()->json($like, 201);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -97,8 +99,8 @@ class LikeController extends Controller
     public function deleteStudentLike(LikeRequest $request)
     {
         try {
-            $this->likeService->deleteLike(auth()->id(), $request->resource_id);
-            return response()->json(['message' => 'Like deleted successfully.'], 200);
+            $this->likeService->deleteLike($request->github_id, $request->resource_id);
+            return response()->json(['message' => 'Like deleted successfully'], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
         }
@@ -127,9 +129,9 @@ class LikeController extends Controller
      * )
     */
 
-    public function getStudentLikes(LikeRequest $request)
+    public function getStudentLikes($github_id)
     {
-        $likes = Like::where('github_id', $request->validated('github_id'))->get();
+        $likes = Like::where('github_id', $github_id)->get();
         return response()->json($likes, 200);
     }
 }
