@@ -13,12 +13,10 @@ class ResourceTest extends TestCase
         /**
      * A basic feature test example.
      */
-    public function testCanGetList(): void
+    public function test_can_get_list(): void
     {
-
-        $response = $this->get(route('resources'));
+        $response = $this->get(route('resources.index')); 
 
         $response->assertStatus(200);
     }
-
 }

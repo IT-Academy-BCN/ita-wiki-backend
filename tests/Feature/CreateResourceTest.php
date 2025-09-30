@@ -1,5 +1,4 @@
 <?php
-
 declare (strict_types= 1);
 
 namespace Tests\Feature;
@@ -30,7 +29,7 @@ class CreateResourceTest extends TestCase
 
         return Resource::factory()->raw([
             'github_id' => $user->github_id,
-            //'tags' => null
+            'tags' => null
         ]);
        
     }
@@ -55,7 +54,7 @@ class CreateResourceTest extends TestCase
 
     public function testItCanCreateAResourceWithTagsId(): void
     {
-        $response = $this->postJson(route('resources.store.v2'), $this->GetResourceDataTagsId());
+        $response = $this->postJson(route('resources.store'), $this->GetResourceDataTagsId());
 
         $response->assertStatus(201);
     }
