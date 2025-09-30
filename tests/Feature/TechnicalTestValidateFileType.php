@@ -25,7 +25,7 @@ public function test_it_cannot_upload_a_non_pdf_file()
 
         $file = UploadedFile::fake()->create('prueba.png', 100, 'image/png');
 
-        $response = $this->postJson('/api/technicaltests', array_merge($payload, [
+        $response = $this->postJson(route('technical-tests.store'), array_merge($payload, [
             'file' => $file,
         ]));
 
