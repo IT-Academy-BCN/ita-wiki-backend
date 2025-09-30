@@ -46,11 +46,12 @@ class CreateResourceTest extends TestCase
             'role' => 'student'
         ]);
 
-        $tagIds = Tag::inRandomOrder()->take(3)->pluck('id')->toArray();
+      
+        $tagNames = Tag::inRandomOrder()->take(3)->pluck('name')->toArray();
 
         return Resource::factory()->raw([
             'github_id' => $user->github_id,
-            'tags' => $tagIds
+            'tags' => $tagNames  
         ]);
     }
 
