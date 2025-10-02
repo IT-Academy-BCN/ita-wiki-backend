@@ -20,20 +20,13 @@ fi
 
 # Wait for the database to be ready before running migrations
 echo "Waiting for database connection..."
-until mysqladmin ping -h"$DB_HOST" --silent; do
+until mysqladmin ping -h mysql -u user -ppassword --skip-ssl --silent; do
     echo "Database not ready. Retrying in 5 seconds..."
     sleep 5
 done
 
-# Run migrations based on the environment
-if [ "$APP_ENV" = "development" ]; then
-    echo "Running fresh migrations and seeding..."
-    php artisan migrate:fresh --seed --force
-else
-    echo "Running standard migrations..."
-    php artisan migrate --force
-    php artisan db:seed --force
-fi
+# Skip migrations for now to test the application
+echo "Skipping migrations for testing..."
 
 echo "Generating application key..."
 php artisan key:generate --force
