@@ -36,7 +36,7 @@ class StoreResourceRequest extends FormRequest
             'url' => ['required', 'url'],
             'category' => ['required', 'string', 'in:Node,React,Angular,JavaScript,Java,Fullstack PHP,Data Science,BBDD'],
             'tags' => ['nullable', 'array', 'max:5'],
-            'tags.*' => ['integer', 'distinct', Rule::exists('tags', 'id')],
+            'tags.*' => ['string', 'distinct', Rule::exists('tags', 'name')],
             'type' =>['required', 'string', 'in:Video,Cursos,Blog']
         ];
     }

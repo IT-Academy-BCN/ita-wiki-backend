@@ -8,7 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Rules\GithubIdRule;
 use App\Rules\RoleStudentRule;
 
-class UpdateResourceFormRequest extends FormRequest
+class UpdateResourceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
