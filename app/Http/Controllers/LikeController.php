@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\LikeService;
 use App\Http\Requests\LikeRequest;
 use App\Models\Like;
-use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class LikeController extends Controller
 {
@@ -58,10 +59,13 @@ class LikeController extends Controller
     public function createStudentLike(LikeRequest $request)
     {
         try {
-            $like = $this->likeService->createLike($request->github_id, $request->resource_id);
+            $like = $this->likeService->createLike(
+                $request->github_id, 
+                $request->resource_id
+            );
             return response()->json($like, 201);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (ConflictHttpException $e) {
+            return response()->json(['error' => $e->getMessage()], 409);
         }
     }
 
@@ -99,10 +103,13 @@ class LikeController extends Controller
     public function deleteStudentLike(LikeRequest $request)
     {
         try {
-            $this->likeService->deleteLike($request->github_id, $request->resource_id);
+            $this->likeService->deleteLike(
+                $request->github_id, 
+                $request->resource_id
+            );
             return response()->json(['message' => 'Like deleted successfully'], 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Like not found.'], 404);
         }
     }
 

@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BookmarkRequest;
 use App\Models\Bookmark;
 use App\Services\BookmarkService;
-use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class BookmarkController extends Controller
 {
@@ -61,8 +62,8 @@ class BookmarkController extends Controller
         try {
             $bookmark = $this->bookmarkService->createBookmark($request->github_id, $request->resource_id);
             return response()->json($bookmark, 201);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (ConflictHttpException $e) {
+            return response()->json(['error' => $e->getMessage()], 409);
         }
     }
 
@@ -102,8 +103,8 @@ class BookmarkController extends Controller
         try {
             $this->bookmarkService->deleteBookmark($request->github_id, $request->resource_id);
             return response()->json(['message' => 'Bookmark deleted successfully'], 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Bookmark not found.'], 404);
         }
     }
 

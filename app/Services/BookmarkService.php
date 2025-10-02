@@ -1,20 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
 use App\Models\Bookmark;
-use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class BookmarkService
 {
     /**
      * Create a bookmark for a user on a resource.
-     * Throws exception if the bookmark already exists.
+     * 
+     * @throws ConflictHttpException
      */
     public function createBookmark(int $githubId, int $resourceId): Bookmark
     {
-        if (Bookmark::where('github_id', $githubId)->where('resource_id', $resourceId)->exists()) {
-            throw new Exception('Bookmark already exists for this resource.');
+        if (Bookmark::where('github_id', $githubId)
+            ->where('resource_id', $resourceId)
+            ->exists()) {
+            throw new ConflictHttpException('Bookmark already exists for this resource.');
         }
 
         return Bookmark::create([
@@ -25,15 +30,14 @@ class BookmarkService
 
     /**
      * Delete a bookmark for a user on a resource.
-     * Throws exception if the bookmark does not exist.
+     * 
+     * @throws ModelNotFoundException
      */
     public function deleteBookmark(int $githubId, int $resourceId): void
     {
-        $bookmark = Bookmark::where('github_id', $githubId)->where('resource_id', $resourceId)->first();
-
-        if (!$bookmark) {
-            throw new Exception('Bookmark not found.');
-        }
+        $bookmark = Bookmark::where('github_id', $githubId)
+            ->where('resource_id', $resourceId)
+            ->firstOrFail();
 
         $bookmark->delete();
     }
