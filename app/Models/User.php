@@ -71,4 +71,25 @@ class User extends Authenticatable
     {
         return $this->guard_name;
     }
+
+    /**
+     * Get the value of the model's primary key for Spatie Permission.
+     * This tells Spatie to use github_id instead of id.
+     *
+     * @return mixed
+     */
+    public function getKey()
+    {
+        return $this->github_id;
+    }
+
+    /**
+     * Get the primary key name for Spatie Permission.
+     *
+     * @return string
+     */
+    public function getKeyName()
+    {
+        return 'github_id';
+    }
 }
