@@ -71,23 +71,20 @@ return new class extends Migration
             $table->unsignedBigInteger($pivotRole);
 
             $table->string('model_type');
-            $table->unsignedBigInteger($columnNames['model_morph_key']);
-            $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
+            // ✅ CHANGED: Use github_id instead of model_id
+            $table->unsignedBigInteger('github_id');
+            $table->index(['github_id', 'model_type'], 'model_has_roles_github_id_model_type_index');
 
             $table->foreign($pivotRole)
                 ->references('id') // role id
                 ->on($tableNames['roles'])
                 ->onDelete('cascade');
-            if ($teams) {
-                $table->unsignedBigInteger($columnNames['team_foreign_key']);
-                $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
 
-                $table->primary([$columnNames['team_foreign_key'], $pivotRole, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_roles_role_model_type_primary');
-            } else {
-                $table->primary([$pivotRole, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_roles_role_model_type_primary');
-            }
+            // ✅ ADDED: Foreign key to users.github_id
+            $table->foreign('github_id')
+                ->references('github_id')
+                ->on('users')
+                ->onDelete('cascade');
         });
 
         Schema::create($tableNames['role_has_permissions'], static function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
