@@ -18,6 +18,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected string $guard_name = 'api';
+
     protected $fillable = [
         'name',
         'email',
@@ -63,5 +65,11 @@ class User extends Authenticatable
     public function getRoleName(): string
     {
         return $this->getRoleNames()->first() ?? 'anonymous';
+    }
+
+    
+    protected function getDefaultGuardName(): string 
+    { 
+        return $this->guard_name; 
     }
 }
