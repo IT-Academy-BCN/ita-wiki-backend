@@ -18,14 +18,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,
-            OldRoleSeeder::class,        
+            RolesAndPermissionsSeeder::class,   
+            UserSeeder::class,                 
+            OldRoleSeeder::class,               //to deprecate
             TagSeeder::class,         
             ResourceSeeder::class,   
             BookmarkSeeder::class,    
             LikeSeeder::class,
             TechnicalTestSeeder::class,
         ]);
-    
     }
 }
