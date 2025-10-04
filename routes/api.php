@@ -10,10 +10,10 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
 
-//GitHub Auth Systen Endpoints
-Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
-Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
-Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
+//GitHub Auth System Endpoints
+Route::get('/auth/github', [GitHubAuthController::class, 'redirect'])->name('auth.github');
+Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('auth.github.callback');
+Route::get('/auth/logout', [GitHubAuthController::class, 'logout'])->name('auth.logout');
 
 
 // (Old)Roles Endpoints: in the current permission logic Roles table refers to Users
