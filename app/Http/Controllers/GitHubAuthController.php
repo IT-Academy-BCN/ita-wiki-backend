@@ -97,4 +97,15 @@ class GitHubAuthController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Método logout básico (sin funcionalidad implementada)
+     */
+    public function logout()
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Cierre de sesión exitoso'
+        ], 200);
+    }
 }

@@ -13,7 +13,7 @@ use App\Http\Controllers\TechnicalTestController;
 //GitHub Auth System Endpoints
 Route::get('/auth/github', [GitHubAuthController::class, 'redirect'])->name('auth.github');
 Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('auth.github.callback');
-Route::get('/auth/logout', [GitHubAuthController::class, 'logout'])->name('auth.logout');
+Route::get('/auth/github/logout', [GitHubAuthController::class, 'logout'])->name('auth.logout');
 
 
 // (Old)Roles Endpoints: in the current permission logic Roles table refers to Users
