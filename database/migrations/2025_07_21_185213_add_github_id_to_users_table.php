@@ -14,16 +14,18 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->bigInteger('github_id')->unsigned()->unique();
             $table->string('github_user_name');
+            $table->string('url_profile')->nullable();
+            $table->string('url_avatar')->nullable();
         });
     }
-
+  
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['github_id', 'github_user_name']);
+            $table->dropColumn(['github_id', 'github_user_name', 'url_profile', 'url_avatar']);
         });
     }
 };
