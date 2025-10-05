@@ -15,6 +15,16 @@ use App\Enums\LanguageEnum;
 
 class TechnicalTestController extends Controller
 {
+  
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('permission:view technical tests')->only(['index', 'show']);
+        $this->middleware('permission:create technical tests')->only(['store']);
+        $this->middleware('permission:edit own technical tests|edit all technical tests')->only(['update']);
+        $this->middleware('permission:delete own technical tests|delete all technical tests')->only(['destroy']);
+    }
+
     /**
      * @OA\Get(
      *      path="/api/technical-tests",
@@ -207,12 +217,17 @@ class TechnicalTestController extends Controller
      */
     public function store(StoreTechnicalTestRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         $data = [
             'title' => $request->title,
             'language' => $request->language,
             'description' => $request->description,
             'tags' => $request->tags,
-            // github_id lo agregaremos después con autenticación
+            'github_id' => $user->github_id,
         ];
 
         if ($request->hasFile('file')) {
@@ -234,4 +249,102 @@ class TechnicalTestController extends Controller
     }
 
    
+    /**
+     * @OA\Get(
+     *     path="/api/technical-tests/{id}",
+     *     summary="Get a technical test",
+     *     tags={"Technical Tests"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Technical test details")
+     * )
+     */
+    public function show(TechnicalTest $technicalTest)
+    {
+        return response()->json([
+            'data' => $technicalTest
+        ]);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/api/technical-tests/{id}",
+     *     summary="Update a technical test",
+     *     tags={"Technical Tests"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Technical test updated successfully"),
+     *     @OA\Response(response=403, description="Forbidden - Not your technical test")
+     * )
+     */
+    public function update(StoreTechnicalTestRequest $request, TechnicalTest $technicalTest)
+    {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Check ownership for "own" permissions
+        if (!$user->can('edit all technical tests')) {
+            if ($technicalTest->github_id !== $user->github_id) {
+                return response()->json(['error' => 'Forbidden - Not your technical test'], 403);
+            }
+        }
+
+        $data = [
+            'title' => $request->title,
+            'language' => $request->language,
+            'description' => $request->description,
+            'tags' => $request->tags,
+         
+        ];
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('technical-tests', $fileName, 'local');
+            
+            $data['file_path'] = $filePath;
+            $data['file_original_name'] = $file->getClientOriginalName();
+            $data['file_size'] = $file->getSize();
+        }
+
+        $technicalTest->update($data);
+
+        return response()->json([
+            'message' => 'Technical test updated successfully',
+            'data' => $technicalTest
+        ]);
+    }
+
+  
+    /**
+     * @OA\Delete(
+     *     path="/api/technical-tests/{id}",
+     *     summary="Delete a technical test",
+     *     tags={"Technical Tests"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Technical test deleted successfully"),
+     *     @OA\Response(response=403, description="Forbidden - Not your technical test")
+     * )
+     */
+    public function destroy(TechnicalTest $technicalTest)
+    {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Check ownership for "own" permissions
+        if (!$user->can('delete all technical tests')) {
+            if ($technicalTest->github_id !== $user->github_id) {
+                return response()->json(['error' => 'Forbidden - Not your technical test'], 403);
+            }
+        }
+
+        $technicalTest->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Technical test deleted successfully'
+        ]);
+    }
 }

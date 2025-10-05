@@ -18,7 +18,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Se recomienda limpiar cache al inicio del seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Crear roles (SOLO 4, sin anonymous)
+        // Crear roles. Usar firstOrCreate para evitar errores de duplicados en tabla Roles
         $student = Role::firstOrCreate(['name' => 'student', 'guard_name' => 'api']);
         $mentor = Role::firstOrCreate(['name' => 'mentor', 'guard_name' => 'api']);
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);

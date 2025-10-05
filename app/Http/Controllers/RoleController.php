@@ -48,6 +48,36 @@ class RoleController extends Controller
      *             @OA\Property(property="user_id", type="integer"),
      *             @OA\Property(property="role", type="string")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Role assigned successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Role assigned successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthorized")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Forbidden")
+     *         )
      *     )
      * )
      */
@@ -72,7 +102,64 @@ class RoleController extends Controller
      *     path="/api/users/{user}/roles",
      *     summary="Get user roles and permissions",
      *     tags={"Roles"},
-     *     @OA\Parameter(name="user", in="path", required=true, @OA\Schema(type="integer"))
+     *     @OA\Parameter(
+     *         name="user", 
+     *         in="path", 
+     *         required=true, 
+     *         @OA\Schema(type="integer"),
+     *         description="User ID"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User roles and permissions retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="user",
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="John Doe"),
+     *                     @OA\Property(property="github_id", type="string", example="999999999")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="roles",
+     *                     type="array",
+     *                     @OA\Items(type="string"),
+     *                     example={"student", "mentor"}
+     *                 ),
+     *                 @OA\Property(
+     *                     property="permissions",
+     *                     type="array",
+     *                     @OA\Items(type="string"),
+     *                     example={"view resources", "create resources", "edit own resources"}
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthorized")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="User not found")
+     *         )
+     *     )
      * )
      */
     public function getUserRoles(User $user): JsonResponse

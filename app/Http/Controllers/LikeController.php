@@ -17,6 +17,10 @@ class LikeController extends Controller
     public function __construct(LikeService $likeService)
     {
         $this->likeService = $likeService;
+        $this->middleware('auth:api');
+        $this->middleware('permission:create likes')->only(['createStudentLike']);
+        $this->middleware('permission:delete own likes')->only(['deleteStudentLike']);
+        $this->middleware('permission:view resources')->only(['getStudentLikes']);
     }
 
     /**
@@ -55,9 +59,17 @@ class LikeController extends Controller
      *     )
      * )
     */
-
     public function createStudentLike(LikeRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if ($request->github_id !== $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only create likes for yourself'], 403);
+        }
+
         try {
             $like = $this->likeService->createLike(
                 $request->github_id, 
@@ -99,9 +111,17 @@ class LikeController extends Controller
      *     )
      * )
     */
-
     public function deleteStudentLike(LikeRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if ($request->github_id !== $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only delete your own likes'], 403);
+        }
+
         try {
             $this->likeService->deleteLike(
                 $request->github_id, 
@@ -135,9 +155,17 @@ class LikeController extends Controller
      *     )
      * )
     */
-
     public function getStudentLikes($github_id)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!$user->can('view users') && $github_id != $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only view your own likes'], 403);
+        }
+
         $likes = Like::where('github_id', $github_id)->get();
         return response()->json($likes, 200);
     }

@@ -18,6 +18,10 @@ class BookmarkController extends Controller
     public function __construct(BookmarkService $bookmarkService)
     {
         $this->bookmarkService = $bookmarkService;
+        $this->middleware('auth:api');
+        $this->middleware('permission:create bookmarks')->only(['createStudentBookmark']);
+        $this->middleware('permission:delete own bookmarks')->only(['deleteStudentBookmark']);
+        $this->middleware('permission:view resources')->only(['getStudentBookmarks']);
     }
 
     /**
@@ -56,9 +60,17 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
     public function createStudentBookmark(BookmarkRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if ($request->github_id !== $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only create bookmarks for yourself'], 403);
+        }
+
         try {
             $bookmark = $this->bookmarkService->createBookmark($request->github_id, $request->resource_id);
             return response()->json($bookmark, 201);
@@ -97,9 +109,17 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
     public function deleteStudentBookmark(BookmarkRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if ($request->github_id !== $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only delete your own bookmarks'], 403);
+        }
+
         try {
             $this->bookmarkService->deleteBookmark($request->github_id, $request->resource_id);
             return response()->json(['message' => 'Bookmark deleted successfully'], 200);
@@ -130,9 +150,17 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
     public function getStudentBookmarks($github_id)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!$user->can('view users') && $github_id != $user->github_id) {
+            return response()->json(['error' => 'Forbidden - Can only view your own bookmarks'], 403);
+        }
+
         $bookmarks = Bookmark::where('github_id', $github_id)->get();
         return response()->json($bookmarks, 200);
     }
