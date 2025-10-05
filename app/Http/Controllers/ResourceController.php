@@ -19,6 +19,15 @@ use App\Http\Requests\UpdateResourceRequest;
  */
 class ResourceController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('permission:view resources')->only(['index']);
+        $this->middleware('permission:create resources')->only(['store']);
+        $this->middleware('permission:edit own resources|edit all resources')->only(['update']);
+        $this->middleware('permission:delete own resources|delete all resources')->only(['destroy']);
+    }
+
     /**
      * @OA\Get(
      *  path="/api/resources",
@@ -136,7 +145,18 @@ class ResourceController extends Controller
     */
     public function update(UpdateResourceRequest $request, Resource $resource)
     {
-        //Obtenemos los datos validados
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Check ownership for "own" permissions
+        if (!$user->can('edit all resources')) {
+            if ($resource->github_id !== $user->github_id) {
+                return response()->json(['error' => 'Forbidden - Not your resource'], 403);
+            }
+        }
+
         $validated = $request->validated();
         unset($validated['github_id']);
 
@@ -144,10 +164,40 @@ class ResourceController extends Controller
             $validated['tags'] = null;
         }
 
-        //Actualizamos los datos
         $resource->update($validated);
 
-        //Devolvemos la respuesta
         return response()->json($resource, 200);
+    }
+
+    /**
+     * @OA\Delete(
+     *  path="/api/resources/{id}",
+     *  summary="Delete a resource",
+     *  tags={"Resources"},
+     *  @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *  @OA\Response(response=200, description="Resource deleted successfully"),
+     *  @OA\Response(response=403, description="Forbidden - Not your resource"),
+     *  @OA\Response(response=404, description="Resource not found")
+     * )
+     */
+    public function destroy(Resource $resource)
+    {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Check ownership for "own" permissions
+        if (!$user->can('delete all resources')) {
+            if ($resource->github_id !== $user->github_id) {
+                return response()->json(['error' => 'Forbidden - Not your resource'], 403);
+            }
+        }
+
+        $resource->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Resource deleted successfully'
+        ]);
     }
 }
