@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TechnicalTests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\LanguageEnum;
@@ -9,8 +9,7 @@ class IndexTechnicalTestRequest extends FormRequest
 {
     public function authorize(): bool
     {
-       
-        return $this->user() && $this->user()->can('view technical tests');
+        return $this->user() !== null;
     }
 
     public function rules(): array

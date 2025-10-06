@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TechnicalTests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\LanguageEnum;
