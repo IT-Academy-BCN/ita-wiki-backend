@@ -15,14 +15,11 @@ use App\Enums\LanguageEnum;
 
 class TechnicalTestController extends Controller
 {
-  
     public function __construct()
     {
         $this->middleware('auth:api');
-        $this->middleware('permission:view technical tests')->only(['index', 'show']);
-        $this->middleware('permission:create technical tests')->only(['store']);
-        $this->middleware('permission:edit own technical tests|edit all technical tests')->only(['update']);
-        $this->middleware('permission:delete own technical tests|delete all technical tests')->only(['destroy']);
+        $this->middleware('check.permission:create technical tests')->only(['store']);
+        $this->middleware('check.permission:view technical tests')->only(['index', 'show']);
     }
 
     /**
@@ -137,6 +134,15 @@ class TechnicalTestController extends Controller
      */
     public function index(IndexTechnicalTestRequest $request)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!$user->can('view technical tests')) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         $query = TechnicalTest::query();
 
         if ($request->filled('search')) {
@@ -218,9 +224,6 @@ class TechnicalTestController extends Controller
     public function store(StoreTechnicalTestRequest $request)
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
         $data = [
             'title' => $request->title,
@@ -282,9 +285,8 @@ class TechnicalTestController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Check ownership for "own" permissions
         if (!$user->can('edit all technical tests')) {
-            if ($technicalTest->github_id !== $user->github_id) {
+            if ($technicalTest->github_id !== $user->github_id || !$user->can('edit own technical tests')) {
                 return response()->json(['error' => 'Forbidden - Not your technical test'], 403);
             }
         }
@@ -294,7 +296,6 @@ class TechnicalTestController extends Controller
             'language' => $request->language,
             'description' => $request->description,
             'tags' => $request->tags,
-         
         ];
 
         if ($request->hasFile('file')) {
@@ -333,9 +334,8 @@ class TechnicalTestController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Check ownership for "own" permissions
         if (!$user->can('delete all technical tests')) {
-            if ($technicalTest->github_id !== $user->github_id) {
+            if ($technicalTest->github_id !== $user->github_id || !$user->can('delete own technical tests')) {
                 return response()->json(['error' => 'Forbidden - Not your technical test'], 403);
             }
         }

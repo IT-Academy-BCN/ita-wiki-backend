@@ -9,7 +9,8 @@ class IndexTechnicalTestRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Pendiente middleware para alumno y mentor
+       
+        return $this->user() && $this->user()->can('view technical tests');
     }
 
     public function rules(): array
@@ -29,5 +30,4 @@ class IndexTechnicalTestRequest extends FormRequest
             'description.max' => 'El campo descripción no debe exceder los 1000 caracteres.',            
         ];
     }
-
 }
