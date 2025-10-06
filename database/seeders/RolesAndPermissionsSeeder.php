@@ -82,8 +82,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit own resources',
             'delete own resources',
             'view technical tests',
-            'create technical tests',
-            'upload technical tests',
             'create bookmarks',
             'delete own bookmarks',
             'create likes',
