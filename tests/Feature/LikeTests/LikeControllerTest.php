@@ -21,17 +21,20 @@ class LikeControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = $this->authenticateUserWithRole('student');
         $this->resources = Resource::factory(10)->create();
     }
 
+    // ========== AUTHENTICATED TESTS ==========
+
     public function test_authenticated_student_can_get_their_likes(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         Like::create([
             'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[0]->id
         ]);
-        
+
         Like::create([
             'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[1]->id
@@ -45,6 +48,8 @@ class LikeControllerTest extends TestCase
 
     public function test_user_cannot_get_other_user_likes(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $otherUser = User::factory()->create();
         $otherUser->assignRole('student');
 
@@ -55,14 +60,18 @@ class LikeControllerTest extends TestCase
 
     public function test_get_likes_for_user_without_likes_returns_empty_array(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $response = $this->getJson(route('likes', $this->user->github_id));
-        
+
         $response->assertStatus(200)
             ->assertJson([]);
     }
 
     public function test_authenticated_student_can_create_like(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $resource = $this->resources[2];
 
         $response = $this->postJson(route('like.create'), [
@@ -79,6 +88,8 @@ class LikeControllerTest extends TestCase
 
     public function test_cannot_create_duplicate_like(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $resource = $this->resources[3];
 
         $this->postJson(route('like.create'), [
@@ -94,6 +105,8 @@ class LikeControllerTest extends TestCase
 
     public function test_cannot_create_like_for_nonexistent_resource(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $response = $this->postJson(route('like.create'), [
             'resource_id' => 999999
         ]);
@@ -104,6 +117,8 @@ class LikeControllerTest extends TestCase
 
     public function test_resource_id_is_required_to_create_like(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $response = $this->postJson(route('like.create'), []);
 
         $response->assertStatus(422)
@@ -112,6 +127,8 @@ class LikeControllerTest extends TestCase
 
     public function test_authenticated_student_can_delete_their_like(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         Like::create([
             'github_id' => $this->user->github_id,
             'resource_id' => $this->resources[1]->id
@@ -131,6 +148,8 @@ class LikeControllerTest extends TestCase
 
     public function test_cannot_delete_nonexistent_like(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
+
         $response = $this->deleteJson(route('like.delete'), [
             'resource_id' => $this->resources[5]->id
         ]);
@@ -138,10 +157,11 @@ class LikeControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    // ========== UNAUTHENTICATED TESTS ==========
+
     public function test_unauthenticated_user_cannot_create_like(): void
     {
-        auth()->guard('api')->logout();
-
+      
         $response = $this->postJson(route('like.create'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -151,8 +171,7 @@ class LikeControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_delete_like(): void
     {
-        auth()->guard('api')->logout();
-
+    
         $response = $this->deleteJson(route('like.delete'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -162,9 +181,9 @@ class LikeControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_get_likes(): void
     {
-        auth()->guard('api')->logout();
+        $user = User::factory()->create();
 
-        $response = $this->getJson(route('likes', $this->user->github_id));
+        $response = $this->getJson(route('likes', $user->github_id));
 
         $response->assertStatus(401);
     }
