@@ -1,26 +1,55 @@
 <?php
-declare (strict_types= 1);
+
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\LikeService;
-use App\Http\Requests\LikeRequest;
+use App\Http\Requests\Likes\CreateLikeRequest;
+use App\Http\Requests\Likes\DeleteLikeRequest;
 use App\Models\Like;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Illuminate\Http\JsonResponse;
 
 class LikeController extends Controller
 {
-    private LikeService $likeService;
-
-    public function __construct(LikeService $likeService)
+    public function __construct()
     {
-        $this->likeService = $likeService;
         $this->middleware('auth:api');
-        $this->middleware('permission:create likes')->only(['createStudentLike']);
-        $this->middleware('permission:delete own likes')->only(['deleteStudentLike']);
-        $this->middleware('permission:view resources')->only(['getStudentLikes']);
+        $this->middleware('check.permission:create likes')->only(['createStudentLike']);
+        $this->middleware('check.permission:delete own likes')->only(['deleteStudentLike']);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/likes/{github_id}",
+     *     summary="Get all likes for a student",
+     *     tags={"Likes"},
+     *     description="If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
+     *     @OA\Parameter(
+     *         name="github_id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=6729608)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Like")
+     *         )
+     *     )
+     * )
+    */
+    public function getStudentLikes(int $github_id): JsonResponse
+    {
+        $user = auth('api')->user();
+        
+        if ($user->github_id !== $github_id) {
+            return response()->json(['error' => 'Forbidden - Can only view your own likes'], 403);
+        }
+
+        $likes = Like::where('github_id', $github_id)->get();
+        return response()->json($likes);
     }
 
     /**
@@ -59,26 +88,24 @@ class LikeController extends Controller
      *     )
      * )
     */
-    public function createStudentLike(LikeRequest $request)
+    public function createStudentLike(CreateLikeRequest $request): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+
+        $existingLike = Like::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if ($existingLike) {
+            return response()->json(['error' => 'Like already exists'], 409);
         }
 
-        if ($request->github_id !== $user->github_id) {
-            return response()->json(['error' => 'Forbidden - Can only create likes for yourself'], 403);
-        }
+        $like = Like::create([
+            'github_id' => $user->github_id,
+            'resource_id' => $request->resource_id,
+        ]);
 
-        try {
-            $like = $this->likeService->createLike(
-                $request->github_id, 
-                $request->resource_id
-            );
-            return response()->json($like, 201);
-        } catch (ConflictHttpException $e) {
-            return response()->json(['error' => $e->getMessage()], 409);
-        }
+        return response()->json($like, 201);
     }
 
     /**
@@ -111,62 +138,20 @@ class LikeController extends Controller
      *     )
      * )
     */
-    public function deleteStudentLike(LikeRequest $request)
+    public function deleteStudentLike(DeleteLikeRequest $request): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+
+        $like = Like::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if (!$like) {
+            return response()->json(['error' => 'Like not found'], 404);
         }
 
-        if ($request->github_id !== $user->github_id) {
-            return response()->json(['error' => 'Forbidden - Can only delete your own likes'], 403);
-        }
+        $like->delete();
 
-        try {
-            $this->likeService->deleteLike(
-                $request->github_id, 
-                $request->resource_id
-            );
-            return response()->json(['message' => 'Like deleted successfully'], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Like not found.'], 404);
-        }
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/likes/{github_id}",
-     *     summary="Get all likes for a student",
-     *     tags={"Likes"},
-     *     description="If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
-     *     @OA\Parameter(
-     *         name="github_id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer", example=6729608)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Like")
-     *         )
-     *     )
-     * )
-    */
-    public function getStudentLikes($github_id)
-    {
-        $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        if (!$user->can('view users') && $github_id != $user->github_id) {
-            return response()->json(['error' => 'Forbidden - Can only view your own likes'], 403);
-        }
-
-        $likes = Like::where('github_id', $github_id)->get();
-        return response()->json($likes, 200);
+        return response()->json(['message' => 'Like deleted successfully']);
     }
 }
