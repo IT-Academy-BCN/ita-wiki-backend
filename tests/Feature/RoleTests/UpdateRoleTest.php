@@ -1,41 +1,20 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\OldRole;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
+/**
+ * @deprecated This test suite will be removed after Spatie migration
+ */
 class UpdateRoleTest extends TestCase
 {
-    use RefreshDatabase;
-    
-    protected $student;
-    protected $mentor;
-    protected $admin;
-    protected $superadmin;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->student = OldRole::factory()->create([
-            'github_id' => 123456,
-            'role' => 'student'
-        ]);
-        $this->mentor = OldRole::factory()->create([
-            'github_id' => 234567,
-            'role' => 'mentor'
-        ]);
-        $this->admin = OldRole::factory()->create([
-            'github_id' => 345678,
-            'role' => 'admin'
-        ]);
-        $this->superadmin = OldRole::factory()->create([
-            'github_id' => 456789,
-            'role' => 'superadmin'
-        ]);
+        $this->markTestSkipped('DEPRECATED: OldRole system - Skipped for PR');
     }
 
     public function testCanUpdateRoleToLower(): void

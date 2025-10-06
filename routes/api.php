@@ -18,6 +18,15 @@ Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->
 Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
 
 
+// ========== TAG ENDPOINTS (JSON-based - PUBLIC for now) ==========
+// ⚠️ These are PUBLIC until we decide on authentication strategy
+Route::prefix('tags')->group(function () {
+    Route::get('/', [TagController::class, 'index'])->name('tags');
+    Route::get('/frequency', [TagController::class, 'getTagsFrequency'])->name('tags.frequency');
+    Route::get('/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
+    Route::get('/by-category', [TagController::class, 'getCategoryTagsId'])->name('tags.by-category');
+});
+
 // Protected routes with authentication and authorization
 Route::middleware(['auth:api'])->group(function () {
     
@@ -37,7 +46,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/bookmarks', [BookmarkController::class, 'deleteStudentBookmark'])->name('bookmark.delete');
     Route::get('/bookmarks/{github_id}', [BookmarkController::class, 'getStudentBookmarks'])->name('bookmarks');
 
-    // USER ENDPOINTS
+    // USER ENDPOINTS (Empty for now - pending mentor decision)
     Route::put('/users/{user}/update-role', [UserController::class, 'updateRole']);
     Route::get('/profile', [UserController::class, 'profile']);
     Route::get('/users', [UserController::class, 'index']);
@@ -51,11 +60,11 @@ Route::middleware(['auth:api'])->group(function () {
     });
 });
 
-// OLD ROLE ENDPOINTS (deprecated)
-Route::get('/old-role/{github_id}', [OldRoleController::class, 'show']);
-Route::post('/old-role', [OldRoleController::class, 'store']);
-Route::put('/old-role/{old_role}', [OldRoleController::class, 'update']);
-Route::delete('/old-role/{old_role}', [OldRoleController::class, 'destroy']);
-
-// TAG ENDPOINTS (deprecated)
-Route::resource('tags', TagController::class);
+// ========== OLD ROLE ENDPOINTS (deprecated - backward compatibility) ==========
+// ⚠️ TODO: Remove after frontend migration
+Route::prefix('old-role')->group(function () {
+    Route::get('/{github_id}', [OldRoleController::class, 'show'])->name('old-role.show');
+    Route::post('/', [OldRoleController::class, 'store'])->name('old-role.store');
+    Route::put('/{old_role}', [OldRoleController::class, 'update'])->name('old-role.update');
+    Route::delete('/{old_role}', [OldRoleController::class, 'destroy'])->name('old-role.destroy');
+});
