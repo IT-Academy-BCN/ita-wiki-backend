@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -23,7 +23,6 @@ class ResourceController extends Controller
     {
         $this->middleware('auth:api');
         
-       
         $this->middleware('check.permission:view resources')->only(['index', 'show']);
         $this->middleware('check.permission:create resources')->only(['store']);
         $this->middleware('check.permission:edit own resources')->only(['update']);
@@ -115,7 +114,7 @@ class ResourceController extends Controller
 
         return response()->json([
             'message' => 'Resource created successfully',
-            'data' => $resource->load('tags')
+            'data' => $resource 
         ], 201);
     }
 
@@ -145,7 +144,7 @@ class ResourceController extends Controller
      */
     public function show(Resource $resource)
     {
-        return response()->json($resource->load('tags'));
+        return response()->json($resource); 
     }
 
     /**
@@ -208,7 +207,7 @@ class ResourceController extends Controller
 
         return response()->json([
             'message' => 'Resource updated successfully',
-            'data' => $resource->load('tags')
+            'data' => $resource // ❌ RIMOSSO ->load('tags')
         ]);
     }
 

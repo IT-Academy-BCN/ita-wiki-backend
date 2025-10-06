@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Database\Seeders\TagSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Laravel\Passport\Passport;
@@ -16,9 +17,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        // ✅ Seed roles, permissions AND tags
         $this->seed(RolesAndPermissionsSeeder::class);
-
-        $this->seed();
+        $this->seed(TagSeeder::class); 
     }
 
     /**

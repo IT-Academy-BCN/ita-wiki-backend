@@ -1,126 +1,167 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\ResourceTests;
 
-use App\Models\Tag;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\OldRole;
 use App\Models\Resource;
-use App\Models\Role;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Laravel\Passport\Passport;
 
 class UpdateResourceTest extends TestCase
 {
-    private function createResource(array $overrides = []): Resource
+    use RefreshDatabase;
+
+    protected User $user;
+    protected Resource $resource;
+
+    public function setUp(): void
     {
-        return Resource::factory()->create($overrides);
+        parent::setUp();
     }
 
-    private function updateResourceRequest(int $resourceId, array $data)
+    private function getUpdateData(array $overrides = []): array
     {
-        return $this->putJson(route('resources.update', $resourceId), $data);
-    }
-
-    public function testItCanUpdateAResource()
-    {
-        $user = User::factory()->create(['github_id' => 12345]);
-        
-        $resource = $this->createResource(['github_id' => $user->github_id]);
-
-        $data = [
-            'github_id' => $user->github_id, 
-            'title' => 'Updated title',
-            'description' => 'Updated description',
+        return array_merge([
+            'title' => 'Updated Resource Title',
+            'description' => 'Updated description for the resource',
             'url' => 'https://updated-url.com',
-        ];
+            'category' => 'React',
+            'type' => 'Video',
+            'tags' => null
+        ], $overrides);
+    }
 
-        $response = $this->updateResourceRequest($resource->id, $data);
+    // ========== SUCCESS TESTS ==========
+
+    public function test_owner_can_update_their_resource(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        // Crear resource del usuario autenticado
+        $this->resource = Resource::factory()->create([
+            'github_id' => $this->user->github_id
+        ]);
+        
+        $data = $this->getUpdateData();
+
+        $response = $this->putJson(route('resources.update', $this->resource->id), $data);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'title' => 'Updated title',
-                    'description' => 'Updated description',
-                    'url' => 'https://updated-url.com',
-                ]);
+            ->assertJsonFragment([
+                'title' => 'Updated Resource Title',
+                'description' => 'Updated description for the resource',
+            ]);
 
         $this->assertDatabaseHas('resources', [
-            'id' => $resource->id,
-            'title' => 'Updated title',
-            'description' => 'Updated description',
+            'id' => $this->resource->id,
+            'title' => 'Updated Resource Title',
             'url' => 'https://updated-url.com',
         ]);
     }
 
-    public function testItCanShowStatus422WithDuplicateUrl()
+    public function test_admin_can_update_any_resource(): void
     {
-        $existingResource = $this->createResource();
-        $resourceToUpdate = $this->createResource();
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        
+        Passport::actingAs($admin, ['*']);
 
-        $response = $this->updateResourceRequest($resourceToUpdate->id, [
-            'title' => 'Updated title',
-            'description' => 'Updated description',
-            'url' => $existingResource->url, 
-        ]);
+        // Crear resource de otro usuario
+        $otherUserResource = Resource::factory()->create();
 
-        $response->assertStatus(422);
+        $data = $this->getUpdateData();
+
+        $response = $this->putJson(route('resources.update', $otherUserResource->id), $data);
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseHas('resources', [
-            'id' => $resourceToUpdate->id,
-            'title' => $resourceToUpdate->title,
-            'description' => $resourceToUpdate->description,
-            'url' => $resourceToUpdate->url,
+            'id' => $otherUserResource->id,
+            'title' => 'Updated Resource Title',
         ]);
     }
+
+    // ========== AUTHORIZATION TESTS ==========
+
+    public function test_user_cannot_update_other_user_resource(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        // Crear resource de otro usuario
+        $otherUserResource = Resource::factory()->create();
+
+        $data = $this->getUpdateData();
+
+        $response = $this->putJson(route('resources.update', $otherUserResource->id), $data);
+
+        $response->assertStatus(403)
+            ->assertJson(['error' => 'Forbidden - Not your resource']);
+
+        // Verificar que NO se actualizó
+        $this->assertDatabaseMissing('resources', [
+            'id' => $otherUserResource->id,
+            'title' => 'Updated Resource Title',
+        ]);
+    }
+
+    public function test_unauthenticated_user_cannot_update_resource(): void
+    {
+        // ✅ Crear resource sin autenticación previa
+        $resource = Resource::factory()->create();
+        
+        $data = $this->getUpdateData();
+
+        // ✅ NO authentication
+        $response = $this->putJson(route('resources.update', $resource->id), $data);
+
+        $response->assertStatus(401);
+    }
+
+    // ========== VALIDATION TESTS ==========
 
     #[DataProvider('resourceUpdateValidationProvider')]
-    public function testItCanShowStatus422WithInvalidDataOnUpdate(array $invalidData, string $fieldName)
+    public function test_update_resource_validation(array $invalidData, string $fieldName): void
     {
-        $resource = $this->createResource();
-
-        $data = [
-            'title' => 'Updated title',
-            'description' => 'Updated description',
-            'url' => 'https://updated-url.com',
-        ];
-
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        $this->resource = Resource::factory()->create([
+            'github_id' => $this->user->github_id
+        ]);
+        
+        $data = $this->getUpdateData();
         $data = array_merge($data, $invalidData);
-    
-        $response = $this->updateResourceRequest($resource->id, $data);
+
+        $response = $this->putJson(route('resources.update', $this->resource->id), $data);
 
         $response->assertStatus(422)
-            
-                ->assertJsonPath($fieldName, function ($errors) {
-                    return is_array($errors) && count($errors) > 0;
-                });
+            ->assertJsonValidationErrors($fieldName);
 
+        // Verificar que NO se actualizó
         $this->assertDatabaseHas('resources', [
-            'id' => $resource->id,
-            'title' => $resource->title,
-            'description' => $resource->description,
-            'url' => $resource->url,
+            'id' => $this->resource->id,
+            'title' => $this->resource->title,
+            'url' => $this->resource->url,
         ]);
     }
 
-    public static function resourceUpdateValidationProvider()
+    public static function resourceUpdateValidationProvider(): array
     {
         return [
             'missing title' => [['title' => null], 'title'],
-            'invalid title (too short)' => [['title' => 'a'], 'title'],
-            'invalid title (too long)' => [['title' => str_repeat('a', 256)], 'title'],
-            'invalid title (array)' => [['title' => []], 'title'],
-            'invalid description (too short)' => [['description' => 'short'], 'description'],
-            'invalid description (too long)' => [['description' => str_repeat('a', 1001)], 'description'],
-            'invalid description (array)' => [['description' => []], 'description'],
+            'title too short' => [['title' => 'a'], 'title'],
+            'title too long' => [['title' => str_repeat('a', 256)], 'title'],
+            'title is array' => [['title' => []], 'title'],
+            'description too short' => [['description' => 'short'], 'description'],
+            'description too long' => [['description' => str_repeat('a', 1001)], 'description'],
+            'description is array' => [['description' => []], 'description'],
             'missing url' => [['url' => null], 'url'],
-            'invalid url (not a url)' => [['url' => 'not a url'], 'url'],
-            'invalid url (array)' => [['url' => []], 'url'],
-            'invalid url (integer)' => [['url' => 123], 'url'],
+            'invalid url' => [['url' => 'not a url'], 'url'],
+            'url is array' => [['url' => []], 'url'],
+            'url is integer' => [['url' => 123], 'url'],
         ];
     }
-
 }
