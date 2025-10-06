@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Requests\IndexTechnicalTestRequest;
-use App\Http\Requests\StoreTechnicalTestRequest;
+use App\Http\Requests\TechnicalTests\IndexTechnicalTestRequest;
+use App\Http\Requests\TechnicalTests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
 use App\Enums\LanguageEnum;
 

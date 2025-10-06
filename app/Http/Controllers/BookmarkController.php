@@ -4,24 +4,18 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\BookmarkRequest;
+use App\Http\Requests\Bookmarks\CreateBookmarkRequest;
+use App\Http\Requests\Bookmarks\DeleteBookmarkRequest;
 use App\Models\Bookmark;
-use App\Services\BookmarkService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Illuminate\Http\JsonResponse;
 
 class BookmarkController extends Controller
 {
-    private BookmarkService $bookmarkService;
-
-    public function __construct(BookmarkService $bookmarkService)
+    public function __construct()
     {
-        $this->bookmarkService = $bookmarkService;
         $this->middleware('auth:api');
-        $this->middleware('permission:create bookmarks')->only(['createStudentBookmark']);
-        $this->middleware('permission:delete own bookmarks')->only(['deleteStudentBookmark']);
-        $this->middleware('permission:view resources')->only(['getStudentBookmarks']);
+        $this->middleware('check.permission:create bookmarks')->only(['createStudentBookmark']);
+        $this->middleware('check.permission:delete own bookmarks')->only(['deleteStudentBookmark']);
     }
 
     /**
@@ -60,23 +54,24 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-    public function createStudentBookmark(BookmarkRequest $request)
+    public function createStudentBookmark(CreateBookmarkRequest $request): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+
+        $existingBookmark = Bookmark::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if ($existingBookmark) {
+            return response()->json(['error' => 'Bookmark already exists'], 409);
         }
 
-        if ($request->github_id !== $user->github_id) {
-            return response()->json(['error' => 'Forbidden - Can only create bookmarks for yourself'], 403);
-        }
+        $bookmark = Bookmark::create([
+            'github_id' => $user->github_id,
+            'resource_id' => $request->resource_id,
+        ]);
 
-        try {
-            $bookmark = $this->bookmarkService->createBookmark($request->github_id, $request->resource_id);
-            return response()->json($bookmark, 201);
-        } catch (ConflictHttpException $e) {
-            return response()->json(['error' => $e->getMessage()], 409);
-        }
+        return response()->json($bookmark, 201);
     }
 
     /**
@@ -109,23 +104,21 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-    public function deleteStudentBookmark(BookmarkRequest $request)
+    public function deleteStudentBookmark(DeleteBookmarkRequest $request): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+
+        $bookmark = Bookmark::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if (!$bookmark) {
+            return response()->json(['error' => 'Bookmark not found'], 404);
         }
 
-        if ($request->github_id !== $user->github_id) {
-            return response()->json(['error' => 'Forbidden - Can only delete your own bookmarks'], 403);
-        }
+        $bookmark->delete();
 
-        try {
-            $this->bookmarkService->deleteBookmark($request->github_id, $request->resource_id);
-            return response()->json(['message' => 'Bookmark deleted successfully'], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Bookmark not found.'], 404);
-        }
+        return response()->json(['message' => 'Bookmark deleted successfully']);
     }
 
     /**
@@ -150,18 +143,15 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-    public function getStudentBookmarks($github_id)
+    public function getStudentBookmarks(int $github_id): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        if (!$user->can('view users') && $github_id != $user->github_id) {
+        
+        if ($user->github_id !== $github_id) {
             return response()->json(['error' => 'Forbidden - Can only view your own bookmarks'], 403);
         }
 
         $bookmarks = Bookmark::where('github_id', $github_id)->get();
-        return response()->json($bookmarks, 200);
+        return response()->json($bookmarks);
     }
 }

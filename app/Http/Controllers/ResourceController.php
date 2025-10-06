@@ -4,11 +4,11 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ShowResourceRequest;
+use App\Http\Requests\Resources\StoreResourceRequest;
+use App\Http\Requests\Resources\UpdateResourceRequest;
+use App\Http\Requests\Resources\ShowResourceRequest;
 use App\Models\Resource;
-use App\Http\Requests\StoreResourceRequest;
-use App\Http\Requests\UpdateResourceRequest; 
-
+use Illuminate\Http\JsonResponse;
 
 /**
  * @OA\Info(
@@ -22,10 +22,12 @@ class ResourceController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-        $this->middleware('permission:view resources')->only(['index']);
-        $this->middleware('permission:create resources')->only(['store']);
-        $this->middleware('permission:edit own resources|edit all resources')->only(['update']);
-        $this->middleware('permission:delete own resources|delete all resources')->only(['destroy']);
+        
+       
+        $this->middleware('check.permission:view resources')->only(['index', 'show']);
+        $this->middleware('check.permission:create resources')->only(['store']);
+        $this->middleware('check.permission:edit own resources')->only(['update']);
+        $this->middleware('check.permission:delete own resources')->only(['destroy']);
     }
 
     /**
@@ -97,11 +99,53 @@ class ResourceController extends Controller
      *     )
      * )
      */
-    public function store(StoreResourceRequest $request)
+    public function store(StoreResourceRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $resource = Resource::create($validated);
-        return response()->json($resource, 201);
+        $user = auth('api')->user();
+
+        $resource = Resource::create([
+            'github_id' => $user->github_id,  
+            'title' => $request->title,
+            'description' => $request->description,
+            'url' => $request->url,
+            'category' => $request->category,
+            'type' => $request->type,
+            'tags' => $request->tags,
+        ]);
+
+        return response()->json([
+            'message' => 'Resource created successfully',
+            'data' => $resource->load('tags')
+        ], 201);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/resources/{resource}",
+     *     summary="Get a single resource by ID",
+     *     tags={"Resources"},
+     *     description="Retrieves a single resource, including its tags, by ID",
+     *     @OA\Parameter(
+     *         name="resource",
+     *         in="path",
+     *         description="ID of the resource to retrieve",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Resource retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Resource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Resource not found"
+     *     )
+     * )
+     */
+    public function show(Resource $resource)
+    {
+        return response()->json($resource->load('tags'));
     }
 
     /**
@@ -143,30 +187,29 @@ class ResourceController extends Controller
      *     )
      * )
     */
-    public function update(UpdateResourceRequest $request, Resource $resource)
+    public function update(UpdateResourceRequest $request, Resource $resource): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
-        // Check ownership for "own" permissions
         if (!$user->can('edit all resources')) {
             if ($resource->github_id !== $user->github_id) {
                 return response()->json(['error' => 'Forbidden - Not your resource'], 403);
             }
         }
 
-        $validated = $request->validated();
-        unset($validated['github_id']);
+        $resource->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'url' => $request->url,
+            'category' => $request->category,
+            'type' => $request->type,
+            'tags' => $request->tags,
+        ]);
 
-        if (array_key_exists('tags', $validated) && empty($validated['tags'])) {
-            $validated['tags'] = null;
-        }
-
-        $resource->update($validated);
-
-        return response()->json($resource, 200);
+        return response()->json([
+            'message' => 'Resource updated successfully',
+            'data' => $resource->load('tags')
+        ]);
     }
 
     /**
@@ -180,14 +223,10 @@ class ResourceController extends Controller
      *  @OA\Response(response=404, description="Resource not found")
      * )
      */
-    public function destroy(Resource $resource)
+    public function destroy(Resource $resource): JsonResponse
     {
         $user = auth('api')->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
-        // Check ownership for "own" permissions
         if (!$user->can('delete all resources')) {
             if ($resource->github_id !== $user->github_id) {
                 return response()->json(['error' => 'Forbidden - Not your resource'], 403);
@@ -195,9 +234,7 @@ class ResourceController extends Controller
         }
 
         $resource->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Resource deleted successfully'
-        ]);
+
+        return response()->json(['message' => 'Resource deleted successfully']);
     }
 }
