@@ -9,6 +9,7 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
+use App\Http\Controllers\UserController;
 
 //GitHub Auth Systen Endpoints
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
@@ -48,3 +49,11 @@ Route::get('/tags/frequency', [TagController::class, 'getTagsFrequency'])->name(
 Route::get('/tags/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
 Route::get('/tags/by-category', [TagController::class, 'getCategoryTagsId'])->name('category.tags.id');
 Route::get('/tags', [TagController::class, 'index'])->name('tags');
+
+// Users Endpoints 
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}/updateRole', [UserController::class, 'updateRole'])->name('users.updateRole');
+    Route::delete('/users/{user}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
+});
