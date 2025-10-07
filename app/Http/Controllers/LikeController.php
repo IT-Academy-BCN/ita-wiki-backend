@@ -1,16 +1,24 @@
 <?php
-
 declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\LikeService;
 use App\Http\Requests\LikeRequest;
 use App\Models\Like;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class LikeController extends Controller
 {
-    //
+    private LikeService $likeService;
+
+    public function __construct(LikeService $likeService)
+    {
+        $this->likeService = $likeService;
+    }
+
     /**
      * @OA\Post(
      *     path="/api/likes",
@@ -50,19 +58,15 @@ class LikeController extends Controller
 
     public function createStudentLike(LikeRequest $request)
     {
-        $validated = $request->validated();
-        $existingLike = Like::where('github_id', $validated['github_id'])
-        ->where('resource_id', $validated['resource_id'])
-        ->first();
-
-        if ($existingLike) {
-            return response()->json([
-                'message' => 'Like already exists.',
-            ], 409); // HTTP 409 Conflict
+        try {
+            $like = $this->likeService->createLike(
+                $request->github_id, 
+                $request->resource_id
+            );
+            return response()->json($like, 201);
+        } catch (ConflictHttpException $e) {
+            return response()->json(['error' => $e->getMessage()], 409);
         }
-
-        $like = Like::create($validated);
-        return response()->json($like, 201);
     }
 
     /**
@@ -98,15 +102,15 @@ class LikeController extends Controller
 
     public function deleteStudentLike(LikeRequest $request)
     {
-        $validated = $request->validated();
-        $like = Like::where('github_id', $validated['github_id'])
-            ->where('resource_id', $validated['resource_id'])
-            ->first();
-        if($like) {
-            $like->delete();
+        try {
+            $this->likeService->deleteLike(
+                $request->github_id, 
+                $request->resource_id
+            );
             return response()->json(['message' => 'Like deleted successfully'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Like not found.'], 404);
         }
-        return response()->json(['message' => 'Like not found'], 404);
     }
 
     /**
@@ -132,9 +136,9 @@ class LikeController extends Controller
      * )
     */
 
-    public function getStudentLikes(LikeRequest $request)
+    public function getStudentLikes($github_id)
     {
-        $likes = Like::where('github_id', $request->validated('github_id'))->get();
+        $likes = Like::where('github_id', $github_id)->get();
         return response()->json($likes, 200);
     }
 }

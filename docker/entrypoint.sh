@@ -13,18 +13,27 @@ if [ -f /var/www/html/bootstrap/cache/config.php ]; then
     rm /var/www/html/bootstrap/cache/config.php
 fi
 
+
 if [ ! -f /var/www/html/.env ]; then
     echo "[WARNING] - .env File Not Found! Using .env.docker File as .env"
     cp /var/www/html/.env.docker /var/www/html/.env
 fi
 
-# Wait for the database to be ready before running migrations
+echo "Loading environment variables from .env..."
+if [ -f /var/www/html/.env ]; then
+    export $(grep -v '^#' /var/www/html/.env | xargs)
+fi
+
+echo "APP_ENV is set to: '$APP_ENV'"
+
 echo "Waiting for database connection..."
-until mysqladmin ping -h"$DB_HOST" --silent; do
+RETRIES=60
+until mysqladmin --skip-ssl --protocol=tcp -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" ping --silent || [ $RETRIES -le 0 ]; do
     echo "Database not ready. Retrying in 5 seconds..."
+    RETRIES=$((RETRIES-1))
     sleep 5
 done
-
+[ $RETRIES -le 0 ] && echo "Database did not become ready in time" && exit 1
 # Run migrations based on the environment
 if [ "$APP_ENV" = "development" ]; then
     echo "Running fresh migrations and seeding..."

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use App\Services\LikeService;
+use App\Services\BookmarkService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LikeService::class);
+        $this->app->singleton(BookmarkService::class);
     }
 
     /**

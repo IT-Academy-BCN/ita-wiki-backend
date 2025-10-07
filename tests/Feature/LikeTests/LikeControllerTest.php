@@ -62,10 +62,11 @@ class LikeControllerTest extends TestCase
             ]);
     }
 
-    public function testGetLikesForUnexistentRoleFails(): void {
+    public function testGetLikesForNonexistentUserReturnsEmptyArray(): void {
         $nonExistentGithubId = 38928374;
-        $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
-        $response->assertStatus(422);
+        $response = $this->get('api/likes/' . $nonExistentGithubId); 
+        $response->assertStatus(200)  
+            ->assertJson([]);
     }
 
     public function testDestroyLike(): void

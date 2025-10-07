@@ -1,14 +1,12 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\GithubIdRule;
 use App\Rules\RoleStudentRule;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BookmarkRequest extends FormRequest
 {
@@ -20,25 +18,24 @@ class BookmarkRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    
-     protected function prepareForValidation()
+    protected function prepareForValidation()
     {
         if ($this->route('github_id')) {
             $this->merge(['github_id' => $this->route('github_id')]);
         }
     }
 
-     public function rules(): array
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
     {
         $rules = [
             'github_id' => [
-                new GithubIdRule(), // General validation for github_id
-                new RoleStudentRule(), // Ensure role is "student"
+                new GithubIdRule(),
+                new RoleStudentRule(),
             ],
         ];
 
