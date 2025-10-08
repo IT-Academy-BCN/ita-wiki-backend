@@ -51,9 +51,7 @@ Route::get('/tags/by-category', [TagController::class, 'getCategoryTagsId'])->na
 Route::get('/tags', [TagController::class, 'index'])->name('tags');
 
 // Users Endpoints 
-Route::middleware(['auth:api'])->group(function () {
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::put('/users/{user}/updateRole', [UserController::class, 'updateRole'])->name('users.updateRole');
     Route::delete('/users/{user}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
-});

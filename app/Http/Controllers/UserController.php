@@ -13,12 +13,28 @@ use Laravel\Passport\HasApiTokens;
 class UserController extends Controller
 {
     public function updateRole(Request $request, User $user) 
-{ /* ... */ }
+    {
+        return response()->json(['message' => 'Role updated',
+            'role' => $user->role
+        ], 200);
 
-    public function profile(Request $request) { /* ... */ }
+    }
 
-    public function index() { /* listar usuarios */ }
+    public function profile(Request $request) {
+        return response()->json(['message' => 'User profile accessed successfully',
+            'user' => $request->user()
+        ], 200);
+    }
 
-    public function destroy(User $user) { /* eliminar usuario */ }
+    public function index() {
+        return response()->json(['message' => 'User list accessed successfully',
+            'users' => User::all()
+        ], 200);
+    }
+
+    public function destroy(User $user) {
+           $user->delete();
+           return response()->json(['message' => 'User deleted successfully'], 200);
+    }
 
 }
