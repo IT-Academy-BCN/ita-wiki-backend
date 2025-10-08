@@ -7,7 +7,7 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\TagSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Laravel\Passport\Passport;
+
 
 abstract class TestCase extends BaseTestCase
 {
@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
         $user = User::factory()->create();
         $user->assignRole($role);
 
-        Passport::actingAs($user, ['*']);
+        $this->actingAs($user, 'api');
 
         return $user;
     }
@@ -46,7 +46,7 @@ abstract class TestCase extends BaseTestCase
             $user->assignRole('student');
         }
 
-        Passport::actingAs($user, ['*']);
+        $this->actingAs($user, 'api');
 
         return $user;
     }

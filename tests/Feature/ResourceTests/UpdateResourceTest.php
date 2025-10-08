@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Models\Resource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Laravel\Passport\Passport;
+
 
 class UpdateResourceTest extends TestCase
 {
@@ -68,7 +68,7 @@ class UpdateResourceTest extends TestCase
         $admin = User::factory()->create();
         $admin->assignRole('admin');
         
-        Passport::actingAs($admin, ['*']);
+        $this->actingAs($admin, 'api');
 
         // Crear resource de otro usuario
         $otherUserResource = Resource::factory()->create();
