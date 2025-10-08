@@ -64,8 +64,8 @@ class LikeControllerTest extends TestCase
 
         $response = $this->getJson(route('likes', $this->user->github_id));
 
-        $response->assertStatus(200)
-
+        $response->assertStatus(200);
+    }
 
     public function test_authenticated_student_can_create_like(): void
     {
