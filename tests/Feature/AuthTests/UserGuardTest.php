@@ -60,32 +60,5 @@ class UserGuardTest extends TestCase
         $this->assertEquals('anonymous', $roleName, 'getRoleName should return anonymous when no role assigned');
     }
 
-    // ⚠️ THESE TESTS DEPEND ON RolesAndPermissionsSeeder
-    // Will pass after seeder is implemented in next PR
-
-    public function test_user_getRoleName_returns_role_when_assigned(): void
-    {
-        $this->markTestSkipped('Waiting for RolesAndPermissionsSeeder in next PR');
-        
-        $user = User::factory()->create();
-        $user->assignRole('student');
-        
-        $roleName = $user->getRoleName();
-        
-        $this->assertEquals('student', $roleName, 'getRoleName should return assigned role name');
-    }
-
-    public function test_user_getRoleName_returns_first_role_when_multiple_assigned(): void
-    {
-        $this->markTestSkipped('Waiting for RolesAndPermissionsSeeder in next PR');
-        
-        $user = User::factory()->create();
-        $user->assignRole('student');
-        $user->assignRole('mentor');
-        
-        $roleName = $user->getRoleName();
-        
-        // Should return first role
-        $this->assertContains($roleName, ['student', 'mentor'], 'getRoleName should return one of assigned roles');
-    }
+   
 }

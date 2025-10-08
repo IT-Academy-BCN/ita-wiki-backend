@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuthGuardTest extends TestCase
