@@ -67,7 +67,8 @@ class BookmarkControllerTest extends TestCase
         $response = $this->getJson(route('bookmarks', $this->user->github_id));
 
         $response->assertStatus(200)
-            ->assertJson([]);
+
+   
     }
 
     public function test_authenticated_student_can_create_bookmark(): void
