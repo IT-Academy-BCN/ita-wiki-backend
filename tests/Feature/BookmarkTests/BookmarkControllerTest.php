@@ -20,13 +20,8 @@ class BookmarkControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        // ✅ SOLO autenticare quando il test lo richiede
-        // NON autenticare qui per tutti i test
         $this->resources = Resource::factory(10)->create();
     }
-
-    // ========== AUTHENTICATED TESTS ==========
 
     public function test_authenticated_student_can_get_their_bookmarks(): void
     {
@@ -159,11 +154,8 @@ class BookmarkControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    // ========== UNAUTHENTICATED TESTS ==========
-
     public function test_unauthenticated_user_cannot_create_bookmark(): void
     {
-        // NO actingAs() - usuario no autenticado
         $response = $this->postJson(route('bookmark.create'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -173,7 +165,6 @@ class BookmarkControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_delete_bookmark(): void
     {
-        // NO actingAs() - usuario no autenticado
         $response = $this->deleteJson(route('bookmark.delete'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -185,13 +176,10 @@ class BookmarkControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        // NO actingAs() - usuario no autenticado
         $response = $this->getJson(route('bookmarks', $user->github_id));
 
         $response->assertStatus(401);
     }
-
-    // ========== PERMISSION TESTS ==========
 
     public function test_student_without_create_permission_cannot_create_bookmark(): void
     {
