@@ -10,11 +10,11 @@ class AuthGuardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_api_guard_uses_passport_driver(): void
+    public function test_api_guard_uses_session_driver(): void
     {
         $guardDriver = config('auth.guards.api.driver');
         
-        $this->assertEquals('passport', $guardDriver, 'API guard should use passport driver');
+        $this->assertEquals('session', $guardDriver, 'API guard should use session driver');
     }
 
     public function test_api_guard_provider_is_users(): void
@@ -38,5 +38,10 @@ class AuthGuardTest extends TestCase
         $this->assertEquals(\App\Models\User::class, $model, 'Users provider should use App\Models\User');
     }
 
-
+    public function test_web_guard_also_uses_session_driver(): void
+    {
+        $webGuardDriver = config('auth.guards.web.driver');
+        
+        $this->assertEquals('session', $webGuardDriver, 'Web guard should use session driver');
+    }
 }
