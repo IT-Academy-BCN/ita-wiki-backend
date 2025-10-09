@@ -54,7 +54,7 @@ class BookmarkControllerTest extends TestCase
             ]);
     }
 
-    public function testGetBookmarksForUnexistentRoleFails(): void {
+    public function testGetBookmarksForNonexistentUserReturnsEmptyArray(): void {
         $nonExistentGithubId = 38928374;
         $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
         $response->assertStatus(200)  
