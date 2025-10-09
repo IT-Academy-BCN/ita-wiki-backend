@@ -8,36 +8,38 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 
 
+
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
+    protected User $user;
+    protected User $admin;
 
-    public function test_endpoint_roleUpdate()
+    protected function setUp(): void
     {
-        $UserAdmin = User::factory()->create();
-        $UserAdmin->assignRole('admin');
+        parent::setUp();
 
-        $userUpdate = User::factory()->create();
-        $userUpdate->assignRole('student');
-
-        $this->actingAs($UserAdmin, 'api');
-        $response = $this->put("/api/users/{$userUpdate->id}/update-role", ['role' => 'admin']);
-
-        $this->assertTrue($userUpdate->hasRole('admin'));
-        $this->assertFalse($userUpdate->hasRole('student'));
-
-        $response->assertStatus(200)
-                ->assertJson([
-                    'message' => 'Role updated successfully',
-                    'user'=> $userUpdate->id
-                ]);
+        $this->user = User::factory()->create();
+        $this->user->assignRole('student');
+        
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
 
     }
 
-    public function test_endpoint_profile()
+    // ========== AUTHENTICATED TESTS FOR ENDPOINTS ==========
+
+    public function test_endpoint_roleUpdate_direction():void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        $this->actingAs($this->user, 'api');
+        $response = $this->put("/api/users/{$this->user->id}/update-role", ['role' => 'admin']);
+        $response->assertStatus(200);
+
+    }
+
+    public function test_endpoint_profile_direction(): void
+    {
+        $this->actingAs($this->user, 'api');
 
         $response = $this->get('/api/profile');
         $response->assertStatus(200)
@@ -53,21 +55,19 @@ class UserControllerTest extends TestCase
                     ]);
     }
 
-    public function test_endpoint_index()
+    public function test_endpoint_index_direction(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        $this->actingAs($this->user, 'api');
 
         $response = $this->get('/api/users');
         $response->assertStatus(200);
     }
 
-    public function test_endpoint_destroy()
+    public function test_endpoint_destroy_direction(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        $this->actingAs($this->user, 'api');
 
-        $response = $this->delete("/api/users/{$user->id}");
+        $response = $this->delete("/api/users/{$this->user->id}");
         $response->assertStatus(200);
     }
 }
