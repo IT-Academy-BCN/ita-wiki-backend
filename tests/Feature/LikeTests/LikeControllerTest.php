@@ -65,6 +65,9 @@ class LikeControllerTest extends TestCase
         $response = $this->getJson(route('likes', $this->user->github_id));
 
         $response->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+
     public function testGetLikesForNonexistentUserReturnsEmptyArray(): void {
         $nonExistentGithubId = 38928374;
         $response = $this->get('api/likes/' . $nonExistentGithubId); 
