@@ -67,6 +67,12 @@ class BookmarkControllerTest extends TestCase
         $response = $this->getJson(route('bookmarks', $this->user->github_id));
 
         $response->assertStatus(200)
+    }
+    
+    public function testGetBookmarksForNonexistentUserReturnsEmptyArray(): void {
+        $nonExistentGithubId = 38928374;
+        $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
+        $response->assertStatus(200)  
             ->assertJson([]);
     }
 
