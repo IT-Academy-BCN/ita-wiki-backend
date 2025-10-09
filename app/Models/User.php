@@ -67,8 +67,10 @@ class User extends Authenticatable
         return $this->getRoleNames()->first() ?? 'anonymous';
     }
 
-    
-    protected function getDefaultGuardName(): string 
+    /**
+     * Get the guard name for the user
+     */
+    public function getGuardName(): string 
     { 
         return $this->guard_name; 
     }
