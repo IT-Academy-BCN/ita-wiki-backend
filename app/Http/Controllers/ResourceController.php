@@ -25,8 +25,6 @@ class ResourceController extends Controller
         
         $this->middleware('check.permission:view resources')->only(['index', 'show']);
         $this->middleware('check.permission:create resources')->only(['store']);
-        $this->middleware('check.permission:edit own resources')->only(['update']);
-        $this->middleware('check.permission:delete own resources')->only(['destroy']);
     }
 
     /**
@@ -207,7 +205,7 @@ class ResourceController extends Controller
 
         return response()->json([
             'message' => 'Resource updated successfully',
-            'data' => $resource // ❌ RIMOSSO ->load('tags')
+            'data' => $resource 
         ]);
     }
 

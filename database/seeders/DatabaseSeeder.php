@@ -18,14 +18,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolesAndPermissionsSeeder::class,   
-            UserSeeder::class,                 
-            OldRoleSeeder::class,               //to deprecate
-            TagSeeder::class,         
-            ResourceSeeder::class,   
-            BookmarkSeeder::class,    
-            LikeSeeder::class,
-            TechnicalTestSeeder::class,
+            RoleSeeder::class,              // 1. Create roles
+            PermissionSeeder::class,        // 2. Create permissions
+            RolePermissionSeeder::class,    // 3. Assign permissions to roles
+            
+            UserSeeder::class,              // 4. Create users (needs roles)
+            OldRoleSeeder::class,           // 5. To deprecate
+            TagSeeder::class,               // 6. Create tags
+            ResourceSeeder::class,          // 7. Create resources
+            BookmarkSeeder::class,          // 8. Create bookmarks
+            LikeSeeder::class,              // 9. Create likes
+            TechnicalTestSeeder::class,     // 10. Create technical tests
         ]);
     }
 }

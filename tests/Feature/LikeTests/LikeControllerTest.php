@@ -68,9 +68,13 @@ class LikeControllerTest extends TestCase
             ->assertJsonCount(0);
     }
 
-    public function testGetLikesForNonexistentUserReturnsEmptyArray(): void {
+    public function test_get_likes_for_nonexistent_user_returns_empty_array(): void 
+    {
+        $this->authenticateUserWithRole('admin');
+        
         $nonExistentGithubId = 38928374;
-        $response = $this->get('api/likes/' . $nonExistentGithubId); 
+        $response = $this->getJson('/api/likes/' . $nonExistentGithubId); 
+        
         $response->assertStatus(200)  
             ->assertJson([]);
     }
@@ -168,7 +172,6 @@ class LikeControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_create_like(): void
     {
-      
         $response = $this->postJson(route('like.create'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -178,7 +181,6 @@ class LikeControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_delete_like(): void
     {
-    
         $response = $this->deleteJson(route('like.delete'), [
             'resource_id' => $this->resources[0]->id
         ]);

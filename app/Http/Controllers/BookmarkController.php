@@ -147,8 +147,8 @@ class BookmarkController extends Controller
     {
         $user = auth('api')->user();
         
-        if ($user->github_id !== $github_id) {
-            return response()->json(['error' => 'Forbidden - Can only view your own bookmarks'], 403);
+        if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
+            return response()->json(['error' => 'Forbidden'], 403);
         }
 
         $bookmarks = Bookmark::where('github_id', $github_id)->get();
