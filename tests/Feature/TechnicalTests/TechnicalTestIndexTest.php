@@ -18,6 +18,8 @@ class TechnicalTestIndexTest extends TestCase
     {
         parent::setUp();
         TechnicalTest::truncate();
+        
+        $this->authenticateUserWithRole('student');
     }
 
     public function testCanGetTechnicalTestListWithCorrectStructure()
@@ -150,19 +152,17 @@ class TechnicalTestIndexTest extends TestCase
             ->assertJsonCount(5, 'data');
     }
     
-    // No happy path tests
+   
     public function testRejectsInvalidLanguage(): void
     {
         $invalidLanguage = 'InvalidLanguage';
         $this->assertFalse(in_array($invalidLanguage, array_column(LanguageEnum::cases(), 'value')));
 
-
-        $response = $this->get(route('technical-tests.index', ['language' => $invalidLanguage]));
+       
+        $response = $this->getJson(route('technical-tests.index', ['language' => $invalidLanguage]));
 
         $response->assertStatus(422);
-        $response->assertJsonFragment([
-            'language' => ['El lenguaje seleccionado no es válido.']
-        ]);
+        $response->assertJsonValidationErrors(['language']);
     }
 
     
@@ -170,9 +170,11 @@ class TechnicalTestIndexTest extends TestCase
     {
         $longString = str_repeat('a', 1000);
         
-        $response = $this->get(route('technical-tests.index', ['search' => $longString]));
+        // FIX: CAMBIARE da get() a getJson()
+        $response = $this->getJson(route('technical-tests.index', ['search' => $longString]));
 
         $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['search']);
     }
 
     public function testHandlesSpecialCharactersInSearch(): void

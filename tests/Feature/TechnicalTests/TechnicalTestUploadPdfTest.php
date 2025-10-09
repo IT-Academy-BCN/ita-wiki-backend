@@ -17,12 +17,14 @@ class TechnicalTestUploadPdfTest extends TestCase
     {
         Storage::fake('local');
 
+     
+        $user = $this->authenticateUserWithRole('mentor');
+
         $payload = [
             'title' => 'Prueba técnica con PDF',
             'language' => LanguageEnum::PHP->value,
             'description' => 'Descripción de prueba',
             'tags' => ['php', 'laravel'],
-            'github_id' => 123456,
         ];
 
         $file = UploadedFile::fake()->create('prueba.pdf', 100, 'application/pdf');

@@ -2,7 +2,7 @@
 
 declare (strict_types= 1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Resources;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,7 +13,8 @@ class ShowResourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+       
+        return $this->user() !== null;
     }
 
     /**
@@ -24,15 +25,15 @@ class ShowResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => 'nullable|string|max:30|regex:/^[a-zA-Z0-9\s]+$/',
-            //
+            'search' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9\s]+$/',
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
-            'search.max'=> 'Search is too long'
+            'search.max' => 'La búsqueda es demasiado larga (máximo 255 caracteres).',
+            'search.regex' => 'La búsqueda solo puede contener letras, números y espacios.',
         ];
     }
 }
