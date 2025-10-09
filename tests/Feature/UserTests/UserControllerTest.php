@@ -14,11 +14,10 @@ class UserControllerTest extends TestCase
 
     public function test_endpoint_roleUpdate()
     {
-        $userAdmin = User::factory()->create();
-        $userAdmin->assignRole('admin');
+        $user = User::factory()->create();
+        $this->actingAs($user, 'api');
 
-        $this->actingAs($userAdmin, 'api');
-        $response = $this->put("/api/users/{$userAdmin->id}/update-role", ['role' => 'admin']);
+        $response = $this->put("/api/users/{$user->id}/update-role", ['role' => 'admin']);
         $response->assertStatus(200);
     }
 
