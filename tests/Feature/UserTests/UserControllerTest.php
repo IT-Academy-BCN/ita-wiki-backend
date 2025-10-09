@@ -40,7 +40,17 @@ class UserControllerTest extends TestCase
         $this->actingAs($user, 'api');
 
         $response = $this->get('/api/profile');
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+                    ->assertJson([
+                        'message' => 'User profile retrieved successfully',
+                        'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'github_id' => $user->github_id,
+                        'roles' => $user->roles->toArray()
+                    ]
+                    ]);
     }
 
     public function test_endpoint_index()

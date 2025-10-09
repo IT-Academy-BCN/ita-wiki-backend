@@ -32,7 +32,22 @@ class UserController extends Controller
     }
 
     public function profile(Request $request) { /* ... */ 
-    return response()->json(['message' => 'User profile retrieved successfully', 'user' => $request->user()], 200);
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        return response()->json([
+            'message' => 'User profile retrieved successfully',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'github_id' => $user->github_id,
+                'roles' => $user->roles->toArray()
+            ]
+        ], 200);
     }
 
     public function index() { /* listar usuarios */
