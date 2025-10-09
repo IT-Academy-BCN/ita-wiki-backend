@@ -66,10 +66,6 @@ class BookmarkControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testGetBookmarksForNonexistentUserReturnsEmptyArray(): void {
-        $response->assertStatus(200)
-            ->assertJsonCount(0);
-    }
     
     public function test_get_bookmarks_for_nonexistent_user_returns_empty_array(): void 
     {
