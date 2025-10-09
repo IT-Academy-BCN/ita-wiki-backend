@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Resource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Laravel\Passport\Passport;
 
 class UpdateResourceTest extends TestCase
 {
@@ -17,11 +16,6 @@ class UpdateResourceTest extends TestCase
 
     protected User $user;
     protected Resource $resource;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
 
     private function getUpdateData(array $overrides = []): array
     {
@@ -41,7 +35,6 @@ class UpdateResourceTest extends TestCase
     {
         $this->user = $this->authenticateUserWithRole('student');
         
-        // Crear resource del usuario autenticado
         $this->resource = Resource::factory()->create([
             'github_id' => $this->user->github_id
         ]);
@@ -65,12 +58,8 @@ class UpdateResourceTest extends TestCase
 
     public function test_admin_can_update_any_resource(): void
     {
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
+        $admin = $this->authenticateUserWithRole('admin');
         
-        Passport::actingAs($admin, ['*']);
-
-        // Crear resource de otro usuario
         $otherUserResource = Resource::factory()->create();
 
         $data = $this->getUpdateData();
@@ -91,7 +80,6 @@ class UpdateResourceTest extends TestCase
     {
         $this->user = $this->authenticateUserWithRole('student');
         
-        // Crear resource de otro usuario
         $otherUserResource = Resource::factory()->create();
 
         $data = $this->getUpdateData();
@@ -101,7 +89,6 @@ class UpdateResourceTest extends TestCase
         $response->assertStatus(403)
             ->assertJson(['error' => 'Forbidden - Not your resource']);
 
-        // Verificar que NO se actualizó
         $this->assertDatabaseMissing('resources', [
             'id' => $otherUserResource->id,
             'title' => 'Updated Resource Title',
@@ -110,12 +97,10 @@ class UpdateResourceTest extends TestCase
 
     public function test_unauthenticated_user_cannot_update_resource(): void
     {
-        // ✅ Crear resource sin autenticación previa
         $resource = Resource::factory()->create();
         
         $data = $this->getUpdateData();
 
-        // ✅ NO authentication
         $response = $this->putJson(route('resources.update', $resource->id), $data);
 
         $response->assertStatus(401);
@@ -140,7 +125,6 @@ class UpdateResourceTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors($fieldName);
 
-        // Verificar que NO se actualizó
         $this->assertDatabaseHas('resources', [
             'id' => $this->resource->id,
             'title' => $this->resource->title,

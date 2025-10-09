@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Tests\Feature\BookmarkTests;
@@ -21,8 +20,6 @@ class BookmarkControllerTest extends TestCase
     {
         parent::setUp();
 
-        // ✅ SOLO autenticare quando il test lo richiede
-        // NON autenticare qui per tutti i test
         $this->resources = Resource::factory(10)->create();
     }
 
@@ -70,8 +67,17 @@ class BookmarkControllerTest extends TestCase
     }
 
     public function testGetBookmarksForNonexistentUserReturnsEmptyArray(): void {
+        $response->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+    
+    public function test_get_bookmarks_for_nonexistent_user_returns_empty_array(): void 
+    {
+        $this->authenticateUserWithRole('admin'); 
+        
         $nonExistentGithubId = 38928374;
-        $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
+        $response = $this->getJson('/api/bookmarks/' . $nonExistentGithubId);
+        
         $response->assertStatus(200)  
             ->assertJson([]);
     }
@@ -169,7 +175,6 @@ class BookmarkControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_create_bookmark(): void
     {
-        // NO actingAs() - usuario no autenticado
         $response = $this->postJson(route('bookmark.create'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -179,7 +184,6 @@ class BookmarkControllerTest extends TestCase
 
     public function test_unauthenticated_user_cannot_delete_bookmark(): void
     {
-        // NO actingAs() - usuario no autenticado
         $response = $this->deleteJson(route('bookmark.delete'), [
             'resource_id' => $this->resources[0]->id
         ]);
@@ -191,7 +195,6 @@ class BookmarkControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        // NO actingAs() - usuario no autenticado
         $response = $this->getJson(route('bookmarks', $user->github_id));
 
         $response->assertStatus(401);
