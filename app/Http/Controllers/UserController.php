@@ -14,6 +14,16 @@ class UserController extends Controller
 {
     public function updateRole(Request $request, User $user) 
     { /* ... */
+        
+        if(!Auth::user()->hasRole('admin')) {
+            return response()->json(['message' => 'not authorized'], 403);
+        }
+        
+        $request->validate([
+            'role' => 'required|string|in:superadmin,mentor,admin,student',
+        ]);
+        $user->syncRoles([$request->role]);
+
         return response()->json(['message' => 'Role updated successfully', 'user' => $user], 200);
 
     }
