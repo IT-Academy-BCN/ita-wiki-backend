@@ -6,9 +6,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 
-/**
- * @deprecated This test suite will be removed after Spatie migration
- */
 class OldRoleSelfAssignmentTest extends TestCase
 {
     protected function setUp(): void
