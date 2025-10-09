@@ -3,40 +3,55 @@
 namespace Tests;
 
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
-use Database\Seeders\TagSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
 
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Setup runs before each test
+     */
     protected function setUp(): void
     {
         parent::setUp();
-
-        // ✅ Seed roles, permissions AND tags
-        $this->seed(RolesAndPermissionsSeeder::class);
-        $this->seed(TagSeeder::class); 
+        
+        // Reset Spatie cache before each test
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        
+        // ✅ FIXED: Seed modular seeders (not RolesAndPermissionsSeeder)
+        $this->seed([
+            \Database\Seeders\RoleSeeder::class,
+            \Database\Seeders\PermissionSeeder::class,
+            \Database\Seeders\RolePermissionSeeder::class,
+            \Database\Seeders\TagSeeder::class, // Tags needed for many tests
+        ]);
     }
 
     /**
-     * Authenticate user with specific Spatie role
+     * Authenticate a user with a specific role using SESSION (not Passport)
+     * 
+     * @param string $role Role name (student, mentor, admin, superadmin)
+     * @return User Authenticated user
      */
     protected function authenticateUserWithRole(string $role): User
     {
         $user = User::factory()->create();
         $user->assignRole($role);
-
-        Passport::actingAs($user, ['*']);
-
+        
+        // ✅ USE SESSION AUTH (not Passport)
+        $this->actingAs($user, 'api');
+        
         return $user;
     }
 
     /**
-     * Authenticate existing user
+     * Authenticate existing user with SESSION
+     * 
+     * @param User|null $user User to authenticate (creates new if null)
+     * @return User Authenticated user
      */
     protected function authenticateUser(User $user = null): User
     {
@@ -46,8 +61,23 @@ abstract class TestCase extends BaseTestCase
             $user->assignRole('student');
         }
 
-        Passport::actingAs($user, ['*']);
+        // ✅ USE SESSION AUTH (not Passport)
+        $this->actingAs($user, 'api');
 
+        return $user;
+    }
+
+    /**
+     * Create a user with a specific role WITHOUT authenticating
+     * 
+     * @param string $role Role name
+     * @return User User instance
+     */
+    protected function createUserWithRole(string $role): User
+    {
+        $user = User::factory()->create();
+        $user->assignRole($role);
+        
         return $user;
     }
 }

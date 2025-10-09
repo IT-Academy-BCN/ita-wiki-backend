@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Resource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Laravel\Passport\Passport;
 
 class UpdateResourceTest extends TestCase
 {
@@ -17,11 +16,6 @@ class UpdateResourceTest extends TestCase
 
     protected User $user;
     protected Resource $resource;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
 
     private function getUpdateData(array $overrides = []): array
     {
@@ -65,17 +59,26 @@ class UpdateResourceTest extends TestCase
 
     public function test_admin_can_update_any_resource(): void
     {
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
+        $admin = $this->authenticateUserWithRole('admin');
         
-        Passport::actingAs($admin, ['*']);
-
-        // Crear resource de otro usuario
+        // ✅ DEBUG: Verifica permessi admin
+        dump('Admin ID: ' . $admin->id);
+        dump('Admin github_id: ' . $admin->github_id);
+        dump('Admin roles: ' . $admin->roles->pluck('name'));
+        dump('Admin permissions: ' . $admin->getAllPermissions()->pluck('name'));
+        dump('Can edit all resources? ' . ($admin->can('edit all resources') ? 'YES' : 'NO'));
+        
         $otherUserResource = Resource::factory()->create();
+        
+        dump('Resource ID: ' . $otherUserResource->id);
+        dump('Resource owner github_id: ' . $otherUserResource->github_id);
 
         $data = $this->getUpdateData();
 
         $response = $this->putJson(route('resources.update', $otherUserResource->id), $data);
+        
+        dump('Response status: ' . $response->status());
+        dump('Response body: ' . $response->getContent());
 
         $response->assertStatus(200);
 
