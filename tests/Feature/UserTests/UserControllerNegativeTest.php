@@ -11,19 +11,58 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class UserControllerNegativeTest extends TestCase
 {
     use RefreshDatabase;
+    protected User $user;
+    protected User $admin;
 
-    public function test_non_admin_cannot_update_roles()
+    protected function setUp(): void
     {
-        $UsernotAdmin = User::factory()->create();
-        $UsernotAdmin->assignRole('student');
-        $this->actingAs($UsernotAdmin, 'api');
+        parent::setUp();
 
-        $response = $this->put("/api/users/{$UsernotAdmin->id}/update-role", ['role' => 'admin']);
+        $this->user = User::factory()->create();
+        $this->user->assignRole('student');
+        
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
+
+    }
+
+    public function test_not_admin_cannot_update_roles()
+    {
+        $this->actingAs($this->user, 'api');
+
+    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'admin']);
         $response->assertStatus(403)
                  ->assertJson([
-                     'message' => 'not authorized'
+                    'error' => 'Forbidden',
                  ]);
+     
     }
+
+    public function test_not_user_update_roles()
+    {
+    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'admin']);
+        $response->assertStatus(401)
+                 ->assertJson([
+                     'message' => 'Unauthenticated.'
+                 ]);
+        
+    }
+
+    public function test_not_role_existent_cannot_be_assigned()
+    {
+        $this->actingAs($this->admin, 'api');
+
+    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'invalid_role']);
+        $response->assertStatus(422)
+                 ->assertJson([
+                     'message' => 'The selected role is invalid.'
+                 ])
+                 ->assertJsonStructure([
+                     'errors' => ['role']
+                 ]);
+        
+    }
+    
 
    
 

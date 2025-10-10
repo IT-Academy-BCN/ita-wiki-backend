@@ -8,36 +8,54 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\HasApiTokens;
+use App\Http\Requests\Users\UpdateUserRoleRequest;
 
 class UserController extends Controller
 {
-    public function updateRole(Request $request, User $user) 
-    { /* ... */
 
-        if(!Auth::user()->hasRole('admin')) {
-            return response()->json(['message' => 'not authorized'], 403);
-        }
-        
-        $request->validate([
-            'role' => 'required|string|in:superadmin,mentor,admin,student',
-        ]);
-
-        $user->syncRoles([$request->role]);
-
-        return response()->json(['message' => 'Role updated successfully',
-                                'user' => $user->id
-                                ], 200);
-
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+        $this->middleware('check.permission:manage users')->only(['index', 'destroy']);
+        $this->middleware('check.permission:edit user roles')->only(['updateRole']);
     }
 
-    public function profile(Request $request) { /* ... */ 
-        $user = Auth::user();
+    public function updateRole(UpdateUserRoleRequest $request, User $user)
+    {     
+        try {
+            $user = auth('api')->user();
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            if (!$user) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+
+            if (!$user->hasRole('admin')) {
+                return response()->json([
+                    'error' => 'Forbidden',
+                ], 403);
+            }
+
+            if (!in_array($request->role, ['superadmin', 'mentor', 'admin', 'student'])) {
+                return response()->json([
+                    'message' => 'The selected role is invalid.',
+                    'errors' => ['role' => ['The selected role is invalid.']]
+                ], 422);
+            }
+
+            $user->syncRoles([$request->role]);
+            return response()->json(['message' => 'Role updated successfully', 'user' => $user], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error updating role',
+                'message' => $e->getMessage()
+            ], 500);
         }
+    }
 
+    public function profile(Request $request) { /* ... */
+        $user=auth('api')->user();
+        
         return response()->json([
             'message' => 'User profile retrieved successfully',
             'user' => [
@@ -51,10 +69,12 @@ class UserController extends Controller
     }
 
     public function index() { /* listar usuarios */
-    return response()->json(['message' => 'Users retrieved successfully', 'users' => User::all()], 200);
+      
+        return response()->json(['message' => 'Users retrieved successfully', 'users' => User::all()], 200);
     }
 
     public function destroy(User $user) { /* eliminar usuario */
+    
         $user->delete();
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
