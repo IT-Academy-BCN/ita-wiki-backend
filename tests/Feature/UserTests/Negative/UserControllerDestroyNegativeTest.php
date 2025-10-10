@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\UserTests\Negative;
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+
+class UserControllerDestroyNegativeTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $admin;
+    protected User $student;
+    protected User $superadmin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
+
+        $this->student = User::factory()->create();
+        $this->student->assignRole('student');
+
+        $this->superadmin = User::factory()->create();
+        $this->superadmin->assignRole('superadmin');
+    }
+
+    public function test_not_admin_or_superadmin_cannot_delete_user(): void
+    {
+        $this->actingAs($this->student, 'api');
+        $response = $this->delete("/api/users/{$this->student->id}");
+        $response->assertStatus(403)
+                 ->assertJson([
+                     'error' => 'Forbidden',
+                 ]);
+    }
+
+  
+ 
+}
