@@ -11,16 +11,16 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class UserControllerNegativeTest extends TestCase
 {
     use RefreshDatabase;
-    protected User $user;
+    protected User $student;
     protected User $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
-        $this->user->assignRole('student');
-        
+        $this->student = User::factory()->create();
+        $this->student->assignRole('student');
+
         $this->admin = User::factory()->create();
         $this->admin->assignRole('admin');
 
@@ -28,9 +28,9 @@ class UserControllerNegativeTest extends TestCase
 
     public function test_not_admin_cannot_update_roles()
     {
-        $this->actingAs($this->user, 'api');
+        $this->actingAs($this->student, 'api');
 
-    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'admin']);
+    $response = $this->putJson("/api/users/{$this->student->id}/update-role", ['role' => 'admin']);
         $response->assertStatus(403)
                  ->assertJson([
                     'error' => 'Forbidden',
@@ -38,9 +38,10 @@ class UserControllerNegativeTest extends TestCase
      
     }
 
+
     public function test_not_user_update_roles()
     {
-    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'admin']);
+    $response = $this->putJson("/api/users/{$this->student->id}/update-role", ['role' => 'admin']);
         $response->assertStatus(401)
                  ->assertJson([
                      'message' => 'Unauthenticated.'
@@ -52,7 +53,7 @@ class UserControllerNegativeTest extends TestCase
     {
         $this->actingAs($this->admin, 'api');
 
-    $response = $this->putJson("/api/users/{$this->user->id}/update-role", ['role' => 'invalid_role']);
+    $response = $this->putJson("/api/users/{$this->student->id}/update-role", ['role' => 'invalid_role']);
         $response->assertStatus(422)
                  ->assertJson([
                      'message' => 'The selected role is invalid.'
@@ -62,9 +63,21 @@ class UserControllerNegativeTest extends TestCase
                  ]);
         
     }
+
     
+    public function test_not_user_cannot_access_profile()
+    {
+        $response = $this->getJson('/api/profile');
+        $response->assertStatus(401)
+                 ->assertJson([
+                     'message' => 'Unauthenticated.'
+                 ]);
+    }
+
+}
+                 
 
    
 
-}
+
       

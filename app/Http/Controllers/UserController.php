@@ -55,6 +55,12 @@ class UserController extends Controller
 
     public function profile(Request $request) { /* ... */
         $user=auth('api')->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+        
+
         
         return response()->json([
             'message' => 'User profile retrieved successfully',
