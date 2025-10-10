@@ -13,10 +13,13 @@ class UserControllerProfileNegativeTest extends TestCase
 
     public function test_not_user_cannot_access_profile()
     {
+        // No autenticado
         $response = $this->getJson('/api/profile');
         $response->assertStatus(401)
                  ->assertJson([
                      'message' => 'Unauthenticated.'
                  ]);
     }
+
+
 }

@@ -16,20 +16,17 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-        $this->middleware('check.permission:manage users')->only(['index', 'destroy']);
+        $this->middleware('check.permission:manage users')->only(['destroy']);
         $this->middleware('check.permission:edit user roles')->only(['updateRole']);
+        $this->middleware('check.permission:view users')->only(['index']);
     }
 
-    public function updateRole(UpdateUserRoleRequest $request, User $user)
+    public function updateRole(UpdateUserRoleRequest $request, $id)
     {     
         try {
-            $userAuth = auth('api')->user();
+            $user = auth('api')->user();
 
-            if (!$userAuth) {
-                return response()->json(['message' => 'Unauthenticated.'], 401);
-            }
-
-            if (!$userAuth->hasRole('admin') && !$userAuth->hasRole('superadmin')) {
+            if (!$user->hasRole('admin') && !$user->hasRole('superadmin')) {
                 return response()->json([
                     'error' => 'Forbidden',
                 ], 403);
@@ -42,8 +39,14 @@ class UserController extends Controller
                 ], 422);
             }
 
-            $user->syncRoles([$request->role]);
-            return response()->json(['message' => 'User role updated successfully', 'user' => $user], 200);
+            $userToUpdate = User::find($id);
+
+            if (!$userToUpdate) {
+                return response()->json(['message' => 'User not found.'], 404);
+            }
+            
+            $userToUpdate->syncRoles([$request->role]);
+            return response()->json(['message' => 'User role updated successfully', 'user' => $userToUpdate], 200);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -54,14 +57,9 @@ class UserController extends Controller
     }
 
     public function profile(Request $request) { /* ... */
-        $user=auth('api')->user();
+       
+        $user = auth('api')->user();
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
-        }
-
-
-        
         return response()->json([
             'message' => 'User profile retrieved successfully',
             'user' => [
@@ -74,10 +72,25 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function index() { /* listar usuarios */
-      
-        return response()->json(['message' => 'Users retrieved successfully', 'users' => User::all()], 200);
-    }
+public function index() { /* listar usuarios */
+        $user = auth('api')->user();
+
+        if (!$user->hasRole('admin') && !$user->hasRole('superadmin')) {
+            return response()->json([
+            'error' => 'Forbidden',
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'users' => User::all()
+        ], 200);
+
+        
+}
+         
+         
+        
 
     public function destroy(User $user) { /* eliminar usuario */
     

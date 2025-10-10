@@ -54,5 +54,15 @@ class UserControllerUpdateRoleNegativeTest extends TestCase
                      'errors' => ['role']
                  ]);
     }
+            public function test_not_user()
+            {
+                $this->actingAs($this->admin, 'api');
+                $response = $this->putJson("/api/users/999999/update-role", ['role' => 'student']);
+                $response->assertStatus(404)
+                         ->assertJson([
+                             'message' => 'User not found.'
+                         ]);
+            }
+
     
 }

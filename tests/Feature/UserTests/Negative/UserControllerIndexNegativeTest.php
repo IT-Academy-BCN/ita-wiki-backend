@@ -1,34 +1,42 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Tests\Feature\UserTests\Positiv;
+namespace Tests\Feature\UserTests\Negative;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 
-class UserControllerIndexTest extends TestCase
+class UserControllerIndexNegativeTest extends TestCase
 {
     use RefreshDatabase;
-    protected User $user;
+
     protected User $admin;
+    protected User $student;
     protected User $superadmin;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
-        $this->user->assignRole('student');
         $this->admin = User::factory()->create();
         $this->admin->assignRole('admin');
+
+        $this->student = User::factory()->create();
+        $this->student->assignRole('student');
+
         $this->superadmin = User::factory()->create();
         $this->superadmin->assignRole('superadmin');
     }
 
-    public function test_endpoint_index_direction(): void
+    public function test_not_admin_or_superadmin_cannot_access_index(): void
     {
-        $this->actingAs($this->admin, 'api');
+        $this->actingAs($this->student, 'api');
         $response = $this->get('/api/users');
-        $response->assertStatus(200);
+        $response->assertStatus(403)
+                 ->assertJson([
+                     'error' => 'Forbidden',
+                 ]);
     }
+ 
 }
