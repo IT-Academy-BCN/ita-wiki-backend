@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TechnicalTests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\LanguageEnum;
@@ -9,7 +9,7 @@ class IndexTechnicalTestRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Pendiente middleware para alumno y mentor
+        return $this->user() !== null;
     }
 
     public function rules(): array
@@ -29,5 +29,4 @@ class IndexTechnicalTestRequest extends FormRequest
             'description.max' => 'El campo descripción no debe exceder los 1000 caracteres.',            
         ];
     }
-
 }

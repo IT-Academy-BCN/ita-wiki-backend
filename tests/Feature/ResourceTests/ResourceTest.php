@@ -1,31 +1,33 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\ResourceTests;
 
-use App\Models\Tag;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\OldRole;
 use App\Models\Resource;
-use App\Models\Role;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ResourceTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
-    
 
-    public function test_can_get_list(): void
+    public function test_authenticated_user_can_get_resources_list(): void
     {
-        $response = $this->get(route('resources.index'));
+        $this->authenticateUserWithRole('student');
 
-        $response->assertStatus(200);
+        Resource::factory()->count(10)->create();
+
+        $response = $this->getJson(route('resources.index'));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(10);
     }
 
-   
+    public function test_unauthenticated_user_cannot_get_resources_list(): void
+    {
+        $response = $this->getJson(route('resources.index'));
+
+        $response->assertStatus(401);
+    }
 }

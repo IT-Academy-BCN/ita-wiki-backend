@@ -1,27 +1,66 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\ResourceTests;
 
-use App\Models\Tag;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\OldRole;
 use App\Models\Resource;
-use App\Models\Role;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ShowResourceTest extends TestCase
 {
+    use RefreshDatabase;
 
-     public function test_user_can_search_for_resources(): void
+    public function setUp(): void
     {
-        $response = $this->get(route('resources.index') . '?search=Laravel');
-
-        $response->assertStatus(200);
+        parent::setUp();
     }
 
+    public function test_authenticated_user_can_search_resources(): void
+    {
+        $this->authenticateUserWithRole('student');
+        
+        Resource::factory()->create(['title' => 'Laravel Tutorial']);
+        Resource::factory()->create(['title' => 'React Guide']);
+
+        $response = $this->getJson(route('resources.index', ['search' => 'Laravel']));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1);
+    }
+
+    public function test_authenticated_user_can_list_all_resources(): void
+    {
+        $this->authenticateUserWithRole('student');
+        
+        Resource::factory()->count(5)->create();
+
+        $response = $this->getJson(route('resources.index'));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(5);
+    }
+
+    public function test_authenticated_user_can_view_single_resource(): void
+    {
+        $this->authenticateUserWithRole('student');
+        
+        $resource = Resource::factory()->create();
+
+        $response = $this->getJson(route('resources.show', $resource->id));
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'id' => $resource->id,
+                'title' => $resource->title,
+            ]);
+    }
+
+    public function test_unauthenticated_user_cannot_search_resources(): void
+    {
+        $response = $this->getJson(route('resources.index', ['search' => 'Laravel']));
+
+        $response->assertStatus(401);
+    }
 }

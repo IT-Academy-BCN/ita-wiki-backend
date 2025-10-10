@@ -1,12 +1,13 @@
 <?php
 
+
 declare (strict_types= 1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowResourceRequest extends FormRequest
+class UpdateUserRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +25,16 @@ class ShowResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => 'nullable|string|max:30|regex:/^[a-zA-Z0-9\s]+$/',
-            //
+            'role' => ['required', 'string', 'in:superadmin,mentor,admin,student'],
         ];
-    }
+    }   
 
-    public function messages()
+    public function messages(): array
     {
         return [
-            'search.max'=> 'Search is too long'
+            'role.required' => 'The role field is required.',
+            'role.string' => 'The role field must be a string.',
+            'role.in' => 'The selected role is invalid.',
         ];
     }
 }

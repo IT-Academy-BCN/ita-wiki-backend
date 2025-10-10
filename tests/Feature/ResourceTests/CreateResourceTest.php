@@ -1,127 +1,163 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\ResourceTests;
 
-use App\Models\Tag;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\OldRole;
 use App\Models\Resource;
-use App\Models\Role;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPUnit\Framework\Attributes\DataProvider;
+use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class CreateResourceTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
-    private function GetResourceData(): array
+    protected User $user;
+
+    public function setUp(): void
     {
-        $user = User::factory()->create();
-
-        // ELIMINAR cuando Spatie se implemente totalmente 
-        OldRole::factory()->create([ 
-            'github_id' => $user->github_id,
-            'role' => 'student'
-        ]);
-
-        return Resource::factory()->raw([
-            'github_id' => $user->github_id,
-            'tags' => null
-        ]);
-       
+        parent::setUp();
     }
 
-    private function GetResourceDataTagsId(): array
+    private function getResourceData(array $overrides = []): array
     {
-        $user = User::factory()->create();
+        return array_merge([
+            'title' => 'Laravel Best Practices',
+            'description' => 'A comprehensive guide to Laravel development',
+            'url' => 'https://example.com/laravel-' . uniqid(),
+            'category' => 'Fullstack PHP',
+            'type' => 'Blog',
+            'tags' => null
+        ], $overrides);
+    }
 
-        // ELIMINAR cuando Spatie se implemente totalmente 
-        OldRole::factory()->create([
-            'github_id' => $user->github_id,
-            'role' => 'student'
-        ]);
-
-      
+    private function getResourceDataWithTags(): array
+    {
         $tagNames = Tag::inRandomOrder()->take(3)->pluck('name')->toArray();
 
-        return Resource::factory()->raw([
-            'github_id' => $user->github_id,
-            'tags' => $tagNames  
+        return $this->getResourceData([
+            'tags' => $tagNames
         ]);
     }
 
-    public function testItCanCreateAResourceWithTagsId(): void
-    {
-        $response = $this->postJson(route('resources.store'), $this->GetResourceDataTagsId());
+    // ========== SUCCESS TESTS ==========
 
-        $response->assertStatus(201);
-    }
-
-    public function testItCanCreateAResource(): void
+    public function test_authenticated_student_can_create_resource(): void
     {
+        $this->user = $this->authenticateUserWithRole('student');
         
-        $response = $this->postJson(route('resources.store'), $this->GetResourceData());
+        $data = $this->getResourceData();
 
-        $response->assertStatus(201);
+        $response = $this->postJson(route('resources.store'), $data);
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'id',
+                    'github_id',
+                    'title',
+                    'description',
+                    'url',
+                    'category',
+                    'type',
+                    'created_at',
+                    'updated_at'
+                ]
+            ]);
+
+        $this->assertDatabaseHas('resources', [
+            'github_id' => $this->user->github_id,
+            'title' => $data['title'],
+            'url' => $data['url'],
+        ]);
     }
 
-    public function testItReturns404WhenRouteIsNotFound(): void
+    public function test_authenticated_student_can_create_resource_with_tags(): void
     {
-        $response = $this->postJson('/non-existent-route', []);
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        $data = $this->getResourceDataWithTags();
 
-        $response->assertStatus(404);
-    }    
+        $response = $this->postJson(route('resources.store'), $data);
+
+        $response->assertStatus(201)
+            ->assertJsonFragment(['title' => $data['title']]);
+
+        $this->assertDatabaseHas('resources', [
+            'github_id' => $this->user->github_id,
+            'title' => $data['title'],
+        ]);
+    }
+
+    // ========== AUTHENTICATION TESTS ==========
+
+    public function test_unauthenticated_user_cannot_create_resource(): void
+    {
+        $response = $this->postJson(route('resources.store'), $this->getResourceData());
+
+        $response->assertStatus(401);
+    }
+
+    // ========== VALIDATION TESTS ==========
 
     #[DataProvider('resourceCreationValidationProvider')]
-    public function testItCanShowStatus_422WithInvalidDataOnCreate(array $invalidData, string $fieldName): void
+    public function test_create_resource_validation(array $invalidData, string $fieldName): void
     {
-        $data = $this->GetResourceData();
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        $data = $this->getResourceData();
         $data = array_merge($data, $invalidData);
 
         $response = $this->postJson(route('resources.store'), $data);
 
         $response->assertStatus(422)
-        ->assertJsonPath($fieldName, function ($errors) {
-            return is_array($errors) && count($errors) > 0;
-        });
+            ->assertJsonValidationErrors($fieldName);
     }
-  
+
     public static function resourceCreationValidationProvider(): array
     {
-        return[
-        // github_id
-            'missing github_id' => [['github_id' => null], 'github_id'],
-            'github_id does not have a role' => [['github_id'=> 99999999999],'github_id'],
-        // title
+        return [
+            // title validation
             'missing title' => [['title' => null], 'title'],
-            'invalid title (too short)' => [['title' => 'a'], 'title'],
-            'invalid title (too long)' => [['title' => self::generateLongText(256)], 'title'],
-            'invalid title (array)' => [['title' => []], 'title'],
-        // description
-            'invalid description (too short)' => [['description' => 'a'], 'description'],
-            'invalid description (too long)' => [['description' => self::generateLongText(1001)], 'description'],
-            'invalid description (array)' => [['description' => []], 'description'],
-        // url
+            'title too short' => [['title' => 'abc'], 'title'],
+            'title too long' => [['title' => str_repeat('a', 256)], 'title'],
+            'title is array' => [['title' => []], 'title'],
+
+            // description validation
+            'description too short' => [['description' => 'short'], 'description'],
+            'description too long' => [['description' => str_repeat('a', 1001)], 'description'],
+            'description is array' => [['description' => []], 'description'],
+
+            // url validation
             'missing url' => [['url' => null], 'url'],
-            'invalid url (not a url)' => [['url' => 'not a url'], 'url'],
-            'invalid url (array)' => [['url' => []], 'url'],
-            'invalid url (integer)' => [['url' => 123], 'url'],
+            'invalid url format' => [['url' => 'not-a-valid-url'], 'url'],
+            'url is array' => [['url' => []], 'url'],
+            'url is integer' => [['url' => 123], 'url'],
+
+            // category validation
+            'missing category' => [['category' => null], 'category'],
+            'invalid category' => [['category' => 'InvalidCategory'], 'category'],
+
+            // type validation
+            'missing type' => [['type' => null], 'type'],
+            'invalid type' => [['type' => 'InvalidType'], 'type'],
+
+            // tags validation
+            'tags not array' => [['tags' => 'not-array'], 'tags'],
+            'too many tags' => [['tags' => ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6']], 'tags'],
         ];
     }
 
-    private static function generateLongText(int $length): string
+    public function test_returns_404_when_route_not_found(): void
     {
-        $faker = \Faker\Factory::create();
-        return $faker->regexify("[a-zA-Z0-9]{{$length}}");
+        $this->user = $this->authenticateUserWithRole('student');
+        
+        $response = $this->postJson('/api/non-existent-route', []);
+
+        $response->assertStatus(404);
     }
-
-
 }
-
-
-?>
