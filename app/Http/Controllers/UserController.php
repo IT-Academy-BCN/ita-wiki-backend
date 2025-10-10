@@ -23,13 +23,13 @@ class UserController extends Controller
     public function updateRole(UpdateUserRoleRequest $request, User $user)
     {     
         try {
-            $user = auth('api')->user();
+            $userAuth = auth('api')->user();
 
-            if (!$user) {
+            if (!$userAuth) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
 
-            if (!$user->hasRole('admin')) {
+            if (!$userAuth->hasRole('admin') && !$userAuth->hasRole('superadmin')) {
                 return response()->json([
                     'error' => 'Forbidden',
                 ], 403);
@@ -43,7 +43,7 @@ class UserController extends Controller
             }
 
             $user->syncRoles([$request->role]);
-            return response()->json(['message' => 'Role updated successfully', 'user' => $user], 200);
+            return response()->json(['message' => 'User role updated successfully', 'user' => $user], 200);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -59,7 +59,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
-        
+
 
         
         return response()->json([
