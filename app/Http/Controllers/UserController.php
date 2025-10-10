@@ -91,7 +91,7 @@ class UserController extends Controller
     }
          
 
-    public function destroy(User $user) { /* eliminar usuario */
+    public function destroy($id) { /* eliminar usuario */
     
         try {
             $userToDelete = User::find($id);
