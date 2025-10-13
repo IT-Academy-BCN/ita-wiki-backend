@@ -196,6 +196,42 @@
                 }
             }
         },
+        "/api/likes/{github_id}": {
+            "get": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Get all likes for a student",
+                "description": "If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
+                "operationId": "f550cb3cd10c52a7b8a033b17039f72c",
+                "parameters": [
+                    {
+                        "name": "github_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6729608
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Like"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/likes": {
             "post": {
                 "tags": [
@@ -341,42 +377,6 @@
                                         }
                                     },
                                     "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/likes/{github_id}": {
-            "get": {
-                "tags": [
-                    "Likes"
-                ],
-                "summary": "Get all likes for a student",
-                "description": "If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
-                "operationId": "f550cb3cd10c52a7b8a033b17039f72c",
-                "parameters": [
-                    {
-                        "name": "github_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 6729608
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Like"
-                                    }
                                 }
                             }
                         }
@@ -854,6 +854,40 @@
             }
         },
         "/api/resources/{resource}": {
+            "get": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Get a single resource by ID",
+                "description": "Retrieves a single resource, including its tags, by ID",
+                "operationId": "0ac8ff12abd5b7294b4be0f79c69e0ca",
+                "parameters": [
+                    {
+                        "name": "resource",
+                        "in": "path",
+                        "description": "ID of the resource to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resource retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            },
             "put": {
                 "tags": [
                     "Resources"

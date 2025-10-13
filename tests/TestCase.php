@@ -21,7 +21,6 @@ abstract class TestCase extends BaseTestCase
         // Reset Spatie cache before each test
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         
-        // ✅ FIXED: Seed modular seeders (not RolesAndPermissionsSeeder)
         $this->seed([
             \Database\Seeders\RoleSeeder::class,
             \Database\Seeders\PermissionSeeder::class,
@@ -41,7 +40,6 @@ abstract class TestCase extends BaseTestCase
         $user = User::factory()->create();
         $user->assignRole($role);
         
-        // ✅ USE SESSION AUTH (not Passport)
         $this->actingAs($user, 'api');
         
         return $user;
@@ -61,7 +59,6 @@ abstract class TestCase extends BaseTestCase
             $user->assignRole('student');
         }
 
-        // ✅ USE SESSION AUTH (not Passport)
         $this->actingAs($user, 'api');
 
         return $user;

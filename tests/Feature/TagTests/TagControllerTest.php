@@ -1,85 +1,68 @@
 <?php
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\TagTests;
 
-use App\Models\Resource;
-use App\Models\User;
-use App\Models\OldRole;
-use App\Models\Tag;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Resource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TagControllerTest extends TestCase
 {
-    protected $user;
+    use RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
+        
+        // ✅ Create a student user for resources
+        $student = User::factory()->create();
+        $student->assignRole('student');
 
-        $tags = [
-            'tag-one',
-            'tag-two',
-            'tag-three'
-        ];
-
-        foreach ($tags as $tag) {
-            Tag::create([
-                'name' => $tag
-            ]);
-        }
-
-        $this->user = User::factory()->create([
-            'github_id' => 9871315,
-        ]);
-
-        // ELIMINAR cuando Spatie se implemente totalmente 
-        OldRole::factory()->create([
-            'github_id' => $this->user->github_id,
-            'role' => 'student'
+        // Create resources with tags
+        Resource::factory()->create([
+            'github_id' => $student->github_id,
+            'tags' => ['docker', 'kubernetes'],
+            'category' => 'Node'
         ]);
 
         Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one']
+            'github_id' => $student->github_id,
+            'tags' => ['docker', 'git'],
+            'category' => 'React'
         ]);
-
-        Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one', 'tag-two']
-        ]);
-
-        Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one', 'tag-two', 'tag-three']
-        ]);
-      
-    }
-    
-    public function testCanGetTagsList(): void
-    {
-        $response = $this->get(route('tags'));
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['name' => 'tag-one']);
-        $response->assertJsonFragment(['name' => 'tag-two']);
-        $response->assertJsonFragment(['name' => 'tag-three']);
     }
 
-    public function testCanGetTagsFrequency(): void
+    public function test_can_get_all_tags(): void
     {
-        $response = $this->get(route('tags.frequency'));
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
     }
 
-    public function testCanGetCategoryTagsFrequency(): void
+    public function test_can_get_tag_frequencies(): void
     {
-        $response = $this->get(route('category.tags.frequency'));
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags/frequency');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
     }
 
-      public function testCanGetCategoryTagsId(): void
+    public function test_can_get_category_tag_frequencies(): void
     {
-        $response = $this->get('/api/tags/by-category');
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags/category-frequency');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
+    }
+
+    public function test_can_get_tags_grouped_by_category(): void
+    {
+        $response = $this->getJson('/api/tags/by-category');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
     }
 }

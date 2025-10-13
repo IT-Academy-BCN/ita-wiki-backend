@@ -22,13 +22,12 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,        // 2. Create permissions
             RolePermissionSeeder::class,    // 3. Assign permissions to roles
             
-            UserSeeder::class,              // 4. Create users (needs roles)
-            OldRoleSeeder::class,           // 5. To deprecate
-            TagSeeder::class,               // 6. Create tags
-            ResourceSeeder::class,          // 7. Create resources
-            BookmarkSeeder::class,          // 8. Create bookmarks
-            LikeSeeder::class,              // 9. Create likes
-            TechnicalTestSeeder::class,     // 10. Create technical tests
+            UserSeeder::class,              
+            TagSeeder::class,               
+            ResourceSeeder::class,         
+            BookmarkSeeder::class,         
+            LikeSeeder::class,              
+            TechnicalTestSeeder::class,    
         ]);
     }
 }
