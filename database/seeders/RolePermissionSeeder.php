@@ -15,18 +15,14 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Define permissions for each role
         $rolePermissions = $this->getRolePermissions();
 
-        // Assign permissions to roles
         foreach ($rolePermissions as $roleName => $permissions) {
             $role = Role::findByName($roleName, 'api');
             
             if ($permissions === 'all') {
-                // Superadmin gets all permissions
                 $role->syncPermissions(Permission::where('guard_name', 'api')->pluck('name'));
             } else {
                 $role->syncPermissions($permissions);
