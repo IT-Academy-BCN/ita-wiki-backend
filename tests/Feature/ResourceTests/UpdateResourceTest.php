@@ -80,11 +80,9 @@ class UpdateResourceTest extends TestCase
     {
         $this->user = $this->authenticateUserWithRole('student');
         
-        // ✅ FIX: Create ANOTHER user with DIFFERENT github_id
         $otherUser = User::factory()->create();
         $otherUser->assignRole('student');
         
-        // ✅ FIX: Force resource to belong to OTHER user
         $otherUserResource = Resource::factory()->create([
             'github_id' => $otherUser->github_id
         ]);
