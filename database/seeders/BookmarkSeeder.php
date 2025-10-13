@@ -18,7 +18,6 @@ class BookmarkSeeder extends Seeder
 
     public function run()
     {
-        // First 3 manually created bookmarks using Role created by Seeder
         $knownStudentId = 999999999;
         $knownStudent = User::where('github_id', $knownStudentId)->firstOrFail();
         $resources = Resource::inRandomOrder()->take(3)->get();
@@ -29,7 +28,6 @@ class BookmarkSeeder extends Seeder
                 'resource_id' => $resource->id,
             ]);
         }
-        // Create 5 additional bookmarks
         Bookmark::factory(5)->create();
     }
 }

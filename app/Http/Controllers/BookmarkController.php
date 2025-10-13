@@ -4,20 +4,18 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\BookmarkRequest;
+use App\Http\Requests\Bookmarks\CreateBookmarkRequest;
+use App\Http\Requests\Bookmarks\DeleteBookmarkRequest;
 use App\Models\Bookmark;
-use App\Services\BookmarkService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Illuminate\Http\JsonResponse;
 
 class BookmarkController extends Controller
 {
-    private BookmarkService $bookmarkService;
-
-    public function __construct(BookmarkService $bookmarkService)
+    public function __construct()
     {
-        $this->bookmarkService = $bookmarkService;
+        $this->middleware('auth:api');
+        $this->middleware('check.permission:create bookmarks')->only(['createStudentBookmark']);
+        $this->middleware('check.permission:delete own bookmarks')->only(['deleteStudentBookmark']);
     }
 
     /**
@@ -56,15 +54,24 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
-    public function createStudentBookmark(BookmarkRequest $request)
+    public function createStudentBookmark(CreateBookmarkRequest $request): JsonResponse
     {
-        try {
-            $bookmark = $this->bookmarkService->createBookmark($request->github_id, $request->resource_id);
-            return response()->json($bookmark, 201);
-        } catch (ConflictHttpException $e) {
-            return response()->json(['error' => $e->getMessage()], 409);
+        $user = auth('api')->user();
+
+        $existingBookmark = Bookmark::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if ($existingBookmark) {
+            return response()->json(['error' => 'Bookmark already exists'], 409);
         }
+
+        $bookmark = Bookmark::create([
+            'github_id' => $user->github_id,
+            'resource_id' => $request->resource_id,
+        ]);
+
+        return response()->json($bookmark, 201);
     }
 
     /**
@@ -97,15 +104,21 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
-    public function deleteStudentBookmark(BookmarkRequest $request)
+    public function deleteStudentBookmark(DeleteBookmarkRequest $request): JsonResponse
     {
-        try {
-            $this->bookmarkService->deleteBookmark($request->github_id, $request->resource_id);
-            return response()->json(['message' => 'Bookmark deleted successfully'], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Bookmark not found.'], 404);
+        $user = auth('api')->user();
+
+        $bookmark = Bookmark::where('github_id', $user->github_id)
+            ->where('resource_id', $request->resource_id)
+            ->first();
+
+        if (!$bookmark) {
+            return response()->json(['error' => 'Bookmark not found'], 404);
         }
+
+        $bookmark->delete();
+
+        return response()->json(['message' => 'Bookmark deleted successfully']);
     }
 
     /**
@@ -130,10 +143,15 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-
-    public function getStudentBookmarks($github_id)
+    public function getStudentBookmarks(int $github_id): JsonResponse
     {
+        $user = auth('api')->user();
+        
+        if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         $bookmarks = Bookmark::where('github_id', $github_id)->get();
-        return response()->json($bookmarks, 200);
+        return response()->json($bookmarks);
     }
 }

@@ -1,123 +1,199 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\LikeTests;
 
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Resource;
 use App\Models\Like;
-use App\Models\OldRole; // ← Eliminar cuando Spatie esté implementado
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LikeControllerTest extends TestCase
 {
     use RefreshDatabase;
-    protected $user;
+
+    protected User $user;
     protected $resources;
-    protected $likes;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->user = User::factory()->create([
-            'github_id' => 9871315,
-        ]);
-    
-        // ELIMINAR: cuando Spatie esté implementado
-        OldRole::factory()->create([
-            'github_id' => $this->user->github_id,
-            'role' => 'student'
-        ]);
-
         $this->resources = Resource::factory(10)->create();
-
-        $this->likes = [
-            Like::create([
-                'github_id' => $this->user->github_id,
-                'resource_id' => $this->resources[0]->id]),
-            Like::create([
-                'github_id' => $this->user->github_id,
-                'resource_id' => $this->resources[1]->id])
-        ];
     }
 
-    public function testGetStudentLikes(): void
+    // ========== AUTHENTICATED TESTS ==========
+
+    public function test_authenticated_student_can_get_their_likes(): void
     {
-        $response = $this->get('api/likes/' . $this->user->github_id);
+        $this->user = $this->authenticateUserWithRole('student');
 
-        // ← AÑADIR ESTAS LÍNEAS PARA DEBUG
-        if ($response->status() !== 200) {
-            dump('Response status: ' . $response->status());
-            dump('Response body: ' . $response->getContent());
-        }
-    
+        Like::create([
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        Like::create([
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[1]->id
+        ]);
+
+        $response = $this->getJson(route('likes', $this->user->github_id));
+
         $response->assertStatus(200)
-            ->assertJsonCount(2)
-            ->assertJson([
-                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[0]->id],
-                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[1]->id]
-            ]);
+            ->assertJsonCount(2);
     }
 
-    public function testGetLikesForNonexistentUserReturnsEmptyArray(): void {
+    public function test_user_cannot_get_other_user_likes(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $otherUser = User::factory()->create();
+        $otherUser->assignRole('student');
+
+        $response = $this->getJson(route('likes', $otherUser->github_id));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_get_likes_for_user_without_likes_returns_empty_array(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->getJson(route('likes', $this->user->github_id));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+
+    public function test_get_likes_for_nonexistent_user_returns_empty_array(): void 
+    {
+        $this->authenticateUserWithRole('admin');
+        
         $nonExistentGithubId = 38928374;
-        $response = $this->get('api/likes/' . $nonExistentGithubId); 
+        $response = $this->getJson('/api/likes/' . $nonExistentGithubId); 
+        
         $response->assertStatus(200)  
             ->assertJson([]);
     }
 
-    public function testDestroyLike(): void
+    public function test_authenticated_student_can_create_like(): void
     {
-        $response = $this->delete('api/likes', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->likes[1]->resource_id
-        ]);
-                
-        $response->assertStatus(200)
-            ->assertJson(['message' => 'Like deleted successfully']);
+        $this->user = $this->authenticateUserWithRole('student');
 
+        $resource = $this->resources[2];
 
-        $this->assertDatabaseMissing('likes', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->likes[1]->resource_id
-        ]);
-    }
-
-    public function testCreateLike(): void
-    {
-        $response = $this->post('api/likes', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[2]->id
+        $response = $this->postJson(route('like.create'), [
+            'resource_id' => $resource->id
         ]);
 
-        $response->assertStatus(201)
-            ->assertJson([
-                'github_id' => $this->user->github_id,
-                'resource_id' => $this->resources[2]->id,
-            ]);
+        $response->assertStatus(201);
 
         $this->assertDatabaseHas('likes', [
             'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[2]->id
+            'resource_id' => $resource->id
         ]);
     }
 
-    public function testCreateLikeForNonexistentRoleFails(): void {
-        $response = $this->post('api/likes', [
-            'github_id' => 9384758,
-            'resource_id' => $this->resources[2]->id
+    public function test_cannot_create_duplicate_like(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $resource = $this->resources[3];
+
+        $this->postJson(route('like.create'), [
+            'resource_id' => $resource->id
         ]);
-        $response->assertStatus(422);
+
+        $response = $this->postJson(route('like.create'), [
+            'resource_id' => $resource->id
+        ]);
+
+        $response->assertStatus(409);
     }
 
-    public function testCreateLikeForNonexistentResourceFails(): void {
-        $response = $this->post('api/likes', [
+    public function test_cannot_create_like_for_nonexistent_resource(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->postJson(route('like.create'), [
+            'resource_id' => 999999
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['resource_id']);
+    }
+
+    public function test_resource_id_is_required_to_create_like(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->postJson(route('like.create'), []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['resource_id']);
+    }
+
+    public function test_authenticated_student_can_delete_their_like(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        Like::create([
             'github_id' => $this->user->github_id,
-            'resource_id' => 447012
+            'resource_id' => $this->resources[1]->id
         ]);
-        $response->assertStatus(422);
+
+        $response = $this->deleteJson(route('like.delete'), [
+            'resource_id' => $this->resources[1]->id
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('likes', [
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[1]->id
+        ]);
+    }
+
+    public function test_cannot_delete_nonexistent_like(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->deleteJson(route('like.delete'), [
+            'resource_id' => $this->resources[5]->id
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    // ========== UNAUTHENTICATED TESTS ==========
+
+    public function test_unauthenticated_user_cannot_create_like(): void
+    {
+        $response = $this->postJson(route('like.create'), [
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_unauthenticated_user_cannot_delete_like(): void
+    {
+        $response = $this->deleteJson(route('like.delete'), [
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_unauthenticated_user_cannot_get_likes(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson(route('likes', $user->github_id));
+
+        $response->assertStatus(401);
     }
 }

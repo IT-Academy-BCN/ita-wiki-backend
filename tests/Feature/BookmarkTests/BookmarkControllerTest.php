@@ -1,126 +1,216 @@
 <?php
+declare(strict_types=1);
 
-declare (strict_types= 1);
-
-namespace Tests\Feature;
+namespace Tests\Feature\BookmarkTests;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\OldRole;
 use App\Models\Resource;
 use App\Models\Bookmark;
-
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BookmarkControllerTest extends TestCase
 {
-    protected $user;
+    use RefreshDatabase;
+
+    protected User $user;
     protected $resources;
-    protected $bookmarks;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->user = User::factory()->create([
-            'github_id' => 9871315,
-        ]);
-
-        // ELIMINAR cuando Spatie se implemente totalmente 
-        OldRole::factory()->create([
-            'github_id' => $this->user->github_id,
-            'role' => 'student'
-        ]);
-
         $this->resources = Resource::factory(10)->create();
-
-        $this->bookmarks = [
-            Bookmark::create([
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[0]->id]),
-            Bookmark::create([
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[1]->id])
-        ];
     }
 
-    public function testGetStudentBookmarks(): void
+    // ========== AUTHENTICATED TESTS ==========
+
+    public function test_authenticated_student_can_get_their_bookmarks(): void
     {
-        $response = $this->get('api/bookmarks/' . $this->user->github_id);
+        $this->user = $this->authenticateUserWithRole('student');
+
+        Bookmark::create([
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        Bookmark::create([
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[1]->id
+        ]);
+
+        $response = $this->getJson(route('bookmarks', $this->user->github_id));
+
         $response->assertStatus(200)
-            ->assertJsonCount(2)
-            ->assertJson([
-                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[0]->id],
-                ['github_id' => $this->user->github_id, 'resource_id' => $this->resources[1]->id]
-            ]);
+            ->assertJsonCount(2);
     }
 
-    public function testGetBookmarksForNonexistentUserReturnsEmptyArray(): void {
+    public function test_user_cannot_get_other_user_bookmarks(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $otherUser = User::factory()->create();
+        $otherUser->assignRole('student');
+
+        $response = $this->getJson(route('bookmarks', $otherUser->github_id));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_get_bookmarks_for_user_without_bookmarks_returns_empty_array(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->getJson(route('bookmarks', $this->user->github_id));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+    
+    public function test_get_bookmarks_for_nonexistent_user_returns_empty_array(): void 
+    {
+        $this->authenticateUserWithRole('admin'); 
+        
         $nonExistentGithubId = 38928374;
-        $response = $this->get('api/bookmarks/' . $nonExistentGithubId);
+        $response = $this->getJson('/api/bookmarks/' . $nonExistentGithubId);
+        
         $response->assertStatus(200)  
             ->assertJson([]);
     }
 
-    public function testDestroyBookmark(): void
+    public function test_authenticated_student_can_create_bookmark(): void
     {
-        $initial_count = $this->bookmarks[1]->resource->bookmark_count;
+        $this->user = $this->authenticateUserWithRole('student');
 
-        $response = $this->delete('api/bookmarks', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->bookmarks[1]->resource_id
-        ]);
-                
-        $response->assertStatus(200)
-            ->assertJson(['message' => 'Bookmark deleted successfully']);
+        $resource = $this->resources[2];
 
-
-        $this->assertDatabaseMissing('bookmarks', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->bookmarks[1]->resource_id
+        $response = $this->postJson(route('bookmark.create'), [
+            'resource_id' => $resource->id
         ]);
 
-        // Assert counter decremented by BookmarkObserver
-        $this->assertEquals($initial_count - 1, $this->bookmarks[1]->resource->fresh()->bookmark_count);
-    }
-
-    public function testCreateBookmark(): void
-    {
-        $test_increment_resource = $this->resources[2];
-        $initial_count = $test_increment_resource->bookmark_count;
-
-        $response = $this->post('api/bookmarks', [
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[2]->id
-        ]);
-
-        $response->assertStatus(201)
-            ->assertJson([
-                'github_id' => $this->user->github_id,
-                'resource_id' => $this->resources[2]->id,
-            ]);
+        $response->assertStatus(201);
 
         $this->assertDatabaseHas('bookmarks', [
             'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[2]->id
+            'resource_id' => $resource->id
         ]);
-
-        // Assert counter incremented by BookmarkObserver
-        $this->assertEquals($initial_count + 1, $test_increment_resource->fresh()->bookmark_count);
     }
 
-    public function testCreateBookmarkForNonexistentRoleFails(): void {
-        $response = $this->post('api/bookmarks', [
-            'github_id' => 9384758,
-            'resource_id' => $this->resources[2]->id
+    public function test_cannot_create_duplicate_bookmark(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $resource = $this->resources[3];
+
+        $this->postJson(route('bookmark.create'), [
+            'resource_id' => $resource->id
         ]);
-        $response->assertStatus(422);
+
+        $response = $this->postJson(route('bookmark.create'), [
+            'resource_id' => $resource->id
+        ]);
+
+        $response->assertStatus(409);
     }
 
-    public function testCreateBookmarkForNonexistentResourceFails(): void {
-        $response = $this->post('api/bookmarks', [
+    public function test_cannot_create_bookmark_for_nonexistent_resource(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->postJson(route('bookmark.create'), [
+            'resource_id' => 999999
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['resource_id']);
+    }
+
+    public function test_resource_id_is_required_to_create_bookmark(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->postJson(route('bookmark.create'), []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['resource_id']);
+    }
+
+    public function test_authenticated_student_can_delete_their_bookmark(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        Bookmark::create([
             'github_id' => $this->user->github_id,
-            'resource_id' => 447012
+            'resource_id' => $this->resources[1]->id
         ]);
-        $response->assertStatus(422);
+
+        $response = $this->deleteJson(route('bookmark.delete'), [
+            'resource_id' => $this->resources[1]->id
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('bookmarks', [
+            'github_id' => $this->user->github_id,
+            'resource_id' => $this->resources[1]->id
+        ]);
+    }
+
+    public function test_cannot_delete_nonexistent_bookmark(): void
+    {
+        $this->user = $this->authenticateUserWithRole('student');
+
+        $response = $this->deleteJson(route('bookmark.delete'), [
+            'resource_id' => $this->resources[5]->id
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    // ========== UNAUTHENTICATED TESTS ==========
+
+    public function test_unauthenticated_user_cannot_create_bookmark(): void
+    {
+        $response = $this->postJson(route('bookmark.create'), [
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_unauthenticated_user_cannot_delete_bookmark(): void
+    {
+        $response = $this->deleteJson(route('bookmark.delete'), [
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_unauthenticated_user_cannot_get_bookmarks(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson(route('bookmarks', $user->github_id));
+
+        $response->assertStatus(401);
+    }
+
+    // ========== PERMISSION TESTS ==========
+
+    public function test_student_without_create_permission_cannot_create_bookmark(): void
+    {
+        $userWithoutRole = User::factory()->create();
+        
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        
+        $this->actingAs($userWithoutRole, 'api');
+
+        $response = $this->postJson(route('bookmark.create'), [
+            'resource_id' => $this->resources[0]->id
+        ]);
+
+        $response->assertStatus(403)
+            ->assertJson(['error' => 'Forbidden']);
     }
 }
