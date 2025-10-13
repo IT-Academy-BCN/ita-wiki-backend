@@ -16,17 +16,16 @@ class ResourceSeeder extends Seeder
      */
     public function run(): void
     {
-        // ✅ Create resources with tags
         $users = User::all();
         $validTags = Tag::all()->pluck('name')->toArray();
         
         if ($users->isEmpty()) {
-            $this->command->warn('⚠️ No users found. Run UserSeeder first.');
+            $this->command->warn(' No users found. Run UserSeeder first.');
             return;
         }
         
         if (empty($validTags)) {
-            $this->command->warn('⚠️ No tags found. Run TagSeeder first.');
+            $this->command->warn(' No tags found. Run TagSeeder first.');
             return;
         }
 
@@ -44,6 +43,6 @@ class ResourceSeeder extends Seeder
             ]);
         }
         
-        $this->command->info('✅ Created 20 resources with tags');
+        $this->command->info(' Created 20 resources with tags');
     }
 }

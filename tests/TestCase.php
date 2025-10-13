@@ -18,7 +18,6 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         
-        // Reset Spatie cache before each test
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         
         $this->seed([
@@ -39,7 +38,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = User::factory()->create();
         $user->assignRole($role);
-        
+      
         $this->actingAs($user, 'api');
         
         return $user;
