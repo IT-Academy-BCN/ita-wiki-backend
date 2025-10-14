@@ -82,14 +82,12 @@ class TagControllerTest extends TestCase
 
         $data = $response->json('data');
 
-       
         $this->assertArrayHasKey('Node', $data);
         $this->assertEquals(1, $data['Node']['docker']);
         $this->assertEquals(1, $data['Node']['kubernetes']);
         $this->assertEquals(1, $data['Node']['nodejs']);
         $this->assertArrayNotHasKey('react', $data['Node']);
 
-        
         $this->assertArrayHasKey('React', $data);
         $this->assertEquals(1, $data['React']['docker']);
         $this->assertEquals(1, $data['React']['react']);
@@ -106,13 +104,11 @@ class TagControllerTest extends TestCase
 
         $data = $response->json('data');
 
-       
         $this->assertArrayHasKey('Node', $data);
         $this->assertArrayHasKey('React', $data);
         $this->assertCount(3, $data['Node']);
         $this->assertCount(3, $data['React']);
 
-        
         $dockerId = Tag::where('name', 'docker')->value('id');
         $this->assertContains($dockerId, $data['Node']);
         $this->assertContains($dockerId, $data['React']);
@@ -126,10 +122,11 @@ class TagControllerTest extends TestCase
     {
         Resource::query()->delete();
 
+        $expectedTagCount = Tag::count();
         
         $this->getJson('/api/tags')
             ->assertStatus(200)
-            ->assertJsonCount(53, 'data'); 
+            ->assertJsonCount($expectedTagCount, 'data');
 
         $this->getJson('/api/tags/frequency')
             ->assertStatus(200)
