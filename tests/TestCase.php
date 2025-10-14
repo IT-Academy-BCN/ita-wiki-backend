@@ -11,20 +11,19 @@ abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Setup runs before each test
-     */
+
     protected function setUp(): void
     {
         parent::setUp();
         
+       
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         
         $this->seed([
             \Database\Seeders\RoleSeeder::class,
             \Database\Seeders\PermissionSeeder::class,
             \Database\Seeders\RolePermissionSeeder::class,
-            \Database\Seeders\TagSeeder::class, // Tags needed for many tests
+            \Database\Seeders\TagSeeder::class,
         ]);
     }
 

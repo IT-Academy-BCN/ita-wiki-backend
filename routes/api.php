@@ -4,7 +4,6 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\OldRoleController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
@@ -58,13 +57,4 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
         Route::get('/users/{user}', [RoleController::class, 'getUserRoles'])->name('roles.user');
     });
-});
-
-// ========== OLD ROLE ENDPOINTS (deprecated - backward compatibility) ==========
-// ⚠️ TODO: Remove after frontend migration
-Route::prefix('old-role')->group(function () {
-    Route::get('/{github_id}', [OldRoleController::class, 'show'])->name('old-role.show');
-    Route::post('/', [OldRoleController::class, 'store'])->name('old-role.store');
-    Route::put('/{old_role}', [OldRoleController::class, 'update'])->name('old-role.update');
-    Route::delete('/{old_role}', [OldRoleController::class, 'destroy'])->name('old-role.destroy');
 });

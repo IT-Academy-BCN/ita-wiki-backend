@@ -196,6 +196,42 @@
                 }
             }
         },
+        "/api/likes/{github_id}": {
+            "get": {
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Get all likes for a student",
+                "description": "If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
+                "operationId": "f550cb3cd10c52a7b8a033b17039f72c",
+                "parameters": [
+                    {
+                        "name": "github_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6729608
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Like"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/likes": {
             "post": {
                 "tags": [
@@ -348,397 +384,6 @@
                 }
             }
         },
-        "/api/likes/{github_id}": {
-            "get": {
-                "tags": [
-                    "Likes"
-                ],
-                "summary": "Get all likes for a student",
-                "description": "If the student's github_id exists it returns all likes for that student or an empty array in case there is not any",
-                "operationId": "f550cb3cd10c52a7b8a033b17039f72c",
-                "parameters": [
-                    {
-                        "name": "github_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 6729608
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Like"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/roles": {
-            "get": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Get all roles",
-                "operationId": "77e3636d8592997ce9d6d27b50857a69",
-                "responses": {
-                    "200": {
-                        "description": "List of all roles"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Update an existing role",
-                "description": "Allows an authorized user to update the role of a specific GitHub ID.",
-                "operationId": "0255a7c08de807a69475909c1e5d922b",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "role",
-                                    "authorized_github_id"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "description": "GitHub ID of the user to assign the role",
-                                        "type": "integer",
-                                        "example": 12345
-                                    },
-                                    "role": {
-                                        "description": "Role to be assigned",
-                                        "type": "string",
-                                        "example": "mentor"
-                                    },
-                                    "authorized_github_id": {
-                                        "description": "GitHub ID of the user making the request (must have permissions)",
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Role updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Rol actualizado con éxito."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized: Cannot update a role of user of equal or higher role rank or make an update to an equal or higher rank than your own",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No puedes actualizar un rol que ya es de orden igual o superior al tuyo."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "La petición contiene un rol inexistente."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Create a new role",
-                "description": "Allows an authorized user to create a new role for a specific GitHub ID.",
-                "operationId": "9e4d3b87565534585d3dd3a74325846d",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "role",
-                                    "authorized_github_id"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "description": "GitHub ID of the user to assign the role",
-                                        "type": "integer",
-                                        "example": 12345
-                                    },
-                                    "role": {
-                                        "description": "Role to be assigned",
-                                        "type": "string",
-                                        "example": "mentor"
-                                    },
-                                    "authorized_github_id": {
-                                        "description": "GitHub ID of the user making the request (must have permissions)",
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Role created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Rol creado con éxito."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized: Cannot create a role equal or higher than your own",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No puedes crear un rol igual o superior al tuyo."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "La petición contiene un rol inexistente."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/login": {
-            "post": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Retrieve a role by GitHub ID",
-                "description": "Fetches a role using the provided GitHub ID. If the role does not exist, it returns an error.",
-                "operationId": "c6c35a5c97cb0466a6c7755fa4dacf35",
-                "parameters": [
-                    {
-                        "name": "github_id",
-                        "in": "query",
-                        "description": "GitHub ID of the user",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 6729608
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Role found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Role found."
-                                        },
-                                        "role": {
-                                            "$ref": "#/components/schemas/Role"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Role not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Role not found."
-                                        },
-                                        "role": {
-                                            "type": "object",
-                                            "example": null,
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/feature-flags/role-self-assignment": {
-            "put": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Role Self Assignment",
-                "description": "Updates a role using the provided GitHub ID. If the role does not exist, it returns an error.",
-                "operationId": "3bea7b6ce135c13127b47ba1a721e51f",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "github_id",
-                                    "role"
-                                ],
-                                "properties": {
-                                    "github_id": {
-                                        "type": "integer",
-                                        "example": 6729608
-                                    },
-                                    "role": {
-                                        "type": "string",
-                                        "example": "admin"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Role updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "El Rol se ha actualizado."
-                                        },
-                                        "role": {
-                                            "properties": {
-                                                "github_id": {
-                                                    "type": "integer",
-                                                    "example": 6729608
-                                                },
-                                                "role": {
-                                                    "type": "string",
-                                                    "example": "admin"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized: The feature flag for role self-assignment is disabled",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "La autoasignación de roles ha sido desactivada."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "La petición contiene un github_id inexistente en nuestro sistema."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/resources": {
             "get": {
                 "tags": [
@@ -854,6 +499,40 @@
             }
         },
         "/api/resources/{resource}": {
+            "get": {
+                "tags": [
+                    "Resources"
+                ],
+                "summary": "Get a single resource by ID",
+                "description": "Retrieves a single resource, including its tags, by ID",
+                "operationId": "0ac8ff12abd5b7294b4be0f79c69e0ca",
+                "parameters": [
+                    {
+                        "name": "resource",
+                        "in": "path",
+                        "description": "ID of the resource to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resource retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Resource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            },
             "put": {
                 "tags": [
                     "Resources"
@@ -968,6 +647,20 @@
                     },
                     "404": {
                         "description": "Resource not found"
+                    }
+                }
+            }
+        },
+        "/api/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Get all roles",
+                "operationId": "77e3636d8592997ce9d6d27b50857a69",
+                "responses": {
+                    "200": {
+                        "description": "List of all roles"
                     }
                 }
             }
@@ -1215,17 +908,7 @@
                 "operationId": "4d0f4baf9e6fa992c0d85fbf140ebf17",
                 "responses": {
                     "200": {
-                        "description": "A list of tags",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Tag"
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Successful operation"
                     }
                 }
             }
@@ -1240,18 +923,7 @@
                 "operationId": "7ba6cfbebeddc69fac4a37ad216924ab",
                 "responses": {
                     "200": {
-                        "description": "An object with tag names as keys and frequencies as values",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "mongodb": 3,
-                                    "tdd": 10
-                                }
-                            }
-                        }
+                        "description": "Successful operation"
                     }
                 }
             }
@@ -1262,28 +934,11 @@
                     "Tags"
                 ],
                 "summary": "Get tag frequencies grouped by category",
-                "description": "Frequencies of tags used in resources grouoped by category",
+                "description": "Frequencies of tags used in resources grouped by category",
                 "operationId": "ab99904db8b3f73579135af62493ea10",
                 "responses": {
                     "200": {
-                        "description": "An object with tag names as keys and frequencies as values",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "Fullstack PHP": {
-                                        "mongodb": 3,
-                                        "tdd": 10
-                                    },
-                                    "React": {
-                                        "hooks": 2,
-                                        "dependencies": 3
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Successful operation"
                     }
                 }
             }
@@ -1294,29 +949,11 @@
                     "Tags"
                 ],
                 "summary": "Get tag IDs grouped by category",
-                "description": "Returns the IDs of tags used in resources, grouped by resource category. This does not require a pivot table and is based on matching tag names from a JSON column.",
+                "description": "Returns the IDs of tags used in resources, grouped by resource category",
                 "operationId": "492b2938f86869f4a413d6b4bd79c814",
                 "responses": {
                     "200": {
-                        "description": "An object with category names as keys and arrays of tag IDs as values",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "Fullstack PHP": [
-                                        1,
-                                        5,
-                                        6
-                                    ],
-                                    "React": [
-                                        3,
-                                        7
-                                    ]
-                                }
-                            }
-                        }
+                        "description": "Successful operation"
                     }
                 }
             }
@@ -1853,33 +1490,6 @@
                 },
                 "type": "object"
             },
-            "Role": {
-                "title": "Role",
-                "description": "Role object representing a user's role and associated GitHub ID",
-                "properties": {
-                    "github_id": {
-                        "description": "The GitHub ID of the user",
-                        "type": "integer",
-                        "example": 6729608
-                    },
-                    "role": {
-                        "description": "The role of the user",
-                        "type": "string",
-                        "example": "student"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-03-17T19:23:41.000000Z"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-03-17T19:23:41.000000Z"
-                    }
-                },
-                "type": "object"
-            },
             "Resource": {
                 "title": "Resource",
                 "properties": {
@@ -2004,12 +1614,12 @@
             "description": "Likes"
         },
         {
-            "name": "Roles",
-            "description": "Roles"
-        },
-        {
             "name": "Resources",
             "description": "Resources"
+        },
+        {
+            "name": "Roles",
+            "description": "Roles"
         },
         {
             "name": "Tags",

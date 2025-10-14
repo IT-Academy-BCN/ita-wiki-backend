@@ -186,12 +186,13 @@ class ResourceController extends Controller
     */
     public function update(UpdateResourceRequest $request, Resource $resource): JsonResponse
     {
-        $user = auth('api')->user();
+        $user = $request->user();
 
-        if (!$user->can('edit all resources')) {
-            if ($resource->github_id !== $user->github_id) {
-                return response()->json(['error' => 'Forbidden - Not your resource'], 403);
-            }
+        $isOwner = $resource->github_id === $user->github_id;
+        $canEditAll = $user->can('edit all resources');
+
+        if (!$isOwner && !$canEditAll) {
+            return response()->json(['error' => 'Forbidden - Not your resource'], 403);
         }
 
         $resource->update([
@@ -222,12 +223,13 @@ class ResourceController extends Controller
      */
     public function destroy(Resource $resource): JsonResponse
     {
-        $user = auth('api')->user();
+        $user = auth()->user();
 
-        if (!$user->can('delete all resources')) {
-            if ($resource->github_id !== $user->github_id) {
-                return response()->json(['error' => 'Forbidden - Not your resource'], 403);
-            }
+        $isOwner = $resource->github_id === $user->github_id;
+        $canDeleteAll = $user->can('delete all resources');
+
+        if (!$isOwner && !$canDeleteAll) {
+            return response()->json(['error' => 'Forbidden - Not your resource'], 403);
         }
 
         $resource->delete();

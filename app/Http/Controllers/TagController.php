@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Models\Resource;
 use Illuminate\Http\JsonResponse;
 
-/**
- * @deprecated  
- */
 class TagController extends Controller
 {
     /**
@@ -22,19 +18,18 @@ class TagController extends Controller
      *     description="Tags used in resources",
      *     @OA\Response(
      *         response=200,
-     *         description="A list of tags",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Tag")
-     *         )
+     *         description="Successful operation"
      *     )
      * )
-    */
-
-    public function index()
+     */
+    public function index(): JsonResponse
     {
         $tags = Tag::all();
-        return response()->json($tags, 200);
+
+        return response()->json([
+            'message' => 'Tags retrieved successfully',
+            'data' => $tags
+        ]);
     }
 
     /**
@@ -45,28 +40,27 @@ class TagController extends Controller
      *     description="Frequencies of tags used in resources",
      *     @OA\Response(
      *         response=200,
-     *         description="An object with tag names as keys and frequencies as values",
-     *         @OA\JsonContent(
-     *              type="object",
-     *              example={
-     *              "mongodb": 3,
-     *              "tdd": 10
-     *              }
-     *         )
+     *         description="Successful operation"
      *     )
      * )
-    */
-
-    public function getTagsFrequency()
+     */
+    public function getTagsFrequency(): JsonResponse
     {
-        $frequencies = Resource::all()
-            ->pluck('tags')
-            ->filter()
-            ->flatten()
-            ->countBy()
-            ->all();
-        
-        return response()->json($frequencies, 200);
+        $resources = Resource::all();
+        $tagFrequencies = [];
+
+        foreach ($resources as $resource) {
+            if (is_array($resource->tags)) {
+                foreach ($resource->tags as $tag) {
+                    $tagFrequencies[$tag] = ($tagFrequencies[$tag] ?? 0) + 1;
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => 'Tag frequencies retrieved successfully',
+            'data' => $tagFrequencies
+        ]);
     }
 
     /**
@@ -74,83 +68,75 @@ class TagController extends Controller
      *     path="/api/tags/category-frequency",
      *     summary="Get tag frequencies grouped by category",
      *     tags={"Tags"},
-     *     description="Frequencies of tags used in resources grouoped by category",
+     *     description="Frequencies of tags used in resources grouped by category",
      *     @OA\Response(
      *         response=200,
-     *         description="An object with tag names as keys and frequencies as values",
-     *         @OA\JsonContent(
-     *              type="object",
-     *              example={
-     *              "Fullstack PHP": {
-     *                  "mongodb": 3,
-     *                  "tdd": 10
-     *              },
-     *              "React": {
-     *                  "hooks": 2,
-     *                  "dependencies": 3
-     *              }
-     *              }
-     *         )
+     *         description="Successful operation"
      *     )
      * )
-    */
-
-    public function getCategoryTagsFrequency()
+     */
+    public function getCategoryTagsFrequency(): JsonResponse
     {
-        $categorizedResources = Resource::all()->groupBy('category');
-        foreach ($categorizedResources as $category => $resources) {
-            $categoryFrequencies = $resources
-                ->pluck('tags')
-                ->filter()
-                ->flatten()
-                ->countBy()
-                ->all();
-            $frequencies[$category] = $categoryFrequencies;
+        $resources = Resource::all();
+        $categoryTagFrequencies = [];
+
+        foreach ($resources as $resource) {
+            $category = $resource->category;
+
+            if (!isset($categoryTagFrequencies[$category])) {
+                $categoryTagFrequencies[$category] = [];
+            }
+
+            if (is_array($resource->tags)) {
+                foreach ($resource->tags as $tag) {
+                    $categoryTagFrequencies[$category][$tag] = ($categoryTagFrequencies[$category][$tag] ?? 0) + 1;
+                }
+            }
         }
 
-        return response()->json($frequencies, 200);
+        return response()->json([
+            'message' => 'Category tag frequencies retrieved successfully',
+            'data' => $categoryTagFrequencies
+        ]);
     }
-/**
+
+    /**
      * @OA\Get(
      *     path="/api/tags/by-category",
      *     summary="Get tag IDs grouped by category",
      *     tags={"Tags"},
-     *     description="Returns the IDs of tags used in resources, grouped by resource category. This does not require a pivot table and is based on matching tag names from a JSON column.",
+     *     description="Returns the IDs of tags used in resources, grouped by resource category",
      *     @OA\Response(
      *         response=200,
-     *         description="An object with category names as keys and arrays of tag IDs as values",
-     *         @OA\JsonContent(
-     *              type="object",
-     *              example={
-     *                  "Fullstack PHP": {1, 5, 6},
-     *                  "React": {3, 7}
-     *              }
-     *         )
+     *         description="Successful operation"
      *     )
      * )
      */
-    public function getCategoryTagsId () : JsonResponse
+    public function getCategoryTagsId(): JsonResponse
     {
-         $resourcesByCategory = Resource::all()->groupBy('category');
-        $tagsByCategory = [];
+        $resources = Resource::all();
+        $categoryTags = [];
 
-    foreach ($resourcesByCategory as $category => $resources) {
-        $tagNames = $resources
-            ->pluck('tags')     
-            ->filter()
-            ->flatten()        
-            ->unique()
-            ->values();
-            
+        foreach ($resources as $resource) {
+            $category = $resource->category;
 
-        $tagIds = Tag::whereIn('name', $tagNames)->pluck('id')->all();
-        
-        $tagsByCategory[$category] = $tagIds;
+            if (!isset($categoryTags[$category])) {
+                $categoryTags[$category] = [];
+            }
+
+            if (is_array($resource->tags)) {
+                foreach ($resource->tags as $tagName) {
+                    $tag = Tag::where('name', $tagName)->first();
+                    if ($tag && !in_array($tag->id, $categoryTags[$category])) {
+                        $categoryTags[$category][] = $tag->id;
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => 'Category tags retrieved successfully',
+            'data' => $categoryTags
+        ]);
     }
-
-    return response()->json($tagsByCategory, 200);
-
-    }
-
-    
 }

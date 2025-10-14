@@ -10,11 +10,10 @@ use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+   
     public function run(): void
     {
+      
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $rolePermissions = $this->getRolePermissions();
@@ -23,6 +22,7 @@ class RolePermissionSeeder extends Seeder
             $role = Role::findByName($roleName, 'api');
             
             if ($permissions === 'all') {
+                
                 $role->syncPermissions(Permission::where('guard_name', 'api')->pluck('name'));
             } else {
                 $role->syncPermissions($permissions);
@@ -31,12 +31,10 @@ class RolePermissionSeeder extends Seeder
             $this->command->info("✓ {$roleName}: {$role->permissions->count()} permissions");
         }
 
-        $this->command->info('✅ Role-Permission assignments completed!');
+        $this->command->info(' Role-Permission assignments completed!');
     }
 
-    /**
-     * Get role-permission mapping
-     */
+   
     private function getRolePermissions(): array
     {
         return [

@@ -169,6 +169,8 @@ class TechnicalTestIndexTest extends TestCase
     public function testRejectsExtremelyLongSearchString(): void
     {
         $longString = str_repeat('a', 1000);
+        
+        
         $response = $this->getJson(route('technical-tests.index', ['search' => $longString]));
 
         $response->assertStatus(422);

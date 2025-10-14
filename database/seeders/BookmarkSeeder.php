@@ -12,9 +12,6 @@ use App\Models\User;
 
 class BookmarkSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
 
     public function run()
     {
@@ -28,6 +25,7 @@ class BookmarkSeeder extends Seeder
                 'resource_id' => $resource->id,
             ]);
         }
+      
         Bookmark::factory(5)->create();
     }
 }

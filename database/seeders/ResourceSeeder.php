@@ -11,9 +11,7 @@ use App\Models\Tag;
 
 class ResourceSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+   
     public function run(): void
     {
         $users = User::all();
@@ -38,7 +36,7 @@ class ResourceSeeder extends Seeder
                 'description' => fake()->paragraph(),
                 'url' => fake()->url(),
                 'category' => fake()->randomElement(['Node', 'React', 'Angular', 'JavaScript', 'Java', 'Fullstack PHP', 'Data Science', 'BBDD']),
-                'tags' => fake()->randomElements($validTags, fake()->numberBetween(1, 5)), // ✅ Always add tags
+                'tags' => fake()->randomElements($validTags, fake()->numberBetween(1, 5)), 
                 'type' => fake()->randomElement(['Video', 'Cursos', 'Blog']),
             ]);
         }

@@ -1,85 +1,143 @@
 <?php
-declare (strict_types= 1);
+declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\TagTests;
 
-use App\Models\Resource;
-use App\Models\User;
-use App\Models\OldRole;
-use App\Models\Tag;
 use Tests\TestCase;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\Resource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TagControllerTest extends TestCase
 {
-    protected $user;
+    use RefreshDatabase;
 
-    public function setUp(): void
+    protected User $student;
+    protected Resource $nodeResource;
+    protected Resource $reactResource;
+
+    protected function setUp(): void
     {
         parent::setUp();
+        
+        $this->student = User::factory()->create();
+        $this->student->assignRole('student');
 
-        $tags = [
-            'tag-one',
-            'tag-two',
-            'tag-three'
-        ];
+        Tag::firstOrCreate(['name' => 'nodejs']);
+        Tag::firstOrCreate(['name' => 'react']);
+        Tag::firstOrCreate(['name' => 'typescript']);
 
-        foreach ($tags as $tag) {
-            Tag::create([
-                'name' => $tag
-            ]);
-        }
-
-        $this->user = User::factory()->create([
-            'github_id' => 9871315,
+        $this->nodeResource = Resource::factory()->create([
+            'github_id' => $this->student->github_id,
+            'tags' => ['docker', 'kubernetes', 'nodejs'],
+            'category' => 'Node'
         ]);
 
-        // ELIMINAR cuando Spatie se implemente totalmente 
-        OldRole::factory()->create([
-            'github_id' => $this->user->github_id,
-            'role' => 'student'
+        $this->reactResource = Resource::factory()->create([
+            'github_id' => $this->student->github_id,
+            'tags' => ['docker', 'react', 'typescript'],
+            'category' => 'React'
         ]);
-
-        Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one']
-        ]);
-
-        Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one', 'tag-two']
-        ]);
-
-        Resource::factory()->create([
-            'github_id' => 9871315,
-            'tags' => ['tag-one', 'tag-two', 'tag-three']
-        ]);
-      
-    }
-    
-    public function testCanGetTagsList(): void
-    {
-        $response = $this->get(route('tags'));
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['name' => 'tag-one']);
-        $response->assertJsonFragment(['name' => 'tag-two']);
-        $response->assertJsonFragment(['name' => 'tag-three']);
     }
 
-    public function testCanGetTagsFrequency(): void
+    public function test_can_get_all_tags(): void
     {
-        $response = $this->get(route('tags.frequency'));
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
+
+        $tagNames = collect($response->json('data'))->pluck('name')->toArray();
+        
+        $this->assertContains('docker', $tagNames);
+        $this->assertContains('kubernetes', $tagNames);
+        $this->assertContains('nodejs', $tagNames);
+        $this->assertContains('react', $tagNames);
     }
 
-    public function testCanGetCategoryTagsFrequency(): void
+    public function test_can_get_tag_frequencies(): void
     {
-        $response = $this->get(route('category.tags.frequency'));
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags/frequency');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
+
+        $frequencies = $response->json('data');
+
+        $this->assertEquals(2, $frequencies['docker']);
+        
+        $this->assertEquals(1, $frequencies['kubernetes']);
+        $this->assertEquals(1, $frequencies['nodejs']);
+        $this->assertEquals(1, $frequencies['react']);
+        $this->assertEquals(1, $frequencies['typescript']);
     }
 
-      public function testCanGetCategoryTagsId(): void
+    public function test_can_get_category_tag_frequencies(): void
     {
-        $response = $this->get('/api/tags/by-category');
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/tags/category-frequency');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
+
+        $data = $response->json('data');
+
+        $this->assertArrayHasKey('Node', $data);
+        $this->assertEquals(1, $data['Node']['docker']);
+        $this->assertEquals(1, $data['Node']['kubernetes']);
+        $this->assertEquals(1, $data['Node']['nodejs']);
+        $this->assertArrayNotHasKey('react', $data['Node']);
+
+        $this->assertArrayHasKey('React', $data);
+        $this->assertEquals(1, $data['React']['docker']);
+        $this->assertEquals(1, $data['React']['react']);
+        $this->assertEquals(1, $data['React']['typescript']);
+        $this->assertArrayNotHasKey('kubernetes', $data['React']);
+    }
+
+    public function test_can_get_tags_grouped_by_category(): void
+    {
+        $response = $this->getJson('/api/tags/by-category');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'data']);
+
+        $data = $response->json('data');
+
+        $this->assertArrayHasKey('Node', $data);
+        $this->assertArrayHasKey('React', $data);
+        $this->assertCount(3, $data['Node']);
+        $this->assertCount(3, $data['React']);
+
+        $dockerId = Tag::where('name', 'docker')->value('id');
+        $this->assertContains($dockerId, $data['Node']);
+        $this->assertContains($dockerId, $data['React']);
+
+        $reactId = Tag::where('name', 'react')->value('id');
+        $this->assertContains($reactId, $data['React']);
+        $this->assertNotContains($reactId, $data['Node']);
+    }
+
+    public function test_endpoints_return_empty_when_no_resources(): void
+    {
+        Resource::query()->delete();
+
+        $expectedTagCount = Tag::count();
+        
+        $this->getJson('/api/tags')
+            ->assertStatus(200)
+            ->assertJsonCount($expectedTagCount, 'data');
+
+        $this->getJson('/api/tags/frequency')
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
+
+        $this->getJson('/api/tags/category-frequency')
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
+
+        $this->getJson('/api/tags/by-category')
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
     }
 }

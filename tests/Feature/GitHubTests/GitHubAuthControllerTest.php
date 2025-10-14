@@ -11,20 +11,17 @@ class GitHubAuthControllerTest extends TestCase
 {
     public function test_callback_redirects_to_frontend_with_user_data()
     {
-        // Mock del usuario de GitHub con email único
         $abstractUser = Mockery::mock(SocialiteUser::class);
         $abstractUser->shouldReceive('getId')->andReturn('12345');
         $abstractUser->shouldReceive('getName')->andReturn('Test User');
         $abstractUser->shouldReceive('getEmail')->andReturn('test_' . time() . '@example.com');
         $abstractUser->shouldReceive('getNickname')->andReturn('testuser');
 
-        // Mock de Socialite
         Socialite::shouldReceive('driver->stateless->user')
             ->andReturn($abstractUser);
 
         $response = $this->get('/api/auth/github/callback');
 
-        // El controlador ahora redirige al frontend
         $response->assertStatus(302)
             ->assertRedirect();
 
