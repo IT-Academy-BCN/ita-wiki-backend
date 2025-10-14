@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Feature\UserTests\Positiv;
+namespace Tests\Feature\UserTests;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -75,6 +75,14 @@ class UserControllerProfileTest extends TestCase
                     ]
                     ]);
     }
-      
 
+    public function test_not_user_cannot_access_profile()
+    {
+        // No autenticado
+        $response = $this->getJson('/api/profile');
+        $response->assertStatus(401)
+                 ->assertJson([
+                     'message' => 'Unauthenticated.'
+                 ]);
+    }
 }
