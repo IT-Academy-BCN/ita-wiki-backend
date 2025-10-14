@@ -19,7 +19,6 @@ class ResourceFactory extends Factory
      */
     public function definition(): array
     {
-        // ✅ Get a random existing student user (or create one)
         $student = User::role('student')->inRandomOrder()->first() 
             ?? User::factory()->create()->assignRole('student');
 

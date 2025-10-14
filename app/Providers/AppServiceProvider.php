@@ -9,18 +9,12 @@ use App\Services\BookmarkService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         $this->app->singleton(LikeService::class);
         $this->app->singleton(BookmarkService::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         if (env('APP_ENV') === 'production') {

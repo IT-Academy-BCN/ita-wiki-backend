@@ -123,7 +123,7 @@ class TechnicalTestCreateTest extends TestCase
     {
         $this->authenticateUserWithRole('mentor');
 
-        // Título muy corto
+        
         $response = $this->postJson(route('technical-tests.store'), [
             'title' => 'abc',
             'language' => LanguageEnum::PHP->value,
@@ -132,7 +132,7 @@ class TechnicalTestCreateTest extends TestCase
         $response->assertStatus(422)
                  ->assertJsonValidationErrors(['title']);
 
-        // Título muy largo
+       
         $response = $this->postJson(route('technical-tests.store'), [
             'title' => str_repeat('a', 256),
             'language' => LanguageEnum::PHP->value,

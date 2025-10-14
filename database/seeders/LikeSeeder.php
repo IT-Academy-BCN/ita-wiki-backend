@@ -12,10 +12,6 @@ use App\Models\User;
 
 class LikeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-
     public function run(): void
     {
         $knownStudentId = 999999999;

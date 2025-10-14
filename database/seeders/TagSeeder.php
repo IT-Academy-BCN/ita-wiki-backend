@@ -9,9 +9,7 @@ use App\Models\Tag;
 
 class TagSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    
     public function run(): void
     {
         $tags = [

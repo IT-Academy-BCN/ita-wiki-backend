@@ -72,9 +72,6 @@ class GitHubAuthController extends Controller
         }
     }
 
-    /**
-     * Obtener información del usuario autenticado
-     */
     public function user(Request $request)
     {
         $githubId = $request->input('github_id');

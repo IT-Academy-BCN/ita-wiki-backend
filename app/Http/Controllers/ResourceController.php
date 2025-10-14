@@ -225,7 +225,6 @@ class ResourceController extends Controller
     {
         $user = auth()->user();
 
-        // ✅ Same logic for delete
         $isOwner = $resource->github_id === $user->github_id;
         $canDeleteAll = $user->can('delete all resources');
 

@@ -12,16 +12,13 @@ use Database\Seeders\TechnicalTestSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
+    
     public function run(): void
     {
         $this->call([
-            RoleSeeder::class,              // 1. Create roles
-            PermissionSeeder::class,        // 2. Create permissions
-            RolePermissionSeeder::class,    // 3. Assign permissions to roles
-            
+            RoleSeeder::class,              
+            PermissionSeeder::class,       
+            RolePermissionSeeder::class,    
             UserSeeder::class,              
             TagSeeder::class,               
             ResourceSeeder::class,         

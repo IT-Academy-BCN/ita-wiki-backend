@@ -24,12 +24,12 @@ class CheckPermission
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Check basic permission
+      
         if (!$user->can($permission)) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        // Check ownership for "own" permissions
+        
         if ($ownershipField && str_contains($permission, 'own')) {
             $resourceId = $request->route($ownershipField);
             $model = $this->getModelFromRoute($request);
@@ -44,7 +44,6 @@ class CheckPermission
     
     private function getModelFromRoute(Request $request)
     {
-        // Logic to get model from route parameters
         if ($request->route('resource')) {
             return \App\Models\Resource::find($request->route('resource'));
         }
