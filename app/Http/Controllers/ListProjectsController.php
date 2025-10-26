@@ -39,4 +39,45 @@ class ListProjectsController extends Controller
         ], 200);
     }
 
+
+    /** method store
+     * Route is POST /api/listsProject
+     * Creates a new project and returns a Json response
+     * return success true, status 200 and message is 'Project created successfully'
+     */
+
+    public function store(Request $request){
+        return response()->json([
+            'success'=>true,
+            'message' => 'Project created successfully'
+        ], 200);
+    }
+
+    /** method update
+     * Route is PUT /api/listsProject/{id}
+     * Updates a specific project and returns a Json response
+     * return success true, status 200 and message is 'Project updated successfully'
+     */
+
+    public function update(Request $request, $id){
+        
+        return response()->json([
+            'success'=>true,
+            'message' => 'Project updated successfully'
+        ], 200);
+    }
+
+    /** Method destroy
+     * Route is DELETE /api/listsProject/{id}
+     * destroy a specific project and returns a Json response
+     * return success true, status 200 and message is 'Project deleted successfully'
+     */
+
+    public function destroy($id){
+        return response()->json([
+            'success'=>true,
+            'message' => 'Project deleted successfully'
+        ], 200);
+    }
+
 }
