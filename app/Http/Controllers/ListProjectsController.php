@@ -3,7 +3,7 @@
 declare (strict_types= 1);
 
 namespace App\Http\Controllers;
-
+use App\Models\ListProjects;
 use Illuminate\Http\Request;
 
 class ListProjectsController extends Controller
@@ -30,11 +30,13 @@ class ListProjectsController extends Controller
      * return success true, data with project details, status 200 and message is 'Project retrieved successfully'
      */
     public function show($id){
+        $project = ListProjects::find($id);
+
         return response()->json([
             'success'=>true,
-            'data' => "Project details for project id: $id",
+            'data' => $project,
             'message' => 'Project retrieved successfully'
         ], 200);
     }
-    
+
 }
