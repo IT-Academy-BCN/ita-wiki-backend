@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\ListProjects;
+use App\Models\ContributorListProject;
 
 class ListProjectsSeeder extends Seeder
 {
@@ -15,9 +16,7 @@ class ListProjectsSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        ListProjects::create([
-            'id' => 1,
+        $Project1= ListProjects::firstOrCreate([
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
             'lenguage_Backend' => 'PHP',

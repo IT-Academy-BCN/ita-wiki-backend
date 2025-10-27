@@ -19,9 +19,9 @@ return new class extends Migration
     {
         Schema::create('contributors_list_project', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('github_id')->constrained('github')->onDelete('cascade');
-            $table->string('role');
-            $table->foreignId('list_project_id')->constrained('list_projects')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users');
+            $table->enum('roleProgramming', ['Frontend Developer', 'Backend Developer', 'Fullstack Developer', 'Designer', 'Project Manager', 'Other']);
+            $table->foreignId('list_project_id')->constrained('list_projects');
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 use App\Models\ListProjects;
+use App\Models\ContributorListProject;
 use Illuminate\Http\Request;
 
 class ListProjectsController extends Controller
@@ -14,11 +15,12 @@ class ListProjectsController extends Controller
      * Returns a Json response with a list of projects
      * return success true, data with list of projects, status 200 and message is 'List of projects retrieved successfully'
      */
+    
     public function index(Request $request){
 
         return response()->json([
             'success'=>true,
-            'data' => ['All projects list here...'],
+            'data' => ListProjects::with('contributorListProject.user')->get(),
             'message' => 'List of projects retrieved successfully'
         ], 200);
 
@@ -30,7 +32,7 @@ class ListProjectsController extends Controller
      * return success true, data with project details, status 200 and message is 'Project retrieved successfully'
      */
     public function show($id){
-        $project = ListProjects::find($id);
+    $project = ListProjects::with('contributorListProject.user')->find($id);
 
         return response()->json([
             'success'=>true,
@@ -79,5 +81,6 @@ class ListProjectsController extends Controller
             'message' => 'Project deleted successfully'
         ], 200);
     }
+
 
 }
