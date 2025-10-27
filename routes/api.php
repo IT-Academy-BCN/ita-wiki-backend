@@ -10,6 +10,7 @@ use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController; 
+use App\Http\Controllers\ListProjectsController;
 
 //GitHub Auth System Endpoints
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
@@ -25,6 +26,9 @@ Route::prefix('tags')->group(function () {
     Route::get('/category-frequency', [TagController::class, 'getCategoryTagsFrequency'])->name('category.tags.frequency');
     Route::get('/by-category', [TagController::class, 'getCategoryTagsId'])->name('tags.by-category');
 });
+
+//listProject endpoint
+Route::apiResource('listsProject', ListProjectsController::class);
 
 // Protected routes with authentication and authorization
 Route::middleware(['auth:api'])->group(function () {

@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             ResourceSeeder::class,         
             BookmarkSeeder::class,         
             LikeSeeder::class,              
-            TechnicalTestSeeder::class,    
+            TechnicalTestSeeder::class,
+            ListProjectsSeeder::class,
         ]);
     }
 }
