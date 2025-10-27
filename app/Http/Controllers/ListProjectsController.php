@@ -18,9 +18,25 @@ class ListProjectsController extends Controller
     
     public function index(Request $request){
 
+        $projects = ListProjects::with('contributorListProject.user')->get()->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'title' => $project->title,
+                'time_duration' => $project->time_duration,
+                'lenguage_Backend' => $project->lenguage_Backend,
+                'lenguage_Frontend' => $project->lenguage_Frontend,
+                'contributors' => $project->contributorListProject->map(function ($contributor) {
+                    return [
+                        'name' => $contributor->user->name,
+                        'roleProgramming' => $contributor->roleProgramming,
+                    ];
+                }),
+            ];
+        });
+    
         return response()->json([
             'success'=>true,
-            'data' => ListProjects::with('contributorListProject.user')->get(),
+            'data' => $projects,
             'message' => 'List of projects retrieved successfully'
         ], 200);
 
@@ -33,6 +49,27 @@ class ListProjectsController extends Controller
      */
     public function show($id){
     $project = ListProjects::with('contributorListProject.user')->find($id);
+
+    if(!$project){
+        return response()->json([
+            'success'=>false,
+            'message' => 'Project not found'
+        ], 404);
+    }
+    
+    $project = [
+        'id' => $project->id,
+        'title' => $project->title,
+        'time_duration' => $project->time_duration,
+        'lenguage_Backend' => $project->lenguage_Backend,
+        'lenguage_Frontend' => $project->lenguage_Frontend,
+        'contributors' => $project->contributorListProject->map(function ($contributor) {
+            return [
+                'name' => $contributor->user->name,
+                'roleProgramming' => $contributor->roleProgramming
+            ];
+        }),
+    ];
 
         return response()->json([
             'success'=>true,

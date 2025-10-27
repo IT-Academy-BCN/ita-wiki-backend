@@ -3,7 +3,7 @@
 declare (strict_types= 1);
 
 namespace Database\Factories;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 
@@ -12,12 +12,10 @@ use App\Models\User;
  */
 class ContributorListProjectFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    use HasFactory;
+
     public function definition(): array
+    
     {
         $user = User::factory()->create();
 

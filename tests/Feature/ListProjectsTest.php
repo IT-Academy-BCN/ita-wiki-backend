@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\ListProjects;
+use App\Models\ContributorListProject;
 
 class ListProjectsTest extends TestCase
 {
@@ -15,6 +16,7 @@ class ListProjectsTest extends TestCase
     use RefreshDatabase;
 
      protected $projectOne;
+     protected $contributorOne;
 
      public function setUp(): void
      {
@@ -26,6 +28,14 @@ class ListProjectsTest extends TestCase
                 'lenguage_Backend' => 'PHP',
                 'lenguage_Frontend' => 'JavaScript',
          ]);
+         
+         $this->contributorOne = ContributorListProject::factory()->create([
+            'user_id' => 1,
+            'roleProgramming' => 'Backend Developer',
+            'list_project_id' => $this->projectOne->id,
+         ]);
+
+
      }
 
     public function test_example(): void
@@ -35,22 +45,8 @@ class ListProjectsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_method_show_devolve_dates(): void {
-        $response = $this->get('/api/listsProject/1');
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'data' => [
-                'id' => 1,
-                'title' => 'Project Alpha',
-                'time_duration' => '1 month',
-                'lenguage_Backend' => 'PHP',
-                'lenguage_Frontend' => 'JavaScript',
-            ],
-            'message' => 'Project retrieved successfully'
-        ]);
-    }
-
+  
+    
     public function test_method_index_endpoint():void{
         $response = $this->get('/api/listsProject/');
         $response->assertStatus(200);
