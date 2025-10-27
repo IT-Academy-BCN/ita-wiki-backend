@@ -18,4 +18,9 @@ class ListProjects extends Model
         'lenguage_Backend',
         'lenguage_Frontend'
     ];
+
+    public function contributorListProject()
+    {
+        return $this->hasMany(ContributorListProject::class, 'list_project_id');
+    }
 }
