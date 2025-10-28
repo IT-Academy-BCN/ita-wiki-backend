@@ -11,7 +11,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
 
-class ListProjectsShowTest extends TestCase
+class ListProjectsIndexTest extends TestCase
 {
      use RefreshDatabase;
 
@@ -46,16 +46,8 @@ class ListProjectsShowTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_method_show_endpoint(): void {
-        $response = $this->get('/api/listsProject/1');
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'Project retrieved successfully'
-        ]);
-    }
-     public function test_method_show_data():void{
-        $response = $this->get('/api/listsProject/1');
+    public function test_method_index_data():void{
+        $response = $this->get('/api/listsProject');
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'title' => $this->projectOne->title,
@@ -71,15 +63,20 @@ class ListProjectsShowTest extends TestCase
         ]);
     }
 
-    public function test_method_show_not_found(): void{
-        $response = $this->get('/api/listsProject/999');
-        $response->assertStatus(404);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Project not found'
+       public function test_method_index_data_contributors():void{
+        $response = $this->get('/api/listsProject');
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'contributors' => [
+                [
+                    'name' => $this->contributorOne->user->name,
+                    'roleProgramming' => $this->contributorOne->roleProgramming,
+                ]
+            ],
         ]);
     }
 
-   
 
+    
 }
+
