@@ -19,8 +19,8 @@ class ListProjectsSeeder extends Seeder
         $Project1= ListProjects::firstOrCreate([
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'JavaScript',
         ]);
 
     }

@@ -39,12 +39,7 @@ class ListProjectsShowTest extends TestCase
         ]);
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+    
 
     public function test_method_show_endpoint(): void {
         $response = $this->get("/api/listsProject/{$this->projectOne->id}");

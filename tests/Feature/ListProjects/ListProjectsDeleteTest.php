@@ -39,12 +39,7 @@ class ListProjectsDeleteTest extends TestCase
         ]);
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+  
 
     public function test_method_delete_endpoint():void{
         $response = $this->delete("/api/listsProject/{$this->projectOne->id}");

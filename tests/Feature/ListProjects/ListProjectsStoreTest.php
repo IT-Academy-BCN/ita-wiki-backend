@@ -39,12 +39,7 @@ class ListProjectsStoreTest extends TestCase
         ]);
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+   
 
     public function test_method_store_endpoint():void{
         $response = $this->post('/api/listsProject/', [

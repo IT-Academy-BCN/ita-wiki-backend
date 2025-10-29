@@ -91,8 +91,8 @@ class ListProjectsController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
                 'time_duration' => 'required|string|max:100',
-                'lenguage_Backend' => 'required|string|max:100',
-                'lenguage_Frontend' => 'required|string|max:100',
+                'language_Backend' => 'required|string|max:100',
+                'language_Frontend' => 'required|string|max:100',
             ]);
 
             $newProject = ListProjects::create($validatedData);
@@ -132,8 +132,8 @@ class ListProjectsController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
                 'time_duration' => 'required|string|max:100',
-                'lenguage_Backend' => 'required|string|max:100',
-                'lenguage_Frontend' => 'required|string|max:100',
+                'language_Backend' => 'required|string|max:100',
+                'language_Frontend' => 'required|string|max:100',
             ]);
 
             $projectUpdated->update($validatedData);
