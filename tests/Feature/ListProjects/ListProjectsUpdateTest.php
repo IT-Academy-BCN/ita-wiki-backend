@@ -39,15 +39,8 @@ class ListProjectsUpdateTest extends TestCase
         ]);
     }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
-
-   
-    public function test_method_update_endpoint():void{
+    public function test_method_update_successfully():void{
         $response = $this->put('/api/listsProject/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
@@ -60,7 +53,7 @@ class ListProjectsUpdateTest extends TestCase
         ]);
     }
 
-    public function test_method_update_not_found():void{
+    public function test_method_update_error_404():void{
         $response = $this->put('/api/listsProject/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
@@ -75,18 +68,32 @@ class ListProjectsUpdateTest extends TestCase
 
     }
 
-    public function test_method_update_data():void{
-        $response = $this->put("/api/listsProject/{$this->projectOne->id}", [
-            'title' => 'Project Alpha Updated',
-            'time_duration' => '2 months',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'TypeScript'
+     public function test_method_datas_not_valid_language():void{
+        $response = $this->post('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '1 month',
+            'language_Backend' => 'pokemon',
+            'language_Frontend' => 'JavaScript'
         ]);
-        $response->assertJsonFragment([
-            'success' => true,
-            'message' => 'Project updated successfully',
+            $response->assertJsonFragment([
+                'success' => false,
+                'message' => 'Invalid Backend language',
         ]);
     }
+
+    public function test_method_datas_error_required():void{
+        $response = $this->post('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '',
+            'language_Backend' => 'Python',
+            'language_Frontend' => ''
+        ]);
+            $response->assertJsonFragment([
+                'message' => 'The time duration field is required. (and 1 more error)',
+        ]);
+        
+    }
+
 
 }
 

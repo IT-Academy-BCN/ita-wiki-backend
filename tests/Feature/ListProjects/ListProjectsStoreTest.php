@@ -67,7 +67,7 @@ class ListProjectsStoreTest extends TestCase
         ]);
     }
 
-    public function test_method_datas_not_valid_required():void{
+    public function test_method_datas_error_required():void{
         $response = $this->post('/api/listsProject/',[
             'title' => 'project invalid',
             'time_duration' => '',
