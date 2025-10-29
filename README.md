@@ -89,3 +89,4 @@ Michelle Di Terlizzi
 Ivonne Cantor Páez
 Cristina Cardona
 Alex Pasquero
+Antonia Minnucci
