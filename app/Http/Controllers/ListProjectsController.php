@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use Illuminate\Http\Request;
+use App\Http\Requests\ListProjectRequest;
 
 class ListProjectsController extends Controller
 {
@@ -85,15 +86,10 @@ class ListProjectsController extends Controller
      * return success true, status 200 and message is 'Project created successfully'
      */
 
-    public function store(Request $request){
+    public function store(ListProjectRequest $request){
 
         try{
-            $validatedData = $request->validate([
-                'title' => 'required|string|max:255',
-                'time_duration' => 'required|string|max:100',
-                'lenguage_Backend' => 'required|string|max:100',
-                'lenguage_Frontend' => 'required|string|max:100',
-            ]);
+            $validatedData = $request->validated();
 
             $newProject = ListProjects::create($validatedData);
 
@@ -118,7 +114,7 @@ class ListProjectsController extends Controller
      * return success true, status 200 and message is 'Project updated successfully'
      */
 
-    public function update(Request $request, $id){
+    public function update(ListProjectRequest $request, $id){
 
         try {
             $projectUpdated = ListProjects::find($id);
@@ -129,16 +125,12 @@ class ListProjectsController extends Controller
                 ], 404);
             }
 
-            $validatedData = $request->validate([
-                'title' => 'required|string|max:255',
-                'time_duration' => 'required|string|max:100',
-                'lenguage_Backend' => 'required|string|max:100',
-                'lenguage_Frontend' => 'required|string|max:100',
-            ]);
+           $validatedData = $request->validated();
 
             $projectUpdated->update($validatedData);
 
             return response()->json([
+
                 'success'=>true,
                 'data' => $projectUpdated,
                 'message' => 'Project updated successfully'
