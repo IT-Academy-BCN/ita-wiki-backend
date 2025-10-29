@@ -28,13 +28,13 @@ class ListProjectsDeleteTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programmingRole' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }

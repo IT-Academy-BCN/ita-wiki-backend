@@ -28,13 +28,13 @@ class ListProjectsUpdateTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programmingRole' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
     }
@@ -51,8 +51,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->put('/api/listsProject/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'TypeScript'
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'TypeScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,
@@ -64,8 +64,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->put('/api/listsProject/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'lenguage_Backend' => 'Ruby',
-            'lenguage_Frontend' => 'Elm'
+            'language_Backend' => 'Ruby',
+            'language_Frontend' => 'Elm'
         ]);
         $response->assertStatus(404);
         $response->assertJsonFragment([
@@ -79,8 +79,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->put("/api/listsProject/{$this->projectOne->id}", [
             'title' => 'Project Alpha Updated',
             'time_duration' => '2 months',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'TypeScript'
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'TypeScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,

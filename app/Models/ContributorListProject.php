@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ContributorListProject extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'contributors_list_project';
 
     protected $fillable =[
         'user_id',
-        'roleProgramming',
+        'programmingRole',
         'list_project_id'
     ];
 

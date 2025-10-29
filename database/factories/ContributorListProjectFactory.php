@@ -21,7 +21,7 @@ class ContributorListProjectFactory extends Factory
 
         return [
             'user_id' => $user->id,
-            'roleProgramming' => $this->faker->randomElement(['Backend', 'Frontend']),
+            'programmingRole' => $this->faker->randomElement(['Backend', 'Frontend']),
             'list_project_id' => $this->faker->numberBetween(1, 10),
         ];
     }

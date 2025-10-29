@@ -28,13 +28,13 @@ class ListProjectsStoreTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_Backend' => 'PHP',
+            'language_Frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programmingRole' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }
@@ -45,8 +45,8 @@ class ListProjectsStoreTest extends TestCase
         $response = $this->post('/api/listsProject/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+            'language_Backend' => 'Python',
+            'language_Frontend' => 'JavaScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,
@@ -58,16 +58,16 @@ class ListProjectsStoreTest extends TestCase
         $response = $this->post('/api/listsProject/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+            'language_Backend' => 'Python',
+            'language_Frontend' => 'JavaScript'
         ]);
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+            'language_Backend' => 'Python',
+            'language_Frontend' => 'JavaScript'
         ]);
         
     }
