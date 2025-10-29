@@ -23,8 +23,8 @@ class ListProjectsController extends Controller
                 'id' => $project->id,
                 'title' => $project->title,
                 'time_duration' => $project->time_duration,
-                'lenguage_Backend' => $project->lenguage_Backend,
-                'lenguage_Frontend' => $project->lenguage_Frontend,
+                    'language_Backend' => $project->language_Backend,
+                    'language_Frontend' => $project->language_Frontend,
                 'contributors' => $project->contributorListProject->map(function ($contributor) {
                     return [
                         'name' => $contributor->user->name,
@@ -61,8 +61,8 @@ class ListProjectsController extends Controller
         'id' => $project->id,
         'title' => $project->title,
         'time_duration' => $project->time_duration,
-        'lenguage_Backend' => $project->lenguage_Backend,
-        'lenguage_Frontend' => $project->lenguage_Frontend,
+        'language_Backend' => $project->language_Backend,
+        'language_Frontend' => $project->language_Frontend,
         'contributors' => $project->contributorListProject->map(function ($contributor) {
             return [
                 'name' => $contributor->user->name,
