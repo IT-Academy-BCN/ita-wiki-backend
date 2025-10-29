@@ -58,17 +58,16 @@ class ListProjectsController extends Controller
     }
     
     $project = [
-        'id' => $project->id,
         'title' => $project->title,
         'time_duration' => $project->time_duration,
         'language_Backend' => $project->language_Backend,
         'language_Frontend' => $project->language_Frontend,
         'contributors' => $project->contributorListProject->map(function ($contributor) {
             return [
-                'name' => $contributor->user->name,
-                'roleProgramming' => $contributor->roleProgramming
-            ];
-        }),
+                    'name' => $contributor->user->name,
+                    'programmingRole' => $contributor->programmingRole
+                ];
+            }),
     ];
 
         return response()->json([
