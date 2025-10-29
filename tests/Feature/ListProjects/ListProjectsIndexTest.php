@@ -64,7 +64,8 @@ class ListProjectsIndexTest extends TestCase
         $response->assertJsonCount(5, 'data');
         $response->assertStatus(200);
     }
-    public function test_method_index_data():void{
+    
+    public function test_index_returns_successfully():void{
         $response = $this->get('/api/listsProject');
         $response->assertJsonFragment([
             'title' => $this->projectOne->title,

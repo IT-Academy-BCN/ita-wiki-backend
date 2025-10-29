@@ -95,6 +95,22 @@ class ListProjectsController extends Controller
                 'language_Frontend' => 'required|string|max:100',
             ]);
 
+            if(!in_array($validatedData['language_Backend'], ['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Backend language'
+                ], 400);
+            }
+
+            if(!in_array($validatedData['language_Frontend'], ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
+
+            
+
             $newProject = ListProjects::create($validatedData);
 
             return response()->json([
@@ -105,7 +121,6 @@ class ListProjectsController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error creating project',
                 'message' => $e->getMessage()
             ], 500);
     
@@ -135,6 +150,20 @@ class ListProjectsController extends Controller
                 'language_Backend' => 'required|string|max:100',
                 'language_Frontend' => 'required|string|max:100',
             ]);
+
+            if(!in_array($validatedData['language_Backend'], ['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Backend language'
+                ], 400);
+            }
+
+            if(!in_array($validatedData['language_Frontend'], ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
 
             $projectUpdated->update($validatedData);
 

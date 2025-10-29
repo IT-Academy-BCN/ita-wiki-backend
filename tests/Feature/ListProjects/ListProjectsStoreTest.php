@@ -41,7 +41,7 @@ class ListProjectsStoreTest extends TestCase
 
    
 
-    public function test_method_store_endpoint():void{
+    public function test_method_store_successfully():void{
         $response = $this->post('/api/listsProject/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
@@ -54,23 +54,30 @@ class ListProjectsStoreTest extends TestCase
         ]);
     }
 
-    public function test_method_store_data():void{        
-        $response = $this->post('/api/listsProject/', [
-            'title' => 'Proyecto Beta',
-            'time_duration' => '1 mes',
-            'language_Backend' => 'Python',
+    public function test_method_datas_not_valid_language():void{
+        $response = $this->post('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '1 month',
+            'language_Backend' => 'pokemon',
             'language_Frontend' => 'JavaScript'
         ]);
+            $response->assertJsonFragment([
+                'success' => false,
+                'message' => 'Invalid Backend language',
+        ]);
+    }
 
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'title' => 'Proyecto Beta',
-            'time_duration' => '1 mes',
+    public function test_method_datas_not_valid_required():void{
+        $response = $this->post('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '',
             'language_Backend' => 'Python',
-            'language_Frontend' => 'JavaScript'
+            'language_Frontend' => ''
+        ]);
+            $response->assertJsonFragment([
+                'message' => 'The time duration field is required. (and 1 more error)',
         ]);
         
     }
 
 }
-
