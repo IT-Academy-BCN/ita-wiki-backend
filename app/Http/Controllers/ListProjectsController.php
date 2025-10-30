@@ -4,6 +4,7 @@ declare (strict_types= 1);
 
 namespace App\Http\Controllers;
 use App\Models\ListProjects;
+use App\Models\ContributorListProject;
 use Illuminate\Http\Request;
 
 class ListProjectsController extends Controller
@@ -14,11 +15,28 @@ class ListProjectsController extends Controller
      * Returns a Json response with a list of projects
      * return success true, data with list of projects, status 200 and message is 'List of projects retrieved successfully'
      */
+    
     public function index(Request $request){
 
+        $projects = ListProjects::with('contributorListProject.user')->get()->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'title' => $project->title,
+                'time_duration' => $project->time_duration,
+                    'language_Backend' => $project->language_Backend,
+                    'language_Frontend' => $project->language_Frontend,
+                'contributors' => $project->contributorListProject->map(function ($contributor) {
+                    return [
+                        'name' => $contributor->user->name,
+                        'roleProgramming' => $contributor->roleProgramming,
+                    ];
+                }),
+            ];
+        });
+    
         return response()->json([
             'success'=>true,
-            'data' => ['All projects list here...'],
+            'data' => $projects,
             'message' => 'List of projects retrieved successfully'
         ], 200);
 
@@ -30,7 +48,27 @@ class ListProjectsController extends Controller
      * return success true, data with project details, status 200 and message is 'Project retrieved successfully'
      */
     public function show($id){
-        $project = ListProjects::find($id);
+    $project = ListProjects::with('contributorListProject.user')->find($id);
+
+    if(!$project){
+        return response()->json([
+            'success'=>false,
+            'message' => 'Project not found'
+        ], 404);
+    }
+    
+    $project = [
+        'title' => $project->title,
+        'time_duration' => $project->time_duration,
+        'language_Backend' => $project->language_Backend,
+        'language_Frontend' => $project->language_Frontend,
+        'contributors' => $project->contributorListProject->map(function ($contributor) {
+            return [
+                    'name' => $contributor->user->name,
+                    'programmingRole' => $contributor->programmingRole
+                ];
+            }),
+    ];
 
         return response()->json([
             'success'=>true,
@@ -47,10 +85,45 @@ class ListProjectsController extends Controller
      */
 
     public function store(Request $request){
-        return response()->json([
-            'success'=>true,
-            'message' => 'Project created successfully'
-        ], 200);
+
+        try{
+            $validatedData = $request->validate([
+                'title' => 'required|string|max:255',
+                'time_duration' => 'required|string|max:100',
+                'language_Backend' => 'required|string|max:100',
+                'language_Frontend' => 'required|string|max:100',
+            ]);
+
+            if(!in_array($validatedData['language_Backend'], ['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Backend language'
+                ], 400);
+            }
+
+            if(!in_array($validatedData['language_Frontend'], ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
+
+            
+
+            $newProject = ListProjects::create($validatedData);
+
+            return response()->json([
+                'success'=>true,
+                'data' => $newProject,
+                'message' => 'Project created successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+    
+        }
     }
 
     /** method update
@@ -60,11 +133,52 @@ class ListProjectsController extends Controller
      */
 
     public function update(Request $request, $id){
-        
-        return response()->json([
-            'success'=>true,
-            'message' => 'Project updated successfully'
-        ], 200);
+
+        try {
+            $projectUpdated = ListProjects::find($id);
+            if (!$projectUpdated) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Project not found'
+                ], 404);
+            }
+
+            $validatedData = $request->validate([
+                'title' => 'required|string|max:255',
+                'time_duration' => 'required|string|max:100',
+                'language_Backend' => 'required|string|max:100',
+                'language_Frontend' => 'required|string|max:100',
+            ]);
+
+            if(!in_array($validatedData['language_Backend'], ['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Backend language'
+                ], 400);
+            }
+
+            if(!in_array($validatedData['language_Frontend'], ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
+
+            $projectUpdated->update($validatedData);
+
+            return response()->json([
+                'success'=>true,
+                'data' => $projectUpdated,
+                'message' => 'Project updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error updating project',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
     }
 
     /** Method destroy
@@ -74,10 +188,30 @@ class ListProjectsController extends Controller
      */
 
     public function destroy($id){
-        return response()->json([
-            'success'=>true,
-            'message' => 'Project deleted successfully'
-        ], 200);
-    }
+        try {
+            $projectDeleted = ListProjects::find($id);
 
+            if(!$projectDeleted){
+                return response()->json([
+                    'success'=>false,
+                    'message' => 'Project not found'
+                ], 404);
+            }
+            // remove the contributors associated with the project
+            ContributorListProject::where('list_project_id', $projectDeleted->id)->delete();
+            $projectDeleted->delete();
+
+            return response()->json([
+                'success'=>true,
+                'message' => 'Project deleted successfully'
+            ], 200);
+        }
+    
+        catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error deleting project',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

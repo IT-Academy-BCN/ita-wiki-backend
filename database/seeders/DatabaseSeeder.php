@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             LikeSeeder::class,              
             TechnicalTestSeeder::class,
             ListProjectsSeeder::class,
+            ContributorListProjectSeeder::class,
         ]);
     }
 }
