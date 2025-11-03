@@ -24,8 +24,8 @@ class ListProjectsController extends Controller
                 'id' => $project->id,
                 'title' => $project->title,
                 'time_duration' => $project->time_duration,
-                    'language_backend' => $project->language_backend,
-                    'language_frontend' => $project->language_frontend,
+                'language_backend' => $project->language_backend,
+                'language_frontend' => $project->language_frontend,
                 'contributors' => $project->contributorListProject->map(function ($contributor) {
                     return [
                         'name' => $contributor->user->name,
