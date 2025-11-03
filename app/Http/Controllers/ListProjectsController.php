@@ -29,7 +29,7 @@ class ListProjectsController extends Controller
                 'contributors' => $project->contributorListProject->map(function ($contributor) {
                     return [
                         'name' => $contributor->user->name,
-                        'roleProgramming' => $contributor->roleProgramming,
+                        'programming_role' => $contributor->programming_role,
                     ];
                 }),
             ];
