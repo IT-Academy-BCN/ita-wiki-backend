@@ -90,3 +90,5 @@ Ivonne Cantor Páez
 Cristina Cardona
 Alex Pasquero
 Sandra Gutierrez
+Antonia Minnucci
+
