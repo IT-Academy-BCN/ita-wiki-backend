@@ -51,6 +51,7 @@ class ListProjectsUpdateTest extends TestCase
             'success' => true,
             'message' => 'Project updated successfully',
         ]);
+        $response->assertStatus(200);
     }
 
     public function test_method_update_error_404():void{
