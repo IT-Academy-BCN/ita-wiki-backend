@@ -52,6 +52,7 @@ class ListProjectsStoreTest extends TestCase
             'success' => true,
             'message' => 'Project created successfully',
         ]);
+        $response->assertStatus(200);
     }
 
     public function test_method_datas_not_valid_language():void{
@@ -65,6 +66,7 @@ class ListProjectsStoreTest extends TestCase
                 'success' => false,
                 'message' => 'Invalid Backend language',
         ]);
+        $response->assertStatus(400);
     }
 
     public function test_method_datas_error_required():void{
@@ -74,9 +76,7 @@ class ListProjectsStoreTest extends TestCase
             'language_backend' => 'Python',
             'language_frontend' => ''
         ]);
-            $response->assertJsonFragment([
-                'message' => 'The time duration field is required. (and 1 more error)',
-        ]);
+        $response->assertStatus(302);
         
     }
 

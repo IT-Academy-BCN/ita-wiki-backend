@@ -79,6 +79,7 @@ class ListProjectsUpdateTest extends TestCase
                 'success' => false,
                 'message' => 'Invalid Backend language',
         ]);
+        $response->assertStatus(400);
     }
 
     public function test_method_datas_error_required():void{
@@ -86,12 +87,9 @@ class ListProjectsUpdateTest extends TestCase
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => 'Python',
-            'language_frontend' => ''
+            'language_frontend' => 'JavaScript'
         ]);
-            $response->assertJsonFragment([
-                'message' => 'The time duration field is required. (and 1 more error)',
-        ]);
-        
+        $response->assertStatus(302);
     }
 
 

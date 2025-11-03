@@ -86,6 +86,7 @@ class ListProjectsIndexTest extends TestCase
           
           
         ]);
+        $response->assertStatus(200);
     }
 
 

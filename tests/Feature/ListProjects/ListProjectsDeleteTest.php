@@ -37,6 +37,7 @@ class ListProjectsDeleteTest extends TestCase
             'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
+        
      }
 
   
@@ -48,6 +49,7 @@ class ListProjectsDeleteTest extends TestCase
             'success' => true,
             'message' => 'Project deleted successfully',
         ]);
+        $response->assertStatus(200);
     }
 
     public function test_delete_nonexistent_project_returns_404():void{
@@ -57,6 +59,7 @@ class ListProjectsDeleteTest extends TestCase
             'success' => false,
             'message' => 'Project not found',
         ]);
+        $response->assertStatus(404);
     }
 
 
