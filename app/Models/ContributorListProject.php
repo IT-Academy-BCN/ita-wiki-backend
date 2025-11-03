@@ -15,7 +15,7 @@ class ContributorListProject extends Model
 
     protected $fillable =[
         'user_id',
-        'programmingRole',
+        'programming_role',
         'list_project_id'
     ];
 

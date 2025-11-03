@@ -29,23 +29,23 @@ class ListProjectsIndexTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
 
         $this->projectTwo = ListProjects::factory()->create([
             'id' => 2,
             'title' => 'Project Beta',
             'time_duration' => '2 months',
-            'language_Backend' => 'Python',
-            'language_Frontend' => 'HTML',
+            'language_backend' => 'Python',
+            'language_frontend' => 'HTML',
         ]);
 
         ListProjects::factory(3)->create();
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'programmingRole' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }
@@ -70,18 +70,18 @@ class ListProjectsIndexTest extends TestCase
         $response->assertJsonFragment([
             'title' => $this->projectOne->title,
             'time_duration' => $this->projectOne->time_duration,
-            'language_Backend' => $this->projectOne->language_Backend,
-            'language_Frontend' => $this->projectOne->language_Frontend,
+            'language_backend' => $this->projectOne->language_backend,
+            'language_frontend' => $this->projectOne->language_frontend,
             'contributors' => [
                 [
                     'name' => $this->contributorOne->user->name,
-                    'programmingRole' => $this->contributorOne->programmingRole,
+                    'programming_role' => $this->contributorOne->programming_role,
                 ]
             ],
             'title' => $this->projectTwo->title,
             'time_duration' => $this->projectTwo->time_duration,
-            'language_Backend' => $this->projectTwo->language_Backend,
-            'language_Frontend' => $this->projectTwo->language_Frontend,
+            'language_backend' => $this->projectTwo->language_backend,
+            'language_frontend' => $this->projectTwo->language_frontend,
             'contributors' => [],
           
           

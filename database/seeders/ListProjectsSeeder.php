@@ -19,20 +19,20 @@ class ListProjectsSeeder extends Seeder
         $Project1= ListProjects::firstOrCreate([
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
         $Project2= ListProjects::firstOrCreate([
             'title' => 'Project Beta',
             'time_duration' => '2 months',
-            'language_Backend' => 'Python',
-            'language_Frontend' => 'HTML',
+            'language_backend' => 'Python',
+            'language_frontend' => 'HTML',
         ]);
         $project3= ListProjects::firstOrCreate([
             'title' => 'Project Gamma',
             'time_duration' => '3 weeks',
-            'language_Backend' => 'Ruby',
-            'language_Frontend' => 'CSS',
+            'language_backend' => 'Ruby',
+            'language_frontend' => 'CSS',
         ]);
 
     }

@@ -28,13 +28,13 @@ class ListProjectsUpdateTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'programmingRole' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
     }
@@ -44,8 +44,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->put('/api/listsProject/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'TypeScript'
+            'language_backend' => 'PHP',
+            'language_frontend' => 'TypeScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,
@@ -57,8 +57,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->put('/api/listsProject/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'language_Backend' => 'Ruby',
-            'language_Frontend' => 'Elm'
+            'language_backend' => 'Ruby',
+            'language_frontend' => 'Elm'
         ]);
         $response->assertStatus(404);
         $response->assertJsonFragment([
@@ -72,8 +72,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->post('/api/listsProject/',[
             'title' => 'project invalid',
             'time_duration' => '1 month',
-            'language_Backend' => 'pokemon',
-            'language_Frontend' => 'JavaScript'
+            'language_backend' => 'pokemon',
+            'language_frontend' => 'JavaScript'
         ]);
             $response->assertJsonFragment([
                 'success' => false,
@@ -85,8 +85,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->post('/api/listsProject/',[
             'title' => 'project invalid',
             'time_duration' => '',
-            'language_Backend' => 'Python',
-            'language_Frontend' => ''
+            'language_backend' => 'Python',
+            'language_frontend' => ''
         ]);
             $response->assertJsonFragment([
                 'message' => 'The time duration field is required. (and 1 more error)',

@@ -15,8 +15,8 @@ class ListProjects extends Model
     protected $fillable = [
         'title',
         'time_duration',
-        'language_Backend',
-        'language_Frontend'
+        'language_backend',
+        'language_frontend'
     ];
 
     public function contributorListProject()

@@ -32,7 +32,7 @@ class ContributorListProjectSeeder extends Seeder
         $contributor1 = ContributorListProject::firstOrCreate([
             'user_id' => $userContributor->id,
             'list_project_id' => $Project1->id,
-            'programmingRole' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
         ]);
 
         

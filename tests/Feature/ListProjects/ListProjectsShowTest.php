@@ -25,16 +25,16 @@ class ListProjectsShowTest extends TestCase
         $this->userOne = User::factory()->create(['id' => 1]);
 
         $this->projectOne = ListProjects::factory()->create([
-            'id' => 1,
-            'title' => 'Project Alpha',
-            'time_duration' => '1 month',
-            'language_Backend' => 'PHP',
-            'language_Frontend' => 'JavaScript',
+              'id' => 1,
+              'title' => 'Project Alpha',
+              'time_duration' => '1 month',
+              'language_backend' => 'PHP',
+              'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'programmingRole' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }
@@ -47,14 +47,14 @@ class ListProjectsShowTest extends TestCase
         $response->assertJsonFragment([
             'success' => true,
             'data' => [
-                'title' => $this->projectOne->title,
-                'time_duration' => $this->projectOne->time_duration,
-                'language_Backend' => $this->projectOne->language_Backend,
-                'language_Frontend' => $this->projectOne->language_Frontend,
+                    'title' => $this->projectOne->title,
+                    'time_duration' => $this->projectOne->time_duration,
+                    'language_backend' => $this->projectOne->language_backend,
+                    'language_frontend' => $this->projectOne->language_frontend,
                 'contributors' => [
                     [
                         'name' => $this->contributorOne->user->name,
-                        'programmingRole' => $this->contributorOne->programmingRole,
+                        'programming_role' => $this->contributorOne->programming_role,
                     ]
                 ],
             ],
