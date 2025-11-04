@@ -26,8 +26,8 @@ class ListProjectRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'time_duration' => 'required|string|max:255',
-            'lenguage_Backend' => 'required|string|max:255',
-            'lenguage_Frontend' => 'required|string|max:255',
+            'language_backend' => 'required|string|max:255',
+            'language_frontend' => 'required|string|max:255',
         ];
     }
 
@@ -37,8 +37,8 @@ class ListProjectRequest extends FormRequest
             'title.required' => "The title field is required.",
             'time_duration.required' => "The time duration field is required.",
             'time_duration.string' => "The time duration must be a string.",
-            'lenguage_Backend.required' => "The backend language field is required.",
-            'lenguage_Frontend.required' => "The frontend language field is required.",
+            'language_backend.required' => "The backend language field is required.",
+            'language_frontend.required' => "The frontend language field is required.",
         ];
     }
 }
