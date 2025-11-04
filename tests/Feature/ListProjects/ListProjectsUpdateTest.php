@@ -28,44 +28,38 @@ class ListProjectsUpdateTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
     }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
-
-   
-    public function test_method_update_endpoint():void{
-        $response = $this->put('/api/listsProject/1', [
+    public function test_method_update_successfully():void{
+        $response = $this->putJson('/api/listsProject/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'TypeScript'
+            'language_backend' => 'PHP',
+            'language_frontend' => 'TypeScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,
             'message' => 'Project updated successfully',
         ]);
+        $response->assertStatus(200);
     }
 
-    public function test_method_update_not_found():void{
-        $response = $this->put('/api/listsProject/999', [
+    public function test_method_update_error_404():void{
+        $response = $this->putJson('/api/listsProject/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'lenguage_Backend' => 'Ruby',
-            'lenguage_Frontend' => 'Elm'
+            'language_backend' => 'Ruby',
+            'language_frontend' => 'Elm'
         ]);
         $response->assertStatus(404);
         $response->assertJsonFragment([
@@ -75,18 +69,30 @@ class ListProjectsUpdateTest extends TestCase
 
     }
 
-    public function test_method_update_data():void{
-        $response = $this->put("/api/listsProject/{$this->projectOne->id}", [
-            'title' => 'Project Alpha Updated',
-            'time_duration' => '2 months',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'TypeScript'
+     public function test_method_datas_not_valid_language():void{
+        $response = $this->postJson('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '1 month',
+            'language_backend' => 'pokemon',
+            'language_frontend' => 'JavaScript'
         ]);
-        $response->assertJsonFragment([
-            'success' => true,
-            'message' => 'Project updated successfully',
+            $response->assertJsonFragment([
+                'success' => false,
+                'message' => 'Invalid Backend language',
         ]);
+        $response->assertStatus(400);
     }
+
+    public function test_method_datas_error_required():void{
+        $response = $this->postJson('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '',
+            'language_backend' => 'Python',
+            'language_frontend' => 'JavaScript'
+        ]);
+        $response->assertStatus(422);
+    }
+
 
 }
 

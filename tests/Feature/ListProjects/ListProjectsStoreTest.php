@@ -28,54 +28,56 @@ class ListProjectsStoreTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+   
 
-        $response->assertStatus(200);
-    }
-
-    public function test_method_store_endpoint():void{
-        $response = $this->post('/api/listsProject/', [
+    public function test_method_store_successfully():void{
+    $response = $this->postJson('/api/listsProject/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+            'language_backend' => 'Python',
+            'language_frontend' => 'JavaScript'
         ]);
         $response->assertJsonFragment([
             'success' => true,
             'message' => 'Project created successfully',
         ]);
+        $response->assertStatus(200);
     }
 
-    public function test_method_store_data():void{        
-        $response = $this->post('/api/listsProject/', [
-            'title' => 'Proyecto Beta',
-            'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+    public function test_method_datas_not_valid_language():void{
+    $response = $this->postJson('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '1 month',
+            'language_backend' => 'pokemon',
+            'language_frontend' => 'JavaScript'
         ]);
+            $response->assertJsonFragment([
+                'success' => false,
+                'message' => 'Invalid Backend language',
+        ]);
+        $response->assertStatus(400);
+    }
 
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'title' => 'Proyecto Beta',
-            'time_duration' => '1 mes',
-            'lenguage_Backend' => 'Python',
-            'lenguage_Frontend' => 'JavaScript'
+    public function test_method_datas_error_required():void{
+    $response = $this->postJson('/api/listsProject/',[
+            'title' => 'project invalid',
+            'time_duration' => '',
+            'language_backend' => 'Python',
+            'language_frontend' => 'JavaScript'
         ]);
+        $response->assertStatus(422);
         
     }
 
 }
-

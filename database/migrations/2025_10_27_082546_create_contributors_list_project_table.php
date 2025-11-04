@@ -20,7 +20,7 @@ return new class extends Migration
         Schema::create('contributors_list_project', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('roleProgramming', ['Frontend Developer', 'Backend Developer', 'Fullstack Developer', 'Designer', 'Project Manager', 'Other']);
+            $table->enum('programming_role', ['Frontend Developer', 'Backend Developer', 'Fullstack Developer', 'Other']);
             $table->foreignId('list_project_id')->constrained('list_projects');
             $table->timestamps();
         });

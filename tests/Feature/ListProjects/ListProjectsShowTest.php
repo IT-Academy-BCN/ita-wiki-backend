@@ -25,66 +25,44 @@ class ListProjectsShowTest extends TestCase
         $this->userOne = User::factory()->create(['id' => 1]);
 
         $this->projectOne = ListProjects::factory()->create([
-            'id' => 1,
-            'title' => 'Project Alpha',
-            'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+              'id' => 1,
+              'title' => 'Project Alpha',
+              'time_duration' => '1 month',
+              'language_backend' => 'PHP',
+              'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    
 
-        $response->assertStatus(200);
-    }
-
-    public function test_method_show_endpoint(): void {
+    public function test_show_existing_project_successfully(): void {
         $response = $this->get("/api/listsProject/{$this->projectOne->id}");
         $response->assertStatus(200);
-        $response->assertJson([
+        $response->assertJsonFragment([
             'success' => true,
-            'message' => 'Project retrieved successfully'
-        ]);
-    }
-     public function test_method_show_data():void{
-        $response = $this->get("/api/listsProject/{$this->projectOne->id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'title' => $this->projectOne->title,
-            'time_duration' => $this->projectOne->time_duration,
-            'lenguage_Backend' => $this->projectOne->lenguage_Backend,
-            'lenguage_Frontend' => $this->projectOne->lenguage_Frontend,
-            'contributors' => [
-                [
-                    'name' => $this->contributorOne->user->name,
-                    'roleProgramming' => $this->contributorOne->roleProgramming,
-                ]
+            'data' => [
+                    'title' => $this->projectOne->title,
+                    'time_duration' => $this->projectOne->time_duration,
+                    'language_backend' => $this->projectOne->language_backend,
+                    'language_frontend' => $this->projectOne->language_frontend,
+                'contributors' => [
+                    [
+                        'name' => $this->contributorOne->user->name,
+                        'programming_role' => $this->contributorOne->programming_role,
+                    ]
+                ],
             ],
         ]);
     }
+    
 
-    public function test_method_show_data_contributors():void{
-        $response = $this->get("/api/listsProject/{$this->projectOne->id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'contributors' => [
-                [
-                    'name' => $this->contributorOne->user->name,
-                    'roleProgramming' => $this->contributorOne->roleProgramming,
-                ]
-            ],
-        ]);
-    }
-
-    public function test_method_show_not_found(): void{
+    public function test_nonexistent_project_returns_404(): void{
         $response = $this->get('/api/listsProject/999');
         $response->assertStatus(404);
         $response->assertJson([

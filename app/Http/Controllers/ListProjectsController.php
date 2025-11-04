@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use Illuminate\Http\Request;
-use App\Http\Requests\ListProjectRequest;
+use App\Enums\LanguageEnum;
 
 class ListProjectsController extends Controller
 {
@@ -24,12 +24,12 @@ class ListProjectsController extends Controller
                 'id' => $project->id,
                 'title' => $project->title,
                 'time_duration' => $project->time_duration,
-                'lenguage_Backend' => $project->lenguage_Backend,
-                'lenguage_Frontend' => $project->lenguage_Frontend,
+                'language_backend' => $project->language_backend,
+                'language_frontend' => $project->language_frontend,
                 'contributors' => $project->contributorListProject->map(function ($contributor) {
                     return [
                         'name' => $contributor->user->name,
-                        'roleProgramming' => $contributor->roleProgramming,
+                        'programming_role' => $contributor->programming_role,
                     ];
                 }),
             ];
@@ -59,15 +59,15 @@ class ListProjectsController extends Controller
     }
     
     $project = [
-        'id' => $project->id,
+
         'title' => $project->title,
         'time_duration' => $project->time_duration,
-        'lenguage_Backend' => $project->lenguage_Backend,
-        'lenguage_Frontend' => $project->lenguage_Frontend,
+        'language_backend' => $project->language_backend,
+        'language_frontend' => $project->language_frontend,
         'contributors' => $project->contributorListProject->map(function ($contributor) {
             return [
                 'name' => $contributor->user->name,
-                'roleProgramming' => $contributor->roleProgramming
+                'programming_role' => $contributor->programming_role
             ];
         }),
     ];
@@ -88,11 +88,29 @@ class ListProjectsController extends Controller
 
     public function store(ListProjectRequest $request){
 
+          $validatedData = $request->validate([
+                'title' => 'required|string|max:255',
+                'time_duration' => 'required|string|max:100',
+                'language_backend' => 'required|string|max:100',
+                'language_frontend' => 'required|string|max:100',
+            ]);
+
+            if(!in_array($validatedData['language_backend'], LanguageEnum::values())){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Backend language'
+                ], 400);
+            }
+
+            if(!in_array($validatedData['language_frontend'], LanguageEnum::values())){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
+
         try{
-            $validatedData = $request->validated();
-
             $newProject = ListProjects::create($validatedData);
-
             return response()->json([
                 'success'=>true,
                 'data' => $newProject,
@@ -101,7 +119,6 @@ class ListProjectsController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error creating project',
                 'message' => $e->getMessage()
             ], 500);
     
@@ -116,19 +133,38 @@ class ListProjectsController extends Controller
 
     public function update(ListProjectRequest $request, $id){
 
-        try {
-            $projectUpdated = ListProjects::find($id);
-            if (!$projectUpdated) {
+        $projectUpdated = ListProjects::find($id);
+
+        if (!$projectUpdated) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Project not found'
+            ], 404);
+        }
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'time_duration' => 'required|string|max:100',
+            'language_backend' => 'required|string|max:100',
+            'language_frontend' => 'required|string|max:100',
+            ]);
+
+            if(!in_array($validatedData['language_backend'], LanguageEnum::values())){
                 return response()->json([
                     'success' => false,
-                    'message' => 'Project not found'
-                ], 404);
+                    'message' => 'Invalid Backend language'
+                ], 400);
             }
 
-           $validatedData = $request->validated();
-
+            if(!in_array($validatedData['language_frontend'], LanguageEnum::values())){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Frontend language'
+                ], 400);
+            }
+            
+        try {
             $projectUpdated->update($validatedData);
-
             return response()->json([
 
                 'success'=>true,
@@ -152,8 +188,7 @@ class ListProjectsController extends Controller
      */
 
     public function destroy($id){
-        try {
-            $projectDeleted = ListProjects::find($id);
+        $projectDeleted = ListProjects::find($id);
 
             if(!$projectDeleted){
                 return response()->json([
@@ -161,11 +196,12 @@ class ListProjectsController extends Controller
                     'message' => 'Project not found'
                 ], 404);
             }
+        try {
             // remove the contributors associated with the project
             ContributorListProject::where('list_project_id', $projectDeleted->id)->delete();
             $projectDeleted->delete();
 
-            return response()->json([
+             return response()->json([
                 'success'=>true,
                 'message' => 'Project deleted successfully'
             ], 200);
@@ -177,5 +213,6 @@ class ListProjectsController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+        
     }
 }

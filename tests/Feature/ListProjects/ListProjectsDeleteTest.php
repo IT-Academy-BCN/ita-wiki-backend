@@ -28,40 +28,38 @@ class ListProjectsDeleteTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'lenguage_Backend' => 'PHP',
-            'lenguage_Frontend' => 'JavaScript',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript',
         ]);
             
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
-            'roleProgramming' => 'Backend Developer',
+            'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
+        
      }
 
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+  
 
-        $response->assertStatus(200);
-    }
-
-    public function test_method_delete_endpoint():void{
+    public function test_delete_existing_project_successfully():void{
         $response = $this->delete("/api/listsProject/{$this->projectOne->id}");
   
         $response->assertJsonFragment([
             'success' => true,
             'message' => 'Project deleted successfully',
         ]);
+        $response->assertStatus(200);
     }
 
-    public function test_method_delate_not_found():void{
+    public function test_delete_nonexistent_project_returns_404():void{
         $response = $this->delete("/api/listsProject/999");
     
         $response->assertJsonFragment([
             'success' => false,
             'message' => 'Project not found',
         ]);
+        $response->assertStatus(404);
     }
 
 
