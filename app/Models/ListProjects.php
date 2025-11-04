@@ -15,7 +15,17 @@ class ListProjects extends Model
     protected $fillable = [
         'title',
         'time_duration',
-        'lenguage_Backend',
-        'lenguage_Frontend'
+        'language_backend',
+        'language_frontend'
     ];
+
+    public function contributorListProject()
+    {
+        return $this->hasMany(ContributorListProject::class, 'list_project_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }
