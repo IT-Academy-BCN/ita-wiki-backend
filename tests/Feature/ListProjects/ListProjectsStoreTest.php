@@ -42,7 +42,7 @@ class ListProjectsStoreTest extends TestCase
    
 
     public function test_method_store_successfully():void{
-        $response = $this->post('/api/listsProject/', [
+    $response = $this->postJson('/api/listsProject/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
             'language_backend' => 'Python',
@@ -56,7 +56,7 @@ class ListProjectsStoreTest extends TestCase
     }
 
     public function test_method_datas_not_valid_language():void{
-        $response = $this->post('/api/listsProject/',[
+    $response = $this->postJson('/api/listsProject/',[
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
@@ -70,13 +70,13 @@ class ListProjectsStoreTest extends TestCase
     }
 
     public function test_method_datas_error_required():void{
-        $response = $this->post('/api/listsProject/',[
+    $response = $this->postJson('/api/listsProject/',[
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => 'Python',
-            'language_frontend' => ''
+            'language_frontend' => 'JavaScript'
         ]);
-        $response->assertStatus(302);
+        $response->assertStatus(422);
         
     }
 
