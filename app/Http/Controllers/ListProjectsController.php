@@ -7,6 +7,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use Illuminate\Http\Request;
 use App\Enums\LanguageEnum;
+use App\Http\Requests\ListProjectRequest;
 
 class ListProjectsController extends Controller
 {
@@ -86,28 +87,23 @@ class ListProjectsController extends Controller
      * return success true, status 200 and message is 'Project created successfully'
      */
 
-    public function store(Request $request){
+    public function store(ListProjectRequest $request){
 
-          $validatedData = $request->validate([
-                'title' => 'required|string|max:255',
-                'time_duration' => 'required|string|max:100',
-                'language_backend' => 'required|string|max:100',
-                'language_frontend' => 'required|string|max:100',
-            ]);
+        $validatedData = $request->validated();
+        
+        if (!in_array($validatedData['language_backend'], LanguageEnum::values())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Backend language'
+            ], 400);
+        }
 
-            if(!in_array($validatedData['language_backend'], LanguageEnum::values())){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Backend language'
-                ], 400);
-            }
-
-            if(!in_array($validatedData['language_frontend'], LanguageEnum::values())){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Frontend language'
-                ], 400);
-            }
+        if (!in_array($validatedData['language_frontend'], LanguageEnum::values())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Frontend language'
+            ], 400);
+        }
 
         try{
             $newProject = ListProjects::create($validatedData);
@@ -131,7 +127,7 @@ class ListProjectsController extends Controller
      * return success true, status 200 and message is 'Project updated successfully'
      */
 
-    public function update(Request $request, $id){
+    public function update(ListProjectRequest $request, $id){
 
         $projectUpdated = ListProjects::find($id);
 
@@ -142,30 +138,26 @@ class ListProjectsController extends Controller
             ], 404);
         }
 
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'time_duration' => 'required|string|max:100',
-            'language_backend' => 'required|string|max:100',
-            'language_frontend' => 'required|string|max:100',
-            ]);
+        $validatedData = $request->validated();
 
-            if(!in_array($validatedData['language_backend'], LanguageEnum::values())){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Backend language'
-                ], 400);
-            }
+        if (!in_array($validatedData['language_backend'], LanguageEnum::values())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Backend language'
+            ], 400);
+        }
 
-            if(!in_array($validatedData['language_frontend'], LanguageEnum::values())){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Frontend language'
-                ], 400);
-            }
+        if (!in_array($validatedData['language_frontend'], LanguageEnum::values())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Frontend language'
+            ], 400);
+        }
             
         try {
             $projectUpdated->update($validatedData);
             return response()->json([
+
                 'success'=>true,
                 'data' => $projectUpdated,
                 'message' => 'Project updated successfully'
