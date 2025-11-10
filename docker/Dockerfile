@@ -24,6 +24,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Copy all application files first
 COPY composer.json composer.lock ./
 COPY artisan ./
+COPY phpunit.xml ./
 COPY app app/
 COPY bootstrap bootstrap/
 COPY config config/
@@ -31,6 +32,7 @@ COPY database database/
 COPY public public/
 COPY resources resources/
 COPY routes routes/
+COPY tests tests/ 
 COPY storage storage/
 COPY .env.docker .env.docker
 

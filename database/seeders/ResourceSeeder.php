@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Tag;
+use Illuminate\Support\Str;
 
 class ResourceSeeder extends Seeder
 {
@@ -33,7 +34,7 @@ class ResourceSeeder extends Seeder
             Resource::create([
                 'github_id' => $user->github_id,
                 'title' => fake()->sentence(4),
-                'description' => fake()->paragraph(),
+                'description' => Str::limit(fake()->paragraph(), 200),
                 'url' => fake()->url(),
                 'category' => fake()->randomElement(['Node', 'React', 'Angular', 'JavaScript', 'Java', 'Fullstack PHP', 'Data Science', 'BBDD']),
                 'tags' => fake()->randomElements($validTags, fake()->numberBetween(1, 5)), 
