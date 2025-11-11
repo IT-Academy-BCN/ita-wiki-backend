@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
@@ -9,7 +10,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController; 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListProjectsController;
 
 //GitHub Auth System Endpoints
@@ -30,15 +31,21 @@ Route::prefix('tags')->group(function () {
 //listProject endpoint
 Route::apiResource('listsProject', ListProjectsController::class);
 
+// PUBLIC CONTRIBUTOR VALIDATION ENDPOINT
+Route::patch(
+    '/listsProject/{listProject}/contributors/{contributor}/status',
+    [ListProjectsController::class, 'updateContributorStatus']
+)->name('contributors.update-status');
+
 // Protected routes with authentication and authorization
 Route::middleware(['auth:api'])->group(function () {
-    
+
     // RESOURCES ENDPOINTS
     Route::apiResource('resources', ResourceController::class);
-    
+
     // TECHNICAL TESTS ENDPOINTS
-    Route::apiResource('technical-tests', TechnicalTestController::class); 
-    
+    Route::apiResource('technical-tests', TechnicalTestController::class);
+
     // LIKES ENDPOINTS
     Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
     Route::delete('/likes', [LikeController::class, 'deleteStudentLike'])->name('like.delete');
