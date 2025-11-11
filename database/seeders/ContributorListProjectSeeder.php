@@ -9,6 +9,7 @@ use Illuminate\Database\Seeder;
 use App\Models\ContributorListProject;
 use App\Models\ListProjects;
 use App\Models\User;
+use App\Enums\ContributorStatusEnum;
 
 class ContributorListProjectSeeder extends Seeder
 {
@@ -33,6 +34,7 @@ class ContributorListProjectSeeder extends Seeder
             'user_id' => $userContributor->id,
             'list_project_id' => $Project1->id,
             'programming_role' => 'Backend Developer',
+            'status' => ContributorStatusEnum::Pending->value,
         ]);
 
         

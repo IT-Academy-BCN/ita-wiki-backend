@@ -16,7 +16,8 @@ class ContributorListProject extends Model
     protected $fillable =[
         'user_id',
         'programming_role',
-        'list_project_id'
+        'list_project_id',
+        'status'
     ];
 
     /** Define the relationship to the ListProjects model
