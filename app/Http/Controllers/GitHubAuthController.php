@@ -94,4 +94,29 @@ class GitHubAuthController extends Controller
             ]
         ]);
     }
+
+    public function getSessionUser(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No user authenticated',
+                'session_id' => session()->getId()
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'github_id' => $user->github_id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'github_user_name' => $user->github_user_name,
+            ],
+            'session_id' => session()->getId()
+        ]);
+    }
 }

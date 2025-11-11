@@ -16,6 +16,7 @@ use App\Http\Controllers\ListProjectsController;
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
 Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
 Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
+Route::get('/auth/github/getSessionUser', [GitHubAuthController::class, 'getSessionUser'])->name('github.session');
 
 
 // ========== TAG ENDPOINTS (JSON-based - PUBLIC for now) ==========
