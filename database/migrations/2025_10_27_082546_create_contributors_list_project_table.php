@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->enum('programming_role', ['Frontend Developer', 'Backend Developer', 'Fullstack Developer', 'Other']);
             $table->foreignId('list_project_id')->constrained('list_projects');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
