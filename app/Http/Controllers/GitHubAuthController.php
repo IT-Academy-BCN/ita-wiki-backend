@@ -97,14 +97,29 @@ class GitHubAuthController extends Controller
 
     public function getSessionUser(Request $request)
     {
-        $user = $request->user();
+        // Start session if not already started
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+
+        $githubId = $request->input('github_id');
+
+        if (!$githubId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'github_id is required',
+                'php_session' => session()->getId()
+            ], 400);
+        }
+
+        $user = User::where('github_id', $githubId)->first();
 
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'No user authenticated',
-                'session_id' => session()->getId()
-            ], 401);
+                'message' => 'User not found',
+                'php_session' => session()->getId()
+            ], 404);
         }
 
         return response()->json([
@@ -116,7 +131,7 @@ class GitHubAuthController extends Controller
                 'email' => $user->email,
                 'github_user_name' => $user->github_user_name,
             ],
-            'session_id' => session()->getId()
+            'php_session' => session()->getId()
         ]);
     }
 }
