@@ -43,64 +43,6 @@ class CreateResourceTest extends TestCase
         ]);
     }
 
-    // ========== SUCCESS TESTS ==========
-
-   /*public function test_authenticated_student_can_create_resource(): void
-    {
-        $this->user = $this->authenticateUserWithRole('student');
-        
-        $data = $this->getResourceData();
-
-        $response = $this->postJson(route('resources.store'), $data);
-
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'message',
-                'data' => [
-                    'id',
-                    'github_id',
-                    'title',
-                    'description',
-                    'url',
-                    'category',
-                    'type',
-                    'created_at',
-                    'updated_at'
-                ]
-            ]);
-
-        $this->assertDatabaseHas('resources', [
-            'github_id' => $this->user->github_id,
-            'title' => $data['title'],
-            'url' => $data['url'],
-        ]);
-    }*/
-
-    /*public function test_authenticated_student_can_create_resource_with_tags(): void
-    {
-        $this->user = $this->authenticateUserWithRole('student');
-        
-        $data = $this->getResourceDataWithTags();
-
-        $response = $this->postJson(route('resources.store'), $data);
-
-        $response->assertStatus(201)
-            ->assertJsonFragment(['title' => $data['title']]);
-
-        $this->assertDatabaseHas('resources', [
-            'github_id' => $this->user->github_id,
-            'title' => $data['title'],
-        ]);
-    }
-
-    // ========== AUTHENTICATION TESTS ==========
-
-    public function test_unauthenticated_user_cannot_create_resource(): void
-    {
-        $response = $this->postJson(route('resources.store'), $this->getResourceData());
-
-        $response->assertStatus(401);
-    }*/
 
     // ========== VALIDATION TESTS ==========
 
@@ -157,7 +99,7 @@ class CreateResourceTest extends TestCase
 
     public function test_returns_404_when_route_not_found(): void
     {
-        $this->user = $this->authenticateUserWithRole('student');
+       // $this->user = $this->authenticateUserWithRole('student');
         
         $response = $this->postJson('/api/non-existent-route', []);
 

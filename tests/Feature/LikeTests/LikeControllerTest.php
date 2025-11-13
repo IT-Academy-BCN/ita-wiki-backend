@@ -27,32 +27,7 @@ class LikeControllerTest extends TestCase
         $this->resources = Resource::factory(10)->create();
     }
 
-    // ========== AUTHENTICATED TESTS ========== 
-
-    /* public function test_authenticated_student_can_get_their_likes(): void
-    {
-        $this->user = $this->authenticateUserWithRole('student');
-        Like::create([
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[0]->id
-        ]);
-        Like::create([
-            'github_id' => $this->user->github_id,
-            'resource_id' => $this->resources[1]->id
-        ]);
-        $response = $this->getJson(route('likes', $this->user->github_id));
-        $response->assertStatus(200)
-            ->assertJsonCount(2);
-    }
-    public function test_user_cannot_get_other_user_likes(): void
-    {
-        $this->user = $this->authenticateUserWithRole('student');
-        $otherUser = User::factory()->create();
-        $otherUser->assignRole('student');
-        $response = $this->getJson(route('likes', $otherUser->github_id));
-        $response->assertStatus(403);
-    }
-    */
+  
     public function test_get_likes_for_user_without_likes_returns_empty_array(): void
     {
         // $this->user = $this->authenticateUserWithRole('student');
@@ -126,25 +101,7 @@ class LikeControllerTest extends TestCase
             ->assertJsonValidationErrors(['resource_id']);
     }
 
-    /*public function test_authenticated_student_can_delete_their_like(): void
-    {
-        // $this->user = $this->authenticateUserWithRole('student');
-        $githubId = 123456;
-        Like::create([
-            'github_id' => $githubId,
-            'resource_id' => $this->resources[1]->id
-        ]);
-        $response = $this->deleteJson(route('like.delete'), [
-            'github_id' => $githubId,
-            'resource_id' => $this->resources[1]->id
-        ]);
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('likes', [
-            'github_id' => $githubId,
-            'resource_id' => $this->resources[1]->id
-        ]);
-    }*/
-
+   
     public function test_cannot_delete_nonexistent_like(): void
     {
         // $this->user = $this->authenticateUserWithRole('student');
@@ -162,25 +119,5 @@ class LikeControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    // ========== UNAUTHENTICATED TESTS ========== 
-    /* public function test_unauthenticated_user_cannot_create_like(): void
-    {
-        $response = $this->postJson(route('like.create'), [
-            'resource_id' => $this->resources[0]->id
-        ]);
-        $response->assertStatus(401);
-    }
-    public function test_unauthenticated_user_cannot_delete_like(): void
-    {
-        $response = $this->deleteJson(route('like.delete'), [
-            'resource_id' => $this->resources[0]->id
-        ]);
-        $response->assertStatus(401);
-    }
-    public function test_unauthenticated_user_cannot_get_likes(): void
-    {
-        $user = User::factory()->create();
-        $response = $this->getJson(route('likes', $user->github_id));
-        $response->assertStatus(401);
-    }   */
+    
 }

@@ -77,32 +77,7 @@ class TechnicalTestCreateTest extends TestCase
         ]);
     }
 
-    /*public function test_student_cannot_create_technical_test(): void
-    {
-        //$this->authenticateUserWithRole('student');
-        $githubId = 123456;
-        User::factory()->create(['github_id' => $githubId]);
-
-        $data = [
-            'title' => 'Examen PHP Básico',
-            'language' => LanguageEnum::PHP->value,
-        ];
-
-        $response = $this->postJson(route('technical-tests.store'), $data);
-        $response->assertStatus(403);
-    }*/
-
-    /*public function test_unauthenticated_user_cannot_create_technical_test(): void
-    {
-        $data = [
-            'title' => 'Examen PHP Básico',
-            'language' => LanguageEnum::PHP->value,
-        ];
-
-        $response = $this->postJson(route('technical-tests.store'), $data);
-        $response->assertStatus(401);
-    }
-    */
+   
     public function test_title_is_required()
     {
         //$this->authenticateUserWithRole('mentor');

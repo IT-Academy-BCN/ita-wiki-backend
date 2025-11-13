@@ -77,45 +77,7 @@ class UpdateResourceTest extends TestCase
         ]);
     }
 
-    // ========== AUTHORIZATION TESTS ==========
-    // Comentado: Sin lógica de autenticación y permisos en el controlador, estos tests no aplican
-    /*
-    public function test_user_cannot_update_other_user_resource(): void
-    {
-       // $this->user = $this->authenticateUserWithRole('student');
-        $githubId = 123456;
-        
-        $otherUser = User::factory()->create();
-        $otherUser->assignRole('student');
-        
-        $otherUserResource = Resource::factory()->create([
-            'github_id' => $otherUser->github_id
-        ]);
-
-        $data = $this->getUpdateData();
-
-        $response = $this->putJson(route('resources.update', $otherUserResource->id), $data);
-
-        $response->assertStatus(403)
-            ->assertJson(['error' => 'Forbidden - Not your resource']);
-
-        $this->assertDatabaseMissing('resources', [
-            'id' => $otherUserResource->id,
-            'title' => 'Updated Resource Title',
-        ]);
-    }
-
-    public function test_unauthenticated_user_cannot_update_resource(): void
-    {
-        $resource = Resource::factory()->create();
-        
-        $data = $this->getUpdateData();
-
-        $response = $this->putJson(route('resources.update', $resource->id), $data);
-
-        $response->assertStatus(401);
-    }
-    */
+    
     // ========== VALIDATION TESTS ==========
 
     #[DataProvider('resourceUpdateValidationProvider')]
