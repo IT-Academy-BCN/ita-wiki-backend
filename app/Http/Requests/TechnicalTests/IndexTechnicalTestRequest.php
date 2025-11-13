@@ -9,7 +9,9 @@ class IndexTechnicalTestRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        // Comentado para permitir acceso público
+        //return $this->user() !== null;
+        return true;
     }
 
     public function rules(): array

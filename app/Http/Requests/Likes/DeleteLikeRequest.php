@@ -10,7 +10,9 @@ class DeleteLikeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+    
+       //return $this->user1 !== null;
+       return true;
     }
 
     public function rules(): array
