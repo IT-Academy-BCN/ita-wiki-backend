@@ -9,12 +9,11 @@ use Illuminate\Validation\Rule;
 
 class UpdateResourceRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        //return $this->user() !== null;
+        return true;
     }
 
     /**

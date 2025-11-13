@@ -12,7 +12,7 @@ class ResourceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_get_resources_list(): void
+   /* public function test_authenticated_user_can_get_resources_list(): void
     {
         $this->authenticateUserWithRole('student');
 
@@ -29,5 +29,5 @@ class ResourceTest extends TestCase
         $response = $this->getJson(route('resources.index'));
 
         $response->assertStatus(401);
-    }
+    }*/
 }

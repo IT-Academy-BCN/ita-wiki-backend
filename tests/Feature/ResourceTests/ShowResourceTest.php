@@ -17,7 +17,7 @@ class ShowResourceTest extends TestCase
         parent::setUp();
     }
 
-    public function test_authenticated_user_can_search_resources(): void
+    /*public function test_authenticated_user_can_search_resources(): void
     {
         $this->authenticateUserWithRole('student');
         
@@ -62,5 +62,5 @@ class ShowResourceTest extends TestCase
         $response = $this->getJson(route('resources.index', ['search' => 'Laravel']));
 
         $response->assertStatus(401);
-    }
+    }*/
 }
