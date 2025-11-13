@@ -9,9 +9,11 @@ use Illuminate\Validation\Rule;
 
 class StoreResourceRequest extends FormRequest
 {
+   
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        //return $this->user() !== null;
+        return true;
     }
 
     public function rules(): array

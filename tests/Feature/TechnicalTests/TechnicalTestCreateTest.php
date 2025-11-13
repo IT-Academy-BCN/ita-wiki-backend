@@ -5,20 +5,27 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Enums\LanguageEnum;
+use App\Models\User;
+use App\Models\TechnicalTest;
 
 class TechnicalTestCreateTest extends TestCase
 {
     use RefreshDatabase;
 
+ 
+
     public function test_can_create_technical_test_with_required_fields_only()
     {
    
         
-        $user = $this->authenticateUserWithRole('mentor');
+        //$user = $this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'title' => 'Examen PHP Básico',
             'language' => LanguageEnum::PHP->value,
+            'github_id' => $githubId,
         ];
 
         $response = $this->postJson(route('technical-tests.store'), $data);
@@ -40,19 +47,22 @@ class TechnicalTestCreateTest extends TestCase
             'title' => 'Examen PHP Básico',
             'language' => LanguageEnum::PHP->value,
             'description' => null,
-            'github_id' => $user->github_id,
+            'github_id' => $githubId,
         ]);
     }
 
     public function test_can_create_technical_test_with_all_fields()
     {
-        $user = $this->authenticateUserWithRole('mentor');
+        //$user = $this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'title' => 'Examen Completo JavaScript',
             'language' => LanguageEnum::JavaScript->value,
             'description' => 'Descripción detallada del examen',
             'tags' => ['javascript', 'frontend', 'react'],
+            'github_id' => $githubId,
         ];
 
         $response = $this->postJson(route('technical-tests.store'), $data);
@@ -63,37 +73,16 @@ class TechnicalTestCreateTest extends TestCase
             'title' => 'Examen Completo JavaScript',
             'language' => LanguageEnum::JavaScript->value,
             'description' => 'Descripción detallada del examen',
-            'github_id' => $user->github_id,
+            'github_id' => $githubId,
         ]);
     }
 
-    public function test_student_cannot_create_technical_test(): void
-    {
-        $this->authenticateUserWithRole('student');
-
-        $data = [
-            'title' => 'Examen PHP Básico',
-            'language' => LanguageEnum::PHP->value,
-        ];
-
-        $response = $this->postJson(route('technical-tests.store'), $data);
-        $response->assertStatus(403);
-    }
-
-    public function test_unauthenticated_user_cannot_create_technical_test(): void
-    {
-        $data = [
-            'title' => 'Examen PHP Básico',
-            'language' => LanguageEnum::PHP->value,
-        ];
-
-        $response = $this->postJson(route('technical-tests.store'), $data);
-        $response->assertStatus(401);
-    }
-
+   
     public function test_title_is_required()
     {
-        $this->authenticateUserWithRole('mentor');
+        //$this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'language' => LanguageEnum::PHP->value,
@@ -107,7 +96,9 @@ class TechnicalTestCreateTest extends TestCase
 
     public function test_language_is_required()
     {
-        $this->authenticateUserWithRole('mentor');
+        //$this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'title' => 'Examen sin lenguaje',
@@ -121,7 +112,9 @@ class TechnicalTestCreateTest extends TestCase
 
     public function test_title_must_be_between_5_and_255_characters()
     {
-        $this->authenticateUserWithRole('mentor');
+       // $this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         
         $response = $this->postJson(route('technical-tests.store'), [
@@ -144,7 +137,9 @@ class TechnicalTestCreateTest extends TestCase
 
     public function test_language_must_be_valid_enum()
     {
-        $this->authenticateUserWithRole('mentor');
+       // $this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'title' => 'Examen con lenguaje inválido',

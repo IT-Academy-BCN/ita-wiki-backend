@@ -94,4 +94,44 @@ class GitHubAuthController extends Controller
             ]
         ]);
     }
+
+    public function getSessionUser(Request $request)
+    {
+        // Start session if not already started
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+
+        $githubId = $request->input('github_id');
+
+        if (!$githubId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'github_id is required',
+                'php_session' => session()->getId()
+            ], 400);
+        }
+
+        $user = User::where('github_id', $githubId)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+                'php_session' => session()->getId()
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'github_id' => $user->github_id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'github_user_name' => $user->github_user_name,
+            ],
+            'php_session' => session()->getId()
+        ]);
+    }
 }
