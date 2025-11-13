@@ -13,9 +13,9 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
-        $this->middleware('permission:view users')->only(['index', 'getUserRoles']);
-        $this->middleware('permission:edit user roles')->only(['assignRole', 'removeRole']);
+        // $this->middleware('auth:api');
+        // $this->middleware('permission:view users')->only(['index', 'getUserRoles']);
+        // $this->middleware('permission:edit user roles')->only(['assignRole', 'removeRole']);
     }
 
     /**

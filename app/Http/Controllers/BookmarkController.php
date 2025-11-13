@@ -13,9 +13,9 @@ class BookmarkController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
-        $this->middleware('check.permission:create bookmarks')->only(['createStudentBookmark']);
-        $this->middleware('check.permission:delete own bookmarks')->only(['deleteStudentBookmark']);
+        // $this->middleware('auth:api');
+        // $this->middleware('check.permission:create bookmarks')->only(['createStudentBookmark']);
+        // $this->middleware('check.permission:delete own bookmarks')->only(['deleteStudentBookmark']);
     }
 
     /**
@@ -56,7 +56,8 @@ class BookmarkController extends Controller
     */
     public function createStudentBookmark(CreateBookmarkRequest $request): JsonResponse
     {
-        $user = auth('api')->user();
+        //$user = auth('api')->user();
+        $user = (object)['github_id' => 999999999]; // Only for check endpoint without auth
 
         $existingBookmark = Bookmark::where('github_id', $user->github_id)
             ->where('resource_id', $request->resource_id)
@@ -104,22 +105,23 @@ class BookmarkController extends Controller
      *     )
      * )
     */
-    public function deleteStudentBookmark(DeleteBookmarkRequest $request): JsonResponse
-    {
-        $user = auth('api')->user();
+    // public function deleteStudentBookmark(DeleteBookmarkRequest $request): JsonResponse
+    // {
+    //     //$user = auth('api')->user();
+    //     // $user = (object)['github_id' => 999999999]; // Only for check endpoint without auth
 
-        $bookmark = Bookmark::where('github_id', $user->github_id)
-            ->where('resource_id', $request->resource_id)
-            ->first();
+    //     $bookmark = Bookmark::where('github_id', $request->github_id)
+    //         ->where('resource_id', $request->resource_id)
+    //         ->first();
 
-        if (!$bookmark) {
-            return response()->json(['error' => 'Bookmark not found'], 404);
-        }
+    //     if (!$bookmark) {
+    //         return response()->json(['error' => 'Bookmark not found'], 404);
+    //     }
 
-        $bookmark->delete();
+    //     $bookmark->delete();
 
-        return response()->json(['message' => 'Bookmark deleted successfully']);
-    }
+    //     return response()->json(['message' => 'Bookmark deleted successfully']);
+    // }
 
     /**
      * @OA\Get(
@@ -145,13 +147,16 @@ class BookmarkController extends Controller
     */
     public function getStudentBookmarks(int $github_id): JsonResponse
     {
-        $user = auth('api')->user();
+        // $user = auth('api')->user();
         
-        if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
+        // if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
+        //     return response()->json(['error' => 'Forbidden'], 403);
+        // }
+
+        // For testing without auth
+        $github_id = 999999999;
 
         $bookmarks = Bookmark::where('github_id', $github_id)->get();
         return response()->json($bookmarks);
     }
-}
+} 

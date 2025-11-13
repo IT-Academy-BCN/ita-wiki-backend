@@ -39,7 +39,7 @@ Route::patch(
 )->name('contributors.update-status');
 
 // Protected routes with authentication and authorization
-//Route::middleware(['auth:api'])->group(function () {
+// Route::middleware(['auth:api'])->group(function () {
 
     // RESOURCES ENDPOINTS
     Route::apiResource('resources', ResourceController::class);
@@ -69,4 +69,4 @@ Route::patch(
         Route::post('/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
         Route::get('/users/{user}', [RoleController::class, 'getUserRoles'])->name('roles.user');
     });
-//});
+// });
