@@ -230,7 +230,7 @@ class TechnicalTestController extends Controller
             'language' => $request->language,
             'description' => $request->description,
             'tags' => $request->tags,
-            'github_id' => $user->github_id,
+            'github_id' => $request->github_id,
         ];
 
         if ($request->hasFile('file')) {

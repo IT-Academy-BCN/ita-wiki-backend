@@ -110,7 +110,6 @@ class CreateResourceTest extends TestCase
        // $this->user = $this->authenticateUserWithRole('student');
         $githubId = 123456;
         
-        // Crear usuario primero para evitar foreign key constraint
         User::factory()->create(['github_id' => $githubId]);
         
         $data = $this->getResourceData();

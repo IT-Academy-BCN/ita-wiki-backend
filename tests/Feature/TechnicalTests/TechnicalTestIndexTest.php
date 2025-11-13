@@ -19,7 +19,8 @@ class TechnicalTestIndexTest extends TestCase
         parent::setUp();
         TechnicalTest::truncate();
         
-        $this->authenticateUserWithRole('student');
+       // $this->authenticateUserWithRole('student');
+       
     }
 
     public function testCanGetTechnicalTestListWithCorrectStructure()

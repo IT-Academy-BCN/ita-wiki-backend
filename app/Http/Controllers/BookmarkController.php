@@ -106,9 +106,9 @@ class BookmarkController extends Controller
     */
     public function deleteStudentBookmark(DeleteBookmarkRequest $request): JsonResponse
     {
-       // $user = auth('api')->user();
+        $user = auth('api')->user();
 
-        $bookmark = Bookmark::where('github_id', $request->github_id)
+        $bookmark = Bookmark::where('github_id', $user->github_id)
             ->where('resource_id', $request->resource_id)
             ->first();
 
