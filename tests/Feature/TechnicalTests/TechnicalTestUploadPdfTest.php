@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use App\Enums\LanguageEnum;
+use App\Models\User;
 
 class TechnicalTestUploadPdfTest extends TestCase
 {
@@ -18,13 +19,16 @@ class TechnicalTestUploadPdfTest extends TestCase
         Storage::fake('local');
 
      
-        $user = $this->authenticateUserWithRole('mentor');
+        // $user = $this->authenticateUserWithRole('mentor');
+        $githubId = 123456;
+        User::factory()->create(['github_id' => $githubId]);
 
         $payload = [
             'title' => 'Prueba técnica con PDF',
             'language' => LanguageEnum::PHP->value,
             'description' => 'Descripción de prueba',
             'tags' => ['php', 'laravel'],
+            'github_id' => $githubId,
         ];
 
         $file = UploadedFile::fake()->create('prueba.pdf', 100, 'application/pdf');

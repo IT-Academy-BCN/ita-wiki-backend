@@ -11,12 +11,12 @@ use Illuminate\Http\JsonResponse;
 
 class LikeController extends Controller
 {
-    public function __construct()
+    /*public function __construct()
     {
         $this->middleware('auth:api');
         $this->middleware('check.permission:create likes')->only(['createStudentLike']);
         $this->middleware('check.permission:delete own likes')->only(['deleteStudentLike']);
-    }
+    }*/
 
     /**
      * @OA\Get(
@@ -42,11 +42,11 @@ class LikeController extends Controller
     */
     public function getStudentLikes(int $github_id): JsonResponse
     {
-        $user = auth('api')->user();
+       // $user = auth('api')->user();
         
-        if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
+       /*if (!$user->hasRole(['admin', 'superadmin']) && $user->github_id !== $github_id) {
             return response()->json(['error' => 'Forbidden'], 403);
-        }
+        }*/
 
         $likes = Like::where('github_id', $github_id)->get();
         return response()->json($likes);
@@ -90,18 +90,18 @@ class LikeController extends Controller
     */
     public function createStudentLike(CreateLikeRequest $request): JsonResponse
     {
-        $user = auth('api')->user();
+       // $user = auth('api')->user();
 
-        $existingLike = Like::where('github_id', $user->github_id)
+        $existignLike = Like::where('github_id', $request->github_id)
             ->where('resource_id', $request->resource_id)
             ->first();
 
-        if ($existingLike) {
+        if ($existignLike) {
             return response()->json(['error' => 'Like already exists'], 409);
         }
 
         $like = Like::create([
-            'github_id' => $user->github_id,
+            'github_id' => $request->github_id,
             'resource_id' => $request->resource_id,
         ]);
 
@@ -140,9 +140,9 @@ class LikeController extends Controller
     */
     public function deleteStudentLike(DeleteLikeRequest $request): JsonResponse
     {
-        $user = auth('api')->user();
+        //$user = auth('api')->user();
 
-        $like = Like::where('github_id', $user->github_id)
+        $like = Like::where('github_id', $request->github_id)
             ->where('resource_id', $request->resource_id)
             ->first();
 
