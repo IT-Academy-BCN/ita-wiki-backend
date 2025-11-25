@@ -907,7 +907,7 @@
                         "description": "Search by title",
                         "required": false,
                         "schema": {
-                            "type": "string",
+                            "type": "String",
                             "example": "Basic PHP exam"
                         }
                     },
@@ -917,7 +917,7 @@
                         "description": "Filter by language",
                         "required": false,
                         "schema": {
-                            "type": "string",
+                            "type": "String",
                             "enum": [
                                 "PHP",
                                 "JavaScript",
@@ -935,7 +935,7 @@
                         "description": "Search by any part of the description",
                         "required": false,
                         "schema": {
-                            "type": "string",
+                            "type": "String",
                             "example": "SOLID"
                         }
                     }
