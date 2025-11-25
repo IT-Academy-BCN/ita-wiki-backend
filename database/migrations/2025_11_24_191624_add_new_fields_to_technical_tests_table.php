@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('technical_tests', function (Blueprint $table) {
-            $table->enum('difficulty_level', ['easy', 'medium', 'hard', 'expert'])->after('language');
-            $table->integer('duration')->after('difficulty_level');
+            $table->enum('difficulty_level', ['easy', 'medium', 'hard', 'expert'])->nullable()->after('language');
+            $table->integer('duration')->nullable()->after('difficulty_level');
             $table->enum('state', ['draft', 'published', 'archived'])->default('draft')->after('duration');
         });
     }
