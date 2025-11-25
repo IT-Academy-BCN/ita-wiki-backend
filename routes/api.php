@@ -48,35 +48,39 @@ Route::patch(
     [ListProjectsController::class, 'updateContributorStatus']
 )->name('contributors.update-status');
 
-// Protected routes with authentication and authorization
-// Route::middleware(['auth:api'])->group(function () {
 
-    // RESOURCES ENDPOINTS
-    Route::apiResource('resources', ResourceController::class);
+// RESOURCES ENDPOINTS
 
-    // TECHNICAL TESTS ENDPOINTS
-    Route::apiResource('technical-tests', TechnicalTestController::class);
+// PUBLIC
+Route::apiResource('resources', ResourceController::class)->only(['index', 'show']);
 
-    // LIKES ENDPOINTS
-    Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
-    Route::delete('/likes', [LikeController::class, 'deleteStudentLike'])->name('like.delete');
-    Route::get('/likes/{github_id}', [LikeController::class, 'getStudentLikes'])->name('likes');
+// PROTECTED
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('resources', ResourceController::class)->except(['index', 'show']);
+});
 
-    // BOOKMARKS ENDPOINTS
-    Route::post('/bookmarks', [BookmarkController::class, 'createStudentBookmark'])->name('bookmark.create');
-    Route::delete('/bookmarks', [BookmarkController::class, 'deleteStudentBookmark'])->name('bookmark.delete');
-    Route::get('/bookmarks/{github_id}', [BookmarkController::class, 'getStudentBookmarks'])->name('bookmarks');
+// TECHNICAL TESTS ENDPOINTS
+Route::apiResource('technical-tests', TechnicalTestController::class);
 
-    // USER ENDPOINTS (Empty for now - pending mentor decision)
-    Route::put('/users/{user}/update-role', [UserController::class, 'updateRole']);
-    Route::get('/profile', [UserController::class, 'profile']);
-    Route::get('/users', [UserController::class, 'index']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+// LIKES ENDPOINTS
+Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
+Route::delete('/likes', [LikeController::class, 'deleteStudentLike'])->name('like.delete');
+Route::get('/likes/{github_id}', [LikeController::class, 'getStudentLikes'])->name('likes');
 
-    // ROLES ENDPOINTS
-    Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleController::class, 'index'])->name('roles.index');
-        Route::post('/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
-        Route::get('/users/{user}', [RoleController::class, 'getUserRoles'])->name('roles.user');
-    });
-// });
+// BOOKMARKS ENDPOINTS
+Route::post('/bookmarks', [BookmarkController::class, 'createStudentBookmark'])->name('bookmark.create');
+Route::delete('/bookmarks', [BookmarkController::class, 'deleteStudentBookmark'])->name('bookmark.delete');
+Route::get('/bookmarks/{github_id}', [BookmarkController::class, 'getStudentBookmarks'])->name('bookmarks');
+
+// USER ENDPOINTS (Empty for now - pending mentor decision)
+Route::put('/users/{user}/update-role', [UserController::class, 'updateRole']);
+Route::get('/profile', [UserController::class, 'profile']);
+Route::get('/users', [UserController::class, 'index']);
+Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+// ROLES ENDPOINTS
+Route::prefix('roles')->group(function () {
+    Route::get('/', [RoleController::class, 'index'])->name('roles.index');
+    Route::post('/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
+    Route::get('/users/{user}', [RoleController::class, 'getUserRoles'])->name('roles.user');
+});
