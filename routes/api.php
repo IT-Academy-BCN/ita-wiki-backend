@@ -12,6 +12,16 @@ use App\Http\Controllers\TechnicalTestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListProjectsController;
+use Illuminate\Http\Request;
+
+// sanctum endpoint to try
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/auth/me', function (Request $request) {
+        return response()->json([
+            'data' => $request->user(),
+        ]);
+    });
+});
 
 //GitHub Auth System Endpoints
 Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
