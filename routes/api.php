@@ -9,6 +9,7 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
+use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListProjectsController;
@@ -61,6 +62,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // TECHNICAL TESTS ENDPOINTS
 Route::apiResource('technical-tests', TechnicalTestController::class);
+
+// EXERCISES ENDPOINTS
+Route::apiResource('exercises', ExerciseController::class);
 
 // LIKES ENDPOINTS
 Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
