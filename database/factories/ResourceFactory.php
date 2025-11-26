@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Database\Factories;
 
@@ -19,20 +19,38 @@ class ResourceFactory extends Factory
      */
     public function definition(): array
     {
-        $student = User::role('student')->inRandomOrder()->first() 
-            ?? User::factory()->create()->assignRole('student');
+        //Commented while no roles are implemented
+        // $student = User::role('student')->inRandomOrder()->first() 
+        //     ?? User::factory()->create()->assignRole('student');
+
+        $user = User::inRandomOrder()->first()
+            ?? User::factory()->create();
 
         return [
-            'github_id' => $student->github_id,
+            'github_id' => $user->github_id,
             'title' => fake()->sentence(),
             'description' => fake()->text(200),
             'url' => fake()->url(),
             'category' => fake()->randomElement([
-                'Node', 'React', 'Angular', 'JavaScript', 'Java', 'Fullstack PHP', 'Data Science', 'BBDD'
+                'Node',
+                'React',
+                'Angular',
+                'JavaScript',
+                'Java',
+                'Fullstack PHP',
+                'Data Science',
+                'BBDD'
             ]),
             'type' => fake()->randomElement(['Video', 'Cursos', 'Blog']),
             'tags' => fake()->randomElements([
-                'docker', 'kubernetes', 'git', 'github', 'sql', 'mongodb', 'aws', 'azure'
+                'docker',
+                'kubernetes',
+                'git',
+                'github',
+                'sql',
+                'mongodb',
+                'aws',
+                'azure'
             ], rand(1, 3)),
             'bookmark_count' => 0,
             'like_count' => 0,

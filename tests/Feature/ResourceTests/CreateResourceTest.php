@@ -8,8 +8,9 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Resource;
 use App\Models\Tag;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreateResourceTest extends TestCase
 {
@@ -22,6 +23,15 @@ class CreateResourceTest extends TestCase
         parent::setUp();
     }
 
+    private function authenticateSanctumUser(int $githubId = 123456): User
+    {
+        $user = User::factory()->create(['github_id' => $githubId]);
+
+        Sanctum::actingAs($user, ['*']);
+
+        return $user;
+    }
+
     private function getResourceData(array $overrides = []): array
     {
         return array_merge([
@@ -30,7 +40,8 @@ class CreateResourceTest extends TestCase
             'url' => 'https://example.com/laravel-' . uniqid(),
             'category' => 'Fullstack PHP',
             'type' => 'Blog',
-            'tags' => null
+            'tags' => null,
+            'github_id' => 123456,
         ], $overrides);
     }
 
@@ -49,11 +60,8 @@ class CreateResourceTest extends TestCase
     #[DataProvider('resourceCreationValidationProvider')]
     public function test_create_resource_validation(array $invalidData, string $fieldName): void
     {
-       // $this->user = $this->authenticateUserWithRole('student');
-        $githubId = 123456;
-        
-        User::factory()->create(['github_id' => $githubId]);
-        
+        $this->authenticateSanctumUser();
+
         $data = $this->getResourceData();
         $data = array_merge($data, $invalidData);
 
@@ -99,8 +107,6 @@ class CreateResourceTest extends TestCase
 
     public function test_returns_404_when_route_not_found(): void
     {
-       // $this->user = $this->authenticateUserWithRole('student');
-        
         $response = $this->postJson('/api/non-existent-route', []);
 
         $response->assertStatus(404);
