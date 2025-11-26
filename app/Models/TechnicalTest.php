@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DifficultyLevelEnum;
-use App\Enums\TestStateEnum;
+use App\Enums\TechnicalTestStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,7 +35,7 @@ class TechnicalTest extends Model
         'like_count' => 'integer',
         'duration' => 'integer',
         'difficulty_level' => DifficultyLevelEnum::class,
-        'state' => TestStateEnum::class,
+        'state' => TechnicalTestStatusEnum::class,
     ];
 
     protected $dates = [

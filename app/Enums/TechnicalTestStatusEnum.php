@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum TestStateEnum: string
+enum TechnicalTestStatusEnum: string
 {
     case Draft = 'draft';
     case Published = 'published';
