@@ -1,15 +1,18 @@
 # Laravel storage symbolic link (causes issues on Windows)
-public/storage
+src/public/storage
 
 # Laravel cache and logs
-bootstrap/cache/*
-storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
+src/bootstrap/cache/*
+src/storage/logs/*
+src/storage/framework/cache/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+
+# PHP vendor
+src/vendor/  
 
 # Node modules and build artifacts
-node_modules/
+src/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -38,7 +41,7 @@ Dockerfile
 coverage/
 
 # Environment files (will be copied separately)
-.env
-.env.*
-!.env.example 
-!.env.docker
+src/.env
+src/.env.*
+!src/.env.example 
+!src/.env.docker

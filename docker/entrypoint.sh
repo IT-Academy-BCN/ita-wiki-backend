@@ -5,6 +5,11 @@ cd /var/www/html
 
 echo "=== ENTRYPOINT START ==="
 
+if [ ! -d vendor ] || [ composer.lock -nt vendor/autoload.php ]; then
+    echo "Running composer install..."
+    composer install --no-interaction
+fi
+
 if [ ! -f .env ]; then
     echo "[INFO] .env not found, using .env.docker as base"
     if [ -f .env.docker ]; then
