@@ -356,12 +356,24 @@ class TechnicalTestController extends Controller
             $data = [
                 'title' => $request->title,
                 'language' => $request->language,
-                'description' => $request->description,
-                'tags' => $request->tags,
-                'difficulty_level' => $request->difficulty_level,
-                'duration' => $request->duration,
-                'state' => $request->state,
             ];
+
+            // Only update optional fields if they are provided
+            if ($request->has('description')) {
+                $data['description'] = $request->description;
+            }
+            if ($request->has('tags')) {
+                $data['tags'] = $request->tags;
+            }
+            if ($request->has('difficulty_level')) {
+                $data['difficulty_level'] = $request->difficulty_level;
+            }
+            if ($request->has('duration')) {
+                $data['duration'] = $request->duration;
+            }
+            if ($request->has('state')) {
+                $data['state'] = $request->state;
+            }
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
