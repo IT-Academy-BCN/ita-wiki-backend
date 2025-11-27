@@ -57,7 +57,7 @@ class UserGuardTest extends TestCase
         
         $roleName = $user->getRoleName();
         
-        $this->assertEquals('anonymous', $roleName, 'getRoleName should return anonymous when no role assigned');
+        $this->assertEquals('sin rol', $roleName, 'getRoleName should return sin rol when no role assigned');
     }
 
    

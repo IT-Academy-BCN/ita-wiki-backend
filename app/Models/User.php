@@ -71,8 +71,8 @@ class User extends Authenticatable
     /**
      * Get the guard name for the user
      */
-    /* public function getGuardName(): string 
+    public function getGuardName(): string 
     { 
         return $this->guard_name; 
-    } */
+    }
 }

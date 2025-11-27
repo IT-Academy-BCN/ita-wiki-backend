@@ -56,16 +56,19 @@ class GitHubOAuthTest extends TestCase
 
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
-        $this->assertStringContainsString('success=true', $redirectUrl);
-        $this->assertStringContainsString('github_id=12345', $redirectUrl);
-        $this->assertStringContainsString('name=Test+User', $redirectUrl);
-        $this->assertStringContainsString('github_user_name=testuser', $redirectUrl);
+        // Nuevo formato: solo envía token
+        $this->assertStringContainsString('token=', $redirectUrl);
 
+        // Verificar que el usuario fue creado
         $this->assertDatabaseHas('users', [
             'github_id' => '12345',
             'github_user_name' => 'testuser',
             'name' => 'Test User',
         ]);
+        
+        // Verificar que se creó un token Sanctum
+        $user = User::where('github_id', '12345')->first();
+        $this->assertGreaterThan(0, $user->tokens()->count());
     }
 
     public function test_can_update_existing_user_from_github_callback()
@@ -93,11 +96,11 @@ class GitHubOAuthTest extends TestCase
             ->assertRedirect();
 
         $redirectUrl = $response->headers->get('Location');
-        $this->assertStringContainsString('success=true', $redirectUrl);
-        $this->assertStringContainsString('github_id=12345', $redirectUrl);
-        $this->assertStringContainsString('name=New+Name', $redirectUrl);
-        $this->assertStringContainsString('github_user_name=newusername', $redirectUrl);
+        // Nuevo formato: solo envía token
+        $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
+        $this->assertStringContainsString('token=', $redirectUrl);
 
+        // Verificar que el usuario fue actualizado
         $this->assertDatabaseHas('users', [
             'id' => $existingUser->id,
             'github_user_name' => 'newusername',
@@ -116,7 +119,13 @@ class GitHubOAuthTest extends TestCase
             'email' => 'test_get_' . time() . '@example.com',
         ]);
 
-        $response = $this->get('/api/auth/github/user?github_id=12345');
+        // Crear token de autenticación
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        // Usar el endpoint /auth/github/user que requiere autenticación
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/auth/github/user');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -130,6 +139,7 @@ class GitHubOAuthTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'user' => [
+                    'id',
                     'github_id',
                     'name',
                     'email',
@@ -140,12 +150,13 @@ class GitHubOAuthTest extends TestCase
 
     public function test_returns_error_when_user_not_found()
     {
-        $response = $this->get('/api/auth/github/user?github_id=99999');
+        // El endpoint /auth/github/user ahora requiere autenticación
+        // Sin token, debe retornar 401 Unauthenticated
+        $response = $this->getJson('/api/auth/github/user');
 
-        $response->assertStatus(404)
+        $response->assertStatus(401)
             ->assertJson([
-                'success' => false,
-                'message' => 'Usuario no encontrado'
+                'message' => 'Unauthenticated.'
             ]);
     }
 
