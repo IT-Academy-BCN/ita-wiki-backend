@@ -10,7 +10,7 @@ use App\Models\Bookmark;
 use App\Models\Resource;
 use App\Models\User;
 
-class BookmarkSeeder extends Seeder
+/* class BookmarkSeeder extends Seeder
 {
 
     public function run()
@@ -28,4 +28,4 @@ class BookmarkSeeder extends Seeder
       
         Bookmark::factory(5)->create();
     }
-}
+} */

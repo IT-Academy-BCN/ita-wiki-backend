@@ -11,9 +11,11 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        $githubUsername = 'test_user';
         $testUser = User::factory()->create([
             'github_id' => '12345678',
-            'github_user_name' => 'test_user',
+            'github_user_name' => $githubUsername,
+            'name' => $githubUsername,
         ]);
 
         $token = $testUser->createToken('Personal Access Token')->plainTextToken;
