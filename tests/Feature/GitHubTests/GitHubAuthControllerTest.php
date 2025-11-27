@@ -27,9 +27,14 @@ class GitHubAuthControllerTest extends TestCase
 
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
-        $this->assertStringContainsString('success=true', $redirectUrl);
-        $this->assertStringContainsString('github_id=12345', $redirectUrl);
-        $this->assertStringContainsString('name=Test+User', $redirectUrl);
-        $this->assertStringContainsString('github_user_name=testuser', $redirectUrl);
+        // El nuevo formato solo envía el token
+        $this->assertStringContainsString('token=', $redirectUrl);
+        
+        // Verificar que el usuario fue creado en la base de datos
+        $this->assertDatabaseHas('users', [
+            'github_id' => '12345',
+            'github_user_name' => 'testuser',
+            'name' => 'Test User',
+        ]);
     }
 }
