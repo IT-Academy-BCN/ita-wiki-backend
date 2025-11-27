@@ -9,7 +9,7 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class SanctumAuthenticationTest extends TestCase
+class AuthUserTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -128,10 +128,11 @@ class SanctumAuthenticationTest extends TestCase
         ]);
 
         $token = $user->createToken('auth_token');
+        $tokenId = $token->accessToken->id;
 
-        Sanctum::actingAs($user, ['*']);
-
-        $response = $this->postJson('/api/auth/logout');
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token->plainTextToken,
+        ])->postJson('/api/auth/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -140,7 +141,7 @@ class SanctumAuthenticationTest extends TestCase
             ]);
 
         $this->assertDatabaseMissing('personal_access_tokens', [
-            'id' => $token->accessToken->id,
+            'id' => $tokenId,
         ]);
     }
 
@@ -152,7 +153,8 @@ class SanctumAuthenticationTest extends TestCase
         $this->assertNotNull($user->github_user_name);
         $this->assertNotNull($user->name);
         $this->assertNotNull($user->email);
-        $this->assertIsString($user->github_id);
+        // github_id se almacena como integer en la base de datos
+        $this->assertIsNumeric($user->github_id);
         $this->assertGreaterThanOrEqual(10000000, (int)$user->github_id);
         $this->assertLessThanOrEqual(99999999, (int)$user->github_id);
     }
