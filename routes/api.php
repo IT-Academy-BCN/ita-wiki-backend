@@ -61,10 +61,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // TECHNICAL TESTS ENDPOINTS
-Route::apiResource('technical-tests', TechnicalTestController::class);
+Route::middleware(['throttle:60,1'])->group(function () {
+    Route::apiResource('technical-tests', TechnicalTestController::class);
+});
 
 // EXERCISES ENDPOINTS
-Route::apiResource('exercises', ExerciseController::class);
+Route::middleware(['throttle:60,1'])->group(function () {
+    Route::apiResource('exercises', ExerciseController::class);
+});
 
 // LIKES ENDPOINTS
 Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
