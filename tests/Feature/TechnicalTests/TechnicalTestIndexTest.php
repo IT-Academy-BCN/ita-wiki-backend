@@ -7,6 +7,8 @@ use Database\Factories\TechnicalTestFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Enums\LanguageEnum;
+use App\Enums\DifficultyLevelEnum;
+use App\Enums\TechnicalTestStatusEnum;
 
 
 class TechnicalTestIndexTest extends TestCase
@@ -185,6 +187,79 @@ class TechnicalTestIndexTest extends TestCase
         $response = $this->get(route('technical-tests.index', ['search' => '@#$%']));
 
         $response->assertStatus(200);
+    }
+
+    public function test_can_filter_by_difficulty_level(): void
+    {
+        TechnicalTest::factory()->create([
+            'difficulty_level' => DifficultyLevelEnum::Easy->value,
+        ]);
+        TechnicalTest::factory()->create([
+            'difficulty_level' => DifficultyLevelEnum::Hard->value,
+        ]);
+        TechnicalTest::factory()->create([
+            'difficulty_level' => DifficultyLevelEnum::Hard->value,
+        ]);
+
+        $response = $this->get(route('technical-tests.index', ['difficulty_level' => 'hard']));
+
+        $response->assertStatus(200)
+                 ->assertJsonCount(2, 'data');
+    }
+
+    public function test_can_filter_by_state(): void
+    {
+        TechnicalTest::factory()->create([
+            'state' => TechnicalTestStatusEnum::Draft->value,
+        ]);
+        TechnicalTest::factory()->create([
+            'state' => TechnicalTestStatusEnum::Published->value,
+        ]);
+        TechnicalTest::factory()->create([
+            'state' => TechnicalTestStatusEnum::Published->value,
+        ]);
+
+        $response = $this->get(route('technical-tests.index', ['state' => 'published']));
+
+        $response->assertStatus(200)
+                 ->assertJsonCount(2, 'data');
+    }
+
+    public function test_index_returns_available_filters(): void
+    {
+        $response = $this->get(route('technical-tests.index'));
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+                     'data',
+                     'filters' => [
+                         'available_languages',
+                         'available_difficulty_levels',
+                         'available_states',
+                         'applied_filters',
+                     ],
+                 ]);
+    }
+
+    public function test_index_includes_exercises_in_response(): void
+    {
+        $technicalTest = TechnicalTest::factory()->create();
+        $technicalTest->exercises()->create([
+            'title' => 'Exercise 1',
+            'order' => 1,
+        ]);
+
+        $response = $this->get(route('technical-tests.index'));
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+                     'data' => [
+                         '*' => [
+                             'exercises',
+                         ],
+                     ],
+                 ])
+                 ->assertJsonCount(1, 'data.0.exercises');
     }
 
 }

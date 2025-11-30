@@ -130,6 +130,143 @@
                 }
             }
         },
+        "/api/exercises": {
+            "get": {
+                "tags": [
+                    "Exercises"
+                ],
+                "summary": "List all exercises",
+                "operationId": "21bd87ce16a1f663c1699749f963152d",
+                "parameters": [
+                    {
+                        "name": "technical_test_id",
+                        "in": "query",
+                        "description": "Filter by technical test ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of exercises"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Exercises"
+                ],
+                "summary": "Create a new exercise",
+                "operationId": "1eac3da7158aade43d25b9ee98b2fb6f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "technical_test_id",
+                                    "title"
+                                ],
+                                "properties": {
+                                    "technical_test_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Crear clase Person"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Implemente una clase Person con..."
+                                    },
+                                    "order": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Exercise created successfully"
+                    }
+                }
+            }
+        },
+        "/api/exercises/{id}": {
+            "get": {
+                "tags": [
+                    "Exercises"
+                ],
+                "summary": "Get an exercise",
+                "operationId": "f3924e81949e4458f8638b614ca1940b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Exercise details"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Exercises"
+                ],
+                "summary": "Update an exercise",
+                "operationId": "418e68635cbc3c0aa804759b6e9d17c3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Exercise updated successfully"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Exercises"
+                ],
+                "summary": "Delete an exercise",
+                "operationId": "65ee987b7f187994058cc17700eef2d9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Exercise deleted successfully"
+                    }
+                }
+            }
+        },
         "/api/likes/{github_id}": {
             "get": {
                 "tags": [
@@ -907,7 +1044,7 @@
                         "description": "Search by title",
                         "required": false,
                         "schema": {
-                            "type": "String",
+                            "type": "string",
                             "example": "Basic PHP exam"
                         }
                     },
@@ -917,7 +1054,7 @@
                         "description": "Filter by language",
                         "required": false,
                         "schema": {
-                            "type": "String",
+                            "type": "string",
                             "enum": [
                                 "PHP",
                                 "JavaScript",
@@ -935,7 +1072,7 @@
                         "description": "Search by any part of the description",
                         "required": false,
                         "schema": {
-                            "type": "String",
+                            "type": "string",
                             "example": "SOLID"
                         }
                     }
@@ -1542,6 +1679,10 @@
         {
             "name": "Bookmarks",
             "description": "Bookmarks"
+        },
+        {
+            "name": "Exercises",
+            "description": "Exercises"
         },
         {
             "name": "Likes",
