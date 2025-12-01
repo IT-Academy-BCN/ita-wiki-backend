@@ -153,7 +153,6 @@ class AuthUserTest extends TestCase
         $this->assertNotNull($user->github_user_name);
         $this->assertNotNull($user->name);
         $this->assertNotNull($user->email);
-        // github_id se almacena como integer en la base de datos
         $this->assertIsNumeric($user->github_id);
         $this->assertGreaterThanOrEqual(10000000, (int)$user->github_id);
         $this->assertLessThanOrEqual(99999999, (int)$user->github_id);
@@ -174,9 +173,6 @@ class AuthUserTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 2);
     }
 
-    /**
-     * Test: Usuario puede tener múltiples tokens
-     */
     public function test_user_can_have_multiple_tokens(): void
     {
         $user = User::factory()->create(['github_id' => '12345678']);

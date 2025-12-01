@@ -17,7 +17,7 @@ class GitHubAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'redirect_url' => $redirectUrl,
-                'message' => 'Redirigiendo a GitHub para autenticación'
+                'message' => 'Redirecting to GitHub for authentication'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -35,7 +35,6 @@ class GitHubAuthController extends Controller
             $user = User::where('github_id', $githubUser->getId())->first();
             
             if (!$user) {
-                //Para crear un nuevo usuario
                 $user = User::create([
                     'github_id' => $githubUser->getId(),
                     'github_user_name' => $githubUser->getNickname(),
@@ -56,13 +55,6 @@ class GitHubAuthController extends Controller
             $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
 
             $redirectUrl = $frontendUrl . '/auth/callback?token=' . urlencode($token);
-            /* . ' . http_build_query([
-                'success' => 'true',
-                'github_id' => $user->github_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'github_user_name' => $user->github_user_name,
-            ]); */
 
             return redirect($redirectUrl);
 
@@ -90,44 +82,4 @@ class GitHubAuthController extends Controller
             ]
         ]);
     }
-
-    /* public function getSessionUser(Request $request)
-    {
-        // Start session if not already started
-        if (!session()->isStarted()) {
-            session()->start();
-        }
-
-        $githubId = $request->input('github_id');
-
-        if (!$githubId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'github_id is required',
-                'php_session' => session()->getId()
-            ], 400);
-        }
-
-        $user = User::where('github_id', $githubId)->first();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-                'php_session' => session()->getId()
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'user' => [
-                'id' => $user->id,
-                'github_id' => $user->github_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'github_user_name' => $user->github_user_name,
-            ],
-            'php_session' => session()->getId()
-        ]);
-    } */
 }

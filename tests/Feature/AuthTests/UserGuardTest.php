@@ -18,19 +18,6 @@ class UserGuardTest extends TestCase
         $this->assertEquals('api', $user->getGuardName(), 'User guard_name should be api');
     }
 
-    public function test_user_getDefaultGuardName_returns_api(): void
-    {
-        $user = User::factory()->create();
-        
-        $reflection = new \ReflectionClass($user);
-        $method = $reflection->getMethod('getGuardName');
-        $method->setAccessible(true);
-        
-        $guardName = $method->invoke($user);
-        
-        $this->assertEquals('api', $guardName, 'getGuardName() should return api');
-    }
-
     public function test_user_can_be_found_by_github_id(): void
     {
         $user = User::factory()->create([
