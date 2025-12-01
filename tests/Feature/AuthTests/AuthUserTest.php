@@ -137,7 +137,7 @@ class AuthUserTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Sesión cerrada correctamente'
+                'message' => 'Session closed successfully'
             ]);
 
         $this->assertDatabaseMissing('personal_access_tokens', [
@@ -177,8 +177,7 @@ class AuthUserTest extends TestCase
     /**
      * Test: Usuario puede tener múltiples tokens
      */
-    public function test_user_can_have_multiple_tokens(): void
-    {
+    public function test_user_can_have_multiple_tokens(): void{
         $user = User::factory()->create(['github_id' => '12345678']);
 
         $token1 = $user->createToken('web')->plainTextToken;
