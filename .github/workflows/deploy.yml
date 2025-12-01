@@ -17,11 +17,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-
+          
       - name: Install dependencies
+        working-directory: ./src
         run: npm install
 
       - name: Build project
+        working-directory: ./src
         run: npm run build
 
       - name: Install Railway CLI

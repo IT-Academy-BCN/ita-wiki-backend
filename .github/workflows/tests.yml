@@ -40,9 +40,9 @@ jobs:
         working-directory: ./src
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      - name: Copy .env
+      - name: Copy test environment
         working-directory: ./src
-        run: cp .env.example .env
+        run: cp ../.env.testing .env
 
       - name: Generate Application Key
         working-directory: ./src
