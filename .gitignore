@@ -5,10 +5,10 @@ src/public/hot
 src/public/storage
 src/storage/*.key
 src/storage/pail
-src/vendor
-src/.env
-src/.env.backup
-src/.env.production
+src/vendor/
+.env
+.env.backup
+.env.production
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
