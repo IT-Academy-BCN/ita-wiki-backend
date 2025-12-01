@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\TechnicalTest;
@@ -10,30 +12,25 @@ use App\Enums\LanguageEnum;
 use App\Enums\DifficultyLevelEnum;
 use App\Enums\TechnicalTestStatusEnum;
 
-
 class TechnicalTestIndexTest extends TestCase
 {
     use RefreshDatabase;
-
 
     protected function setUp(): void
     {
         parent::setUp();
         TechnicalTest::truncate();
-        
-       // $this->authenticateUserWithRole('student');
-       
     }
 
-    public function testCanGetTechnicalTestListWithCorrectStructure()
+    public function testCanGetTechnicalTestListWithCorrectStructure(): void
     {
         TechnicalTest::factory(3)->create();
 
-       $response = $this->get(route('technical-tests.index'));  
-       
-       $response->assertStatus(200)
+        $response = $this->get(route('technical-tests.index'));;
+
+        $response->assertStatus(200)
             ->assertJsonCount(3, 'data')
-             ->assertJsonStructure([
+            ->assertJsonStructure([
                 'data' => [
                     '*' => [
                         'id',
@@ -161,19 +158,16 @@ class TechnicalTestIndexTest extends TestCase
         $invalidLanguage = 'InvalidLanguage';
         $this->assertFalse(in_array($invalidLanguage, array_column(LanguageEnum::cases(), 'value')));
 
-       
         $response = $this->getJson(route('technical-tests.index', ['language' => $invalidLanguage]));
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['language']);
     }
 
-    
     public function testRejectsExtremelyLongSearchString(): void
     {
         $longString = str_repeat('a', 1000);
-        
-        
+
         $response = $this->getJson(route('technical-tests.index', ['search' => $longString]));
 
         $response->assertStatus(422);

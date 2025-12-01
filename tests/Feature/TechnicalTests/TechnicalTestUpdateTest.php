@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,7 +17,7 @@ class TechnicalTestUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_update_technical_test_with_new_exercises()
+    public function test_can_update_technical_test_with_new_exercises(): void
     {
         $githubId = 123456;
         User::factory()->create(['github_id' => $githubId]);
@@ -48,7 +50,7 @@ class TechnicalTestUpdateTest extends TestCase
         $this->assertEquals('New Exercise 1', $technicalTest->exercises[0]->title);
     }
 
-    public function test_updating_without_exercises_field_preserves_existing_exercises()
+    public function test_updating_without_exercises_field_preserves_existing_exercises(): void
     {
         $githubId = 123456;
         User::factory()->create(['github_id' => $githubId]);
@@ -76,7 +78,7 @@ class TechnicalTestUpdateTest extends TestCase
         $this->assertEquals($existingExercises[0]->id, $technicalTest->exercises[0]->id);
     }
 
-    public function test_updating_with_empty_exercises_array_deletes_all_exercises()
+    public function test_updating_with_empty_exercises_array_deletes_all_exercises(): void
     {
         $githubId = 123456;
         User::factory()->create(['github_id' => $githubId]);
@@ -104,7 +106,7 @@ class TechnicalTestUpdateTest extends TestCase
         $this->assertCount(0, $technicalTest->exercises);
     }
 
-    public function test_can_update_difficulty_level_and_duration()
+    public function test_can_update_difficulty_level_and_duration(): void
     {
         $githubId = 123456;
         User::factory()->create(['github_id' => $githubId]);
@@ -136,7 +138,7 @@ class TechnicalTestUpdateTest extends TestCase
         ]);
     }
 
-    public function test_can_update_state()
+    public function test_can_update_state(): void
     {
         $githubId = 123456;
         User::factory()->create(['github_id' => $githubId]);
