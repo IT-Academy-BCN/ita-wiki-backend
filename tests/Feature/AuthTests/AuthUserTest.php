@@ -137,7 +137,7 @@ class AuthUserTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Session closed successfully'
+                'message' => 'Sesión closed successfully'
             ]);
 
         $this->assertDatabaseMissing('personal_access_tokens', [
