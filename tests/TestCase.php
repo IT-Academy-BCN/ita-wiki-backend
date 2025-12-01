@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\PermissionRegistrar;
 
 abstract class TestCase extends BaseTestCase
@@ -16,6 +17,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
        
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         
@@ -25,6 +27,12 @@ abstract class TestCase extends BaseTestCase
             \Database\Seeders\RolePermissionSeeder::class,
             \Database\Seeders\TagSeeder::class,
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        parent::tearDown();
     }
 
     /**
