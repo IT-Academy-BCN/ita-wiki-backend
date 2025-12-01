@@ -41,7 +41,7 @@ Dockerfile
 coverage/
 
 # Environment files (will be copied separately)
-src/.env
-src/.env.*
-!src/.env.example 
-!src/.env.docker
+.env
+.env.*
+!.env.example 
+!.env.docker
