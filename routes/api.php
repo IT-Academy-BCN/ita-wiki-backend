@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Sesión cerrada correctamente'
+            'message' => 'Sesión closed succesfully'
         ]);
     });
 });
