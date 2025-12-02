@@ -12,22 +12,20 @@ class GitHubOAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
+    protected function setUp(): void{
         parent::setUp();
         
         Socialite::shouldReceive('driver->stateless->redirect->getTargetUrl')
             ->andReturn('https://github.com/login/oauth/authorize?client_id=test&redirect_uri=test');
     }
 
-    public function test_can_get_redirect_url()
-    {
+    public function test_can_get_redirect_url(){
         $response = $this->get('/api/auth/github/redirect');
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Redirigiendo a GitHub para autenticación'
+                'message' => 'Redirecting to GitHub for authentication'
             ])
             ->assertJsonStructure([
                 'success',
@@ -37,8 +35,7 @@ class GitHubOAuthTest extends TestCase
     }
 
     
-    public function test_can_create_user_from_github_callback()
-    {
+    public function test_can_create_user_from_github_callback(){
         $githubUser = new SocialiteUser();
         $githubUser->id = '12345';
         $githubUser->nickname = 'testuser';
@@ -56,11 +53,7 @@ class GitHubOAuthTest extends TestCase
 
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
-        $this->assertStringContainsString('success=true', $redirectUrl);
-        $this->assertStringContainsString('github_id=12345', $redirectUrl);
-        $this->assertStringContainsString('name=Test+User', $redirectUrl);
-        $this->assertStringContainsString('github_user_name=testuser', $redirectUrl);
-
+        $this->assertStringContainsString('token=', $redirectUrl);
         $this->assertDatabaseHas('users', [
             'github_id' => '12345',
             'github_user_name' => 'testuser',
@@ -68,8 +61,7 @@ class GitHubOAuthTest extends TestCase
         ]);
     }
 
-    public function test_can_update_existing_user_from_github_callback()
-    {
+    public function test_can_update_existing_user_from_github_callback(){
         $existingUser = User::factory()->create([
             'github_id' => '12345',
             'github_user_name' => 'oldusername',
@@ -93,10 +85,8 @@ class GitHubOAuthTest extends TestCase
             ->assertRedirect();
 
         $redirectUrl = $response->headers->get('Location');
-        $this->assertStringContainsString('success=true', $redirectUrl);
-        $this->assertStringContainsString('github_id=12345', $redirectUrl);
-        $this->assertStringContainsString('name=New+Name', $redirectUrl);
-        $this->assertStringContainsString('github_user_name=newusername', $redirectUrl);
+        $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
+        $this->assertStringContainsString('token=', $redirectUrl);
 
         $this->assertDatabaseHas('users', [
             'id' => $existingUser->id,
@@ -107,8 +97,7 @@ class GitHubOAuthTest extends TestCase
 
 
 
-    public function test_can_get_user_by_github_id()
-    {
+    public function test_can_get_user_by_github_id(){
         $user = User::factory()->create([
             'github_id' => '12345',
             'github_user_name' => 'testuser',
@@ -116,12 +105,20 @@ class GitHubOAuthTest extends TestCase
             'email' => 'test_get_' . time() . '@example.com',
         ]);
 
-        $response = $this->get('/api/auth/github/user?github_id=12345');
+        // Create authentication token
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        // Use the endpoint with Sanctum authentication
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->getJson('/api/auth/github/user');
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'user' => [
+                    'id' => $user->id,
                     'github_id' => '12345',
                     'github_user_name' => 'testuser',
                     'name' => 'Test User',
@@ -130,6 +127,7 @@ class GitHubOAuthTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'user' => [
+                    'id',
                     'github_id',
                     'name',
                     'email',
@@ -138,22 +136,21 @@ class GitHubOAuthTest extends TestCase
             ]);
     }
 
-    public function test_returns_error_when_user_not_found()
-    {
-        $response = $this->get('/api/auth/github/user?github_id=99999');
+    public function test_returns_error_when_user_not_found(){
+        // The /auth/github/user endpoint requires authentication
+        // Without token, should return 401 Unauthenticated
+        $response = $this->getJson('/api/auth/github/user');
 
-        $response->assertStatus(404)
+        $response->assertStatus(401)
             ->assertJson([
-                'success' => false,
-                'message' => 'Usuario no encontrado'
+                'message' => 'Unauthenticated.'
             ]);
     }
 
    
-    public function test_handles_errors_in_callback()
-    {
+    public function test_handles_errors_in_callback(){
         Socialite::shouldReceive('driver->stateless->user')
-            ->andThrow(new \Exception('Error de autenticación'));
+            ->andThrow(new \Exception('Authentication error'));
 
         $response = $this->get('/api/auth/github/callback');
 
@@ -163,12 +160,11 @@ class GitHubOAuthTest extends TestCase
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:5173/auth/callback', $redirectUrl);
         $this->assertStringContainsString('success=false', $redirectUrl);
-        $this->assertStringContainsString('error=Error+de+autenticaci%C3%B3n', $redirectUrl);
+        $this->assertStringContainsString('error=Authentication+error', $redirectUrl);
     }
 
      
-    public function test_uses_correct_frontend_url()
-    {
+    public function test_uses_correct_frontend_url(){
         config(['app.frontend_url' => 'https://test-frontend.com']);
 
         $githubUser = new SocialiteUser();

@@ -20,7 +20,7 @@ class LikeControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        // Crea un usuario con github_id=123456 para los tests
+        // Create a user with github_id=123456 for the tests
         User::factory()->create([
             'github_id' => 123456,
         ]);

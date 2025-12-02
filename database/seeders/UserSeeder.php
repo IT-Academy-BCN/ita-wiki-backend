@@ -11,14 +11,21 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        $githubUsername = 'test_user';
         $testUser = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'github_id' => '999999999',
-            'github_user_name' => 'Github Test User',
+            'github_id' => '12345678',
+            'github_user_name' => $githubUsername,
+            'name' => $githubUsername,
         ]);
+
+        $token = $testUser->createToken('Personal Access Token')->plainTextToken;
+
+        $this->command->info('User test created successfully');
+        $this->command->info('Github ID: ' . $testUser->github_id);
+        $this->command->info('GitHub Username: ' . $testUser->github_user_name);
+        $this->command->info('Personal Access Token: ' . $token);
         
-        $testUser->assignRole('student');
+        /* $testUser->assignRole('student');
 
         $users = User::factory(20)->create();
         
@@ -28,7 +35,7 @@ class UserSeeder extends Seeder
             $user->assignRole($randomRole);
         }
         
-        $this->command->info('Created User and assigned Spatie roles');
+        $this->command->info('Created User and assigned Spatie roles'); */
     }
 }
 
