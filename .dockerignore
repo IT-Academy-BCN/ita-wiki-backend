@@ -1,18 +1,18 @@
 # Laravel storage symbolic link (causes issues on Windows)
-src/public/storage
+public/storage
 
 # Laravel cache and logs
-src/bootstrap/cache/*
-src/storage/logs/*
-src/storage/framework/cache/*
-src/storage/framework/sessions/*
-src/storage/framework/views/*
+bootstrap/cache/*
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
 
 # PHP vendor
-src/vendor/  
+vendor/  
 
 # Node modules and build artifacts
-src/node_modules/
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

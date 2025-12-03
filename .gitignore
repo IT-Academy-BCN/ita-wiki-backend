@@ -1,29 +1,38 @@
-/.phpunit.cache
-/node_modules
-src/public/build
-src/public/hot
-src/public/storage
-src/storage/*.key
-src/storage/pail
-src/vendor/
+# Laravel
+/vendor/
+/node_modules/
+/composer.phar
+
+# Environment
 .env
-.env.backup
-.env.production
-.phpactor.json
+.env.*
+!.env.example
+
+# Laravel runtime
+/storage/
+!storage/app/public
+storage/logs/
+storage/framework/
+src/storage/logs/
+src/storage/framework/
+src/storage/api-docs/
+
+# Laravel cache
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
+.phpunit.cache
+/.phpactor.json
+
+# Frontend build
+public/hot
+public/build
+public/storage
+
+# Editors and IDEs
+/.idea
+/.vscode
+/.fleet
+/.zed
+
+# OS / misc
 npm-debug.log
 yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
-docker/entrypoint-local.sh
-src/.env
-src/.env.*
-
-
-
