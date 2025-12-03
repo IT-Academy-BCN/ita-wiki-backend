@@ -44,6 +44,14 @@ jobs:
         working-directory: ./
         run: cp .env.testing .env
 
+      - name: Prepare Laravel storage directories
+        run: |
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p storage/logs
+          chmod -R 777 storage
+
       - name: Generate Application Key
         working-directory: ./
         run: php artisan key:generate
