@@ -19,11 +19,11 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        working-directory: ./src
+        working-directory: ./
         run: npm install
 
       - name: Build project
-        working-directory: ./src
+        working-directory: ./
         run: npm run build
 
       - name: Install Railway CLI
