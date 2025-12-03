@@ -21,15 +21,15 @@ RUN if ! pecl list | grep -q xdebug; then pecl install xdebug && docker-php-ext-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Copy all application files
-COPY src/ .
+# Copy all installation files
+COPY bootstrap ./bootstrap
+COPY public ./public
+COPY storage ./storage
+COPY src ./src
+COPY  artisan composer.json composer.lock phpunit.xml ./
 
 # Install dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# Set permissions for storage and bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache && \
-    chmod -R 775 storage bootstrap/cache
 
 # Copy Nginx configuration
 COPY ./docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
