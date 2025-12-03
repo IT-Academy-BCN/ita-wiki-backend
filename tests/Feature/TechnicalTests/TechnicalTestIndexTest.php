@@ -138,7 +138,7 @@ class TechnicalTestIndexTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(0, 'data')
             ->assertJson([
-            'message' => 'No se han encontrado tests con esos criterios'
+            'message' => 'No tests found with those criteria'
         ]);
     }
 

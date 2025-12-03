@@ -84,7 +84,7 @@ class TechnicalTestController extends Controller
      *                      @OA\Property(property="deleted_at", type="string", format="date-time", nullable=true)
      *                  )         
      *              ),
-     *              @OA\Property(property="message", type="string", nullable=true, example="No se han encontrado tests con esos criterios"),
+     *              @OA\Property(property="message", type="string", nullable=true, example="No tests found with those criteria"),
      *              @OA\Property(
      *                  property="filters",
      *                  type="object",
@@ -174,7 +174,7 @@ class TechnicalTestController extends Controller
 
         return response()->json([
             'data' => $technicalTests,
-            'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
+            'message' => $technicalTests->isEmpty()? 'No tests found with those criteria' : null,
             'filters' => [
                 'available_languages' => LanguageEnum::values(),
                 'available_difficulty_levels' => DifficultyLevelEnum::values(),

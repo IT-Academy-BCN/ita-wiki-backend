@@ -17,7 +17,7 @@ class GitHubAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'redirect_url' => $redirectUrl,
-                'message' => 'Redirigiendo a GitHub para autenticación'
+                'message' => 'Redirecting to GitHub for authentication'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -36,28 +36,25 @@ class GitHubAuthController extends Controller
             
             if (!$user) {
                 $user = User::create([
-                    'name' => $githubUser->getName() ?: $githubUser->getNickname(),
-                    'email' => $githubUser->getEmail(),
                     'github_id' => $githubUser->getId(),
                     'github_user_name' => $githubUser->getNickname(),
+                    'name' => $githubUser->getName() ?: $githubUser->getNickname(),
+                    'email' => $githubUser->getEmail() ?? $githubUser->getNickname() . '@github.local',                   
                     'password' => Hash::make(Str::random(32)),
                 ]);
             } else {
                 $user->update([
-                    'name' => $githubUser->getName() ?: $githubUser->getNickname(),
-                    'email' => $githubUser->getEmail(),
                     'github_user_name' => $githubUser->getNickname(),
+                    'name' => $githubUser->getName() ?: $githubUser->getNickname(),
+                    'email' => $githubUser->getEmail() ?? $user->email,                   
                 ]);
             }
 
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
-            $redirectUrl = $frontendUrl . '/auth/callback?' . http_build_query([
-                'success' => 'true',
-                'github_id' => $user->github_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'github_user_name' => $user->github_user_name,
-            ]);
+
+            $redirectUrl = $frontendUrl . '/auth/callback?token=' . urlencode($token);
 
             return redirect($redirectUrl);
 
@@ -74,64 +71,15 @@ class GitHubAuthController extends Controller
 
     public function user(Request $request)
     {
-        $githubId = $request->input('github_id');
-        $user = User::where('github_id', $githubId)->first();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Usuario no encontrado'
-            ], 404);
-        }
-
         return response()->json([
             'success' => true,
             'user' => [
-                'github_id' => $user->github_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'github_user_name' => $user->github_user_name,
+                'id' => $request->user()->id,
+                'github_id' => $request->user()->github_id,
+                'github_user_name' => $request->user()->github_user_name,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,               
             ]
-        ]);
-    }
-
-    public function getSessionUser(Request $request)
-    {
-        // Start session if not already started
-        if (!session()->isStarted()) {
-            session()->start();
-        }
-
-        $githubId = $request->input('github_id');
-
-        if (!$githubId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'github_id is required',
-                'php_session' => session()->getId()
-            ], 400);
-        }
-
-        $user = User::where('github_id', $githubId)->first();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-                'php_session' => session()->getId()
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'user' => [
-                'id' => $user->id,
-                'github_id' => $user->github_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'github_user_name' => $user->github_user_name,
-            ],
-            'php_session' => session()->getId()
         ]);
     }
 }
