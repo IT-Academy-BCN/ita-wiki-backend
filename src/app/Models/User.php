@@ -21,11 +21,12 @@ class User extends Authenticatable
     protected string $guard_name = 'api';
 
     protected $fillable = [
+        'github_id',
+        'github_user_name',
         'name',
         'email',
         'password',
-        'github_id',
-        'github_user_name',
+        
     ];
 
     /**
@@ -64,7 +65,7 @@ class User extends Authenticatable
      */
     public function getRoleName(): string
     {
-        return $this->getRoleNames()->first() ?? 'anonymous';
+        return $this->getRoleNames()->first() ?? 'sin rol';
     }
 
     /**

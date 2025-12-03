@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TechnicalTests\IndexTechnicalTestRequest;
 use App\Http\Requests\TechnicalTests\StoreTechnicalTestRequest;
 use App\Models\TechnicalTest;
+use App\Models\Exercise;
 use App\Enums\LanguageEnum;
+use App\Enums\DifficultyLevelEnum;
+use App\Enums\TechnicalTestStatusEnum;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Tag(
@@ -79,7 +84,7 @@ class TechnicalTestController extends Controller
      *                      @OA\Property(property="deleted_at", type="string", format="date-time", nullable=true)
      *                  )         
      *              ),
-     *              @OA\Property(property="message", type="string", nullable=true, example="No se han encontrado tests con esos criterios"),
+     *              @OA\Property(property="message", type="string", nullable=true, example="No tests found with those criteria"),
      *              @OA\Property(
      *                  property="filters",
      *                  type="object",
@@ -143,7 +148,7 @@ class TechnicalTestController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         }*/
 
-        $query = TechnicalTest::query();
+        $query = TechnicalTest::with('exercises');
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -156,15 +161,25 @@ class TechnicalTestController extends Controller
         if ($request->filled('description')) {
             $query->where('description', 'like', '%' . $request->description . '%');
         }
+
+        if ($request->filled('difficulty_level')) {
+            $query->where('difficulty_level', $request->difficulty_level);
+        }
+
+        if ($request->filled('state')) {
+            $query->where('state', $request->state);
+        }
          
         $technicalTests = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'data' => $technicalTests,
-            'message' => $technicalTests->isEmpty()? 'No se han encontrado tests con esos criterios' : null,
+            'message' => $technicalTests->isEmpty()? 'No tests found with those criteria' : null,
             'filters' => [
                 'available_languages' => LanguageEnum::values(),
-                'applied_filters' => $request->only(['search', 'language' ,'description'])        
+                'available_difficulty_levels' => DifficultyLevelEnum::values(),
+                'available_states' => TechnicalTestStatusEnum::values(),
+                'applied_filters' => $request->only(['search', 'language', 'description', 'difficulty_level', 'state'])        
             ] 
         ]);
     }
@@ -225,30 +240,72 @@ class TechnicalTestController extends Controller
     {
        // $user = auth('api')->user();
 
-        $data = [
-            'title' => $request->title,
-            'language' => $request->language,
-            'description' => $request->description,
-            'tags' => $request->tags,
-            'github_id' => $request->github_id,
-        ];
+        try {
+            DB::beginTransaction();
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('technical-tests', $fileName, 'local');
+            $data = [
+                'title' => $request->title,
+                'language' => $request->language,
+                'description' => $request->description,
+                'tags' => $request->tags,
+                'github_id' => $request->github_id,
+                'difficulty_level' => $request->difficulty_level,
+                'duration' => $request->duration,
+                'state' => $request->state ?? 'draft',
+            ];
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('technical-tests', $fileName, 'local');
+                
+                $data['file_path'] = $filePath;
+                $data['file_original_name'] = $file->getClientOriginalName();
+                $data['file_size'] = $file->getSize();
+            }
+
+            $technicalTest = TechnicalTest::create($data);
+
+            // Create exercises if provided
+            if ($request->filled('exercises') && is_array($request->exercises) && count($request->exercises) > 0) {
+                $exercisesData = collect($request->exercises)->map(function($exercise, $index) {
+                    return [
+                        'title' => $exercise['title'],
+                        'description' => $exercise['description'] ?? null,
+                        'order' => $index + 1,
+                        'is_completed' => $exercise['is_completed'] ?? false,
+                    ];
+                })->toArray();
+                
+                $technicalTest->exercises()->createMany($exercisesData);
+            }
+
+            DB::commit();
+
+            // Load exercises for response
+            $technicalTest->load('exercises');
+
+            return response()->json([
+                'message' => 'Technical test created successfully',
+                'data' => $technicalTest
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
             
-            $data['file_path'] = $filePath;
-            $data['file_original_name'] = $file->getClientOriginalName();
-            $data['file_size'] = $file->getSize();
+            Log::error('Error creating technical test', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data' => $request->except('file')
+            ]);
+
+            return response()->json([
+                'message' => 'Error creating technical test',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $technicalTest = TechnicalTest::create($data);
-
-        return response()->json([
-            'message' => 'Technical test created successfully',
-            'data' => $technicalTest
-        ], 201);
+        
+        // TODO: Consider using upsert/sync for exercises in future optimization
     }
 
    
@@ -263,6 +320,8 @@ class TechnicalTestController extends Controller
      */
     public function show(TechnicalTest $technicalTest)
     {
+        $technicalTest->load('exercises');
+        
         return response()->json([
             'data' => $technicalTest
         ]);
@@ -291,29 +350,90 @@ class TechnicalTestController extends Controller
             }
         }*/
 
-        $data = [
-            'title' => $request->title,
-            'language' => $request->language,
-            'description' => $request->description,
-            'tags' => $request->tags,
-        ];
+        try {
+            DB::beginTransaction();
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('technical-tests', $fileName, 'local');
+            $data = [
+                'title' => $request->title,
+                'language' => $request->language,
+            ];
+
+            // Only update optional fields if they are provided
+            if ($request->has('description')) {
+                $data['description'] = $request->description;
+            }
+            if ($request->has('tags')) {
+                $data['tags'] = $request->tags;
+            }
+            if ($request->has('difficulty_level')) {
+                $data['difficulty_level'] = $request->difficulty_level;
+            }
+            if ($request->has('duration')) {
+                $data['duration'] = $request->duration;
+            }
+            if ($request->has('state')) {
+                $data['state'] = $request->state;
+            }
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('technical-tests', $fileName, 'local');
+                
+                $data['file_path'] = $filePath;
+                $data['file_original_name'] = $file->getClientOriginalName();
+                $data['file_size'] = $file->getSize();
+            }
+
+            $technicalTest->update($data);
+
+            // Handle exercises if provided in request
+            if ($request->has('exercises')) {
+                // Delete existing exercises
+                $technicalTest->exercises()->delete();
+
+                // Create new exercises if array is not empty
+                if (is_array($request->exercises) && count($request->exercises) > 0) {
+                    $exercisesData = collect($request->exercises)->map(function($exercise, $index) {
+                        return [
+                            'title' => $exercise['title'],
+                            'description' => $exercise['description'] ?? null,
+                            'order' => $index + 1,
+                            'is_completed' => $exercise['is_completed'] ?? false,
+                        ];
+                    })->toArray();
+                    
+                    $technicalTest->exercises()->createMany($exercisesData);
+                }
+            }
+
+            DB::commit();
+
+            // Reload exercises for response
+            $technicalTest->load('exercises');
+
+            return response()->json([
+                'message' => 'Technical test updated successfully',
+                'data' => $technicalTest
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
             
-            $data['file_path'] = $filePath;
-            $data['file_original_name'] = $file->getClientOriginalName();
-            $data['file_size'] = $file->getSize();
+            Log::error('Error updating technical test', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'technical_test_id' => $technicalTest->id,
+                'data' => $request->except('file')
+            ]);
+
+            return response()->json([
+                'message' => 'Error updating technical test',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $technicalTest->update($data);
-
-        return response()->json([
-            'message' => 'Technical test updated successfully',
-            'data' => $technicalTest
-        ]);
+        
+        // TODO: Consider using sync mechanism for exercises to preserve IDs and optimize updates
     }
 
   

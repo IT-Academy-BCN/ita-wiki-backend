@@ -9,25 +9,35 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\TechnicalTestController;
+use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ListProjectsController;
 use Illuminate\Http\Request;
 
-// sanctum endpoint to try
+// GitHub Auth System Endpoints (PUBLIC)
+Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
+Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
+
+// Protected Auth Endpoints (Require Sanctum Token)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', function (Request $request) {
         return response()->json([
-            'data' => $request->user(),
+            'success' => true,
+            'user' => $request->user()->only(['id', 'github_id', 'github_user_name', 'name', 'email'])
+        ]);
+    });
+
+    Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
+
+    Route::post('/auth/logout', function(Request $request){
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión closed succesfully'
         ]);
     });
 });
-
-//GitHub Auth System Endpoints
-Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])->name('github.redirect');
-Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->name('github.callback');
-Route::get('/auth/github/user', [GitHubAuthController::class, 'user'])->name('github.user');
-Route::get('/auth/github/getSessionUser', [GitHubAuthController::class, 'getSessionUser'])->name('github.session');
 
 
 // ========== TAG ENDPOINTS (JSON-based - PUBLIC for now) ==========
@@ -60,7 +70,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // TECHNICAL TESTS ENDPOINTS
-Route::apiResource('technical-tests', TechnicalTestController::class);
+Route::middleware(['throttle:60,1'])->group(function () {
+    Route::apiResource('technical-tests', TechnicalTestController::class);
+});
+
+// EXERCISES ENDPOINTS
+Route::middleware(['throttle:60,1'])->group(function () {
+    Route::apiResource('exercises', ExerciseController::class);
+});
 
 // LIKES ENDPOINTS
 Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');

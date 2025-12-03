@@ -17,7 +17,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
        
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         
@@ -31,7 +33,9 @@ abstract class TestCase extends BaseTestCase
 
     protected function tearDown(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
         parent::tearDown();
     }
 
