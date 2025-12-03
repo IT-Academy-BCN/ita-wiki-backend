@@ -42,7 +42,7 @@ jobs:
 
       - name: Copy test environment
         working-directory: ./
-        run: cp ../.env.testing .env
+        run: cp .env.testing .env
 
       - name: Generate Application Key
         working-directory: ./
