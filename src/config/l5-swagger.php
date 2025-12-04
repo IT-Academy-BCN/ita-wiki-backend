@@ -44,7 +44,8 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    //base_path('src/app'),
+                    app_path(),
                 ],
             ],
         ],
@@ -86,8 +87,8 @@ return [
             /*
              * Absolute path to directory where to export views
              */
-            'views' => base_path('resources/views/vendor/l5-swagger'),
-
+            'views' => base_path('src/resources/views/vendor/l5-swagger'),
+            
             /*
              * Edit to set the api's base path
              */

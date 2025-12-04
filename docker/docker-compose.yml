@@ -7,9 +7,7 @@ services:
         ports:
             - "8000:80"
         volumes:
-            - ..:/var/www/html
-            - ../storage:/var/www/html/storage
-            - ../bootstrap/cache:/var/www/html/bootstrap/cache
+            - ../src:/var/www/html/src
             - ../.env.docker:/var/www/html/.env.docker:ro
         depends_on:
             - mysql
