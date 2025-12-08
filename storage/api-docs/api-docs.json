@@ -1167,7 +1167,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "No se han encontrado tests con esos criterios",
+                                            "example": "No tests found with those criteria",
                                             "nullable": true
                                         },
                                         "filters": {
