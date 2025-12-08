@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Sesión closed succesfully'
+            'message' => 'Sesión closed successfully'
         ]);
     });
 });
@@ -69,12 +69,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('resources', ResourceController::class)->except(['index', 'show']);
 });
 
+// TECHNICAL TESTS
+
+//PUBLIC
 Route::middleware(['throttle:60,1'])->group(function () {
     Route::apiResource('technical-tests', TechnicalTestController::class)
     ->only(['index', 'show']);
 });
 
-//Protegido: Crear, actualizar y eliminar
+//PROTECTED
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function() {
     Route::apiResource('technical-tests', TechnicalTestController::class)
     ->except(['index', 'show']);
