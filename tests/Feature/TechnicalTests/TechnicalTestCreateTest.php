@@ -11,15 +11,24 @@ use App\Enums\DifficultyLevelEnum;
 use App\Enums\TechnicalTestStatusEnum;
 use App\Models\User;
 use App\Models\TechnicalTest;
+use Laravel\Sanctum\Sanctum;
 
 class TechnicalTestCreateTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Authenticate user for all tests in this class
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+    }
+
     public function test_can_create_technical_test_with_required_fields_only(): void
     {
         $githubId = 123456;
-        User::factory()->create(['github_id' => $githubId]);
 
         $data = [
             'title' => 'Examen PHP Básico',
