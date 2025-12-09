@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
@@ -13,11 +13,11 @@ use App\Models\User;
 
 class ListProjectsIndexTest extends TestCase
 {
-     use RefreshDatabase;
+    use RefreshDatabase;
 
-        protected $projectOne;
-        protected $projectTwo;
-        protected $contributorOne;
+    protected $projectOne;
+    protected $projectTwo;
+    protected $contributorOne;
 
     public function setUp(): void
     {
@@ -42,31 +42,34 @@ class ListProjectsIndexTest extends TestCase
         ]);
 
         ListProjects::factory(3)->create();
-            
+
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
             'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
-     }
+    }
 
 
-    public function test_method_index_endpoint():void{
-        $response = $this->get('/api/listsProject');
+    public function test_method_index_endpoint(): void
+    {
+        $response = $this->get('/api/codeconnect');
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'success' => true,
         ]);
-   }
+    }
 
-    public function test_method_count_projects():void {
-        $response = $this->get('/api/listsProject');
+    public function test_method_count_projects(): void
+    {
+        $response = $this->get('/api/codeconnect');
         $response->assertJsonCount(5, 'data');
         $response->assertStatus(200);
     }
-    
-    public function test_index_returns_successfully():void{
-        $response = $this->get('/api/listsProject');
+
+    public function test_index_returns_successfully(): void
+    {
+        $response = $this->get('/api/codeconnect');
         $response->assertJsonFragment([
             'title' => $this->projectOne->title,
             'time_duration' => $this->projectOne->time_duration,
@@ -83,14 +86,9 @@ class ListProjectsIndexTest extends TestCase
             'language_backend' => $this->projectTwo->language_backend,
             'language_frontend' => $this->projectTwo->language_frontend,
             'contributors' => [],
-          
-          
+
+
         ]);
         $response->assertStatus(200);
     }
-
-
-
-    
 }
-

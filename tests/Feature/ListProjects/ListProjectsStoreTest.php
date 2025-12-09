@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
@@ -10,13 +10,15 @@ use Tests\TestCase;
 use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class ListProjectsStoreTest extends TestCase
 {
-     use RefreshDatabase;
+    use RefreshDatabase;
 
-        protected $projectOne;
-        protected $contributorOne;
+    protected $projectOne;
+    protected $contributorOne;
+    protected $userOne;
 
     public function setUp(): void
     {
@@ -31,53 +33,81 @@ class ListProjectsStoreTest extends TestCase
             'language_backend' => 'PHP',
             'language_frontend' => 'JavaScript',
         ]);
-            
+
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
             'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
-     }
+    }
 
-   
+    public function test_method_store_successfully(): void
+    {
 
-    public function test_method_store_successfully():void{
-    $response = $this->postJson('/api/listsProject/', [
+        Sanctum::actingAs($this->userOne);
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
             'language_backend' => 'Python',
             'language_frontend' => 'JavaScript'
         ]);
+
         $response->assertJsonFragment([
             'success' => true,
             'message' => 'Project created successfully',
         ]);
+
         $response->assertStatus(200);
     }
 
-    public function test_method_datas_not_valid_language():void{
-    $response = $this->postJson('/api/listsProject/',[
+    public function test_method_datas_not_valid_language(): void
+    {
+        
+        Sanctum::actingAs($this->userOne);
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
             'language_frontend' => 'JavaScript'
         ]);
-            $response->assertJsonFragment([
-                'success' => false,
-                'message' => 'Invalid Backend language',
+
+        $response->assertJsonFragment([
+            'success' => false,
+            'message' => 'Invalid Backend language',
         ]);
+
         $response->assertStatus(400);
     }
 
-    public function test_method_datas_error_required():void{
-    $response = $this->postJson('/api/listsProject/',[
+    public function test_method_datas_error_required(): void
+    {
+
+        Sanctum::actingAs($this->userOne);
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => 'Python',
             'language_frontend' => 'JavaScript'
         ]);
         $response->assertStatus(422);
-        
     }
 
+    public function test_store_requires_authentication(): void
+    {
+
+        $response = $this->postJson('/api/codeconnect/', [
+            'title' => 'Proyecto Gamma',
+            'time_duration' => '1 mes',
+            'language_backend' => 'PHP',
+            'language_frontend' => 'JavaScript'
+        ]);
+
+        $response->assertStatus(401);
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+    }
 }
