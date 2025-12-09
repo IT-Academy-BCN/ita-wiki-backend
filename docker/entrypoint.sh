@@ -76,6 +76,10 @@ chmod -R u+w storage
 echo "Generating API documentation..."
 php artisan l5-swagger:generate || true
 
+echo "Laravel permissions..."
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R ug+rwx storage bootstrap/cache
+
 echo "Starting PHP-FPM and Nginx..."
 exec sh -c "php-fpm & nginx -g 'daemon off;'"
 
