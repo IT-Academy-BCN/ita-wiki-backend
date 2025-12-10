@@ -14,10 +14,37 @@ use App\Enums\ContributorStatusEnum;
 class ListProjectsController extends Controller
 {
 
-    /** method index 
-     * Route is GET /api/listsProject
-     * Returns a Json response with a list of projects
-     * return success true, data with list of projects, status 200 and message is 'List of projects retrieved successfully'
+    /**
+     * @OA\Get(
+     *   path="/api/codeconnect",
+     *   summary="Get all projects",
+     *   tags={"Codeconnect"},
+     *   description="Returns a list of all published projects.",
+     *   @OA\Response(
+     *       response=200,
+     *       description="List of projects retrieved successfully",
+     *       @OA\JsonContent(
+     *           type="array",
+     *           @OA\Items(
+     *               type="object",
+     *               @OA\Property(property="id", type="integer", example=1),
+     *               @OA\Property(property="title", type="string", example="Project Alpha"),
+     *               @OA\Property(property="time_duration", type="string", example="2 months"),
+     *               @OA\Property(property="language_backend", type="string", example="PHP"),
+     *               @OA\Property(property="language_frontend", type="string", example="JavaScript"),
+     *               @OA\Property(
+     *                   property="contributors",
+     *                   type="array",
+     *                   @OA\Items(
+     *                       type="object",
+     *                       @OA\Property(property="name", type="string", example="John Doe"),
+     *                       @OA\Property(property="programming_role", type="string", example="Backend Developer")
+     *                   )
+     *               )
+     *           )
+     *       )
+     *   )
+     * )
      */
 
     public function index(Request $request)
@@ -46,10 +73,42 @@ class ListProjectsController extends Controller
         ], 200);
     }
 
-    /** method show
-     * Route is GET /api/listsProject/{id}
-     * Returns a Json response with a specific project
-     * return success true, data with project details, status 200 and message is 'Project retrieved successfully'
+    /**
+     * @OA\Get(
+     *   path="/api/codeconnect/{id}",
+     *   summary="Get a specific project",
+     *   tags={"Codeconnect"},
+     *   @OA\Parameter(
+     *       name="id",
+     *       in="path",
+     *       required=true,
+     *       @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *      description="Project retrieved successfully",
+     *      @OA\JsonContent(
+     *           type="object",
+     *           @OA\Property(property="title", type="string", example="Project Alpha"),
+     *           @OA\Property(property="time_duration", type="string", example="1 month"),
+     *           @OA\Property(property="language_backend", type="string", example="PHP"),
+     *           @OA\Property(property="language_frontend", type="string", example="JavaScript"),
+     *           @OA\Property(
+     *               property="contributors",
+     *               type="array",
+     *               @OA\Items(
+     *                   type="object",
+     *                   @OA\Property(property="name", type="string", example="Jane Doe"),
+     *                   @OA\Property(property="programming_role", type="string", example="Frontend Developer")
+     *               )
+     *           )
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="Project not found"
+     *   )
+     * )
      */
     public function show($id)
     {
@@ -84,10 +143,35 @@ class ListProjectsController extends Controller
     }
 
 
-    /** method store
-     * Route is POST /api/listsProject
-     * Creates a new project and returns a Json response
-     * return success true, status 200 and message is 'Project created successfully'
+    /**
+     * @OA\Post(
+     *   path="/api/codeconnect",
+     *   summary="Create a new project",
+     *   tags={"Codeconnect"},
+     *   security={{"sanctum":{}}},
+     *   @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *          required={"title","time_duration","language_backend","language_frontend"},
+     *          @OA\Property(property="title", type="string", example="Project Delta"),
+     *          @OA\Property(property="time_duration", type="string", example="3 months"),
+     *          @OA\Property(property="language_backend", type="string", example="PHP"),
+     *          @OA\Property(property="language_frontend", type="string", example="JavaScript")
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *      description="Project created successfully"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Invalid language value"
+     *   ),
+     *   @OA\Response(
+     *      response=422,
+     *      description="Validation error"
+     *   )
+     * )
      */
 
     public function store(ListProjectRequest $request)
@@ -113,8 +197,8 @@ class ListProjectsController extends Controller
             $newProject = ListProjects::create($validatedData);
             return response()->json([
                 'success' => true,
-                'data' => $newProject,
-                'message' => 'Project created successfully'
+                'message' => 'Project created successfully',
+                'data' => $newProject
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -123,10 +207,36 @@ class ListProjectsController extends Controller
         }
     }
 
-    /** method update
-     * Route is PUT /api/listsProject/{id}
-     * Updates a specific project and returns a Json response
-     * return success true, status 200 and message is 'Project updated successfully'
+    /**
+     * @OA\Put(
+     *   path="/api/codeconnect/{id}",
+     *   summary="Update an existing project",
+     *   tags={"Codeconnect"},
+     *   security={{"sanctum":{}}},
+     *   @OA\Parameter(
+     *       name="id",
+     *       in="path",
+     *       required=true,
+     *       @OA\Schema(type="integer")
+     *   ),
+     *   @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *          @OA\Property(property="title", type="string", example="Updated Project"),
+     *          @OA\Property(property="time_duration", type="string", example="2 months"),
+     *          @OA\Property(property="language_backend", type="string", example="PHP"),
+     *          @OA\Property(property="language_frontend", type="string", example="TypeScript")
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *      description="Project updated successfully"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="Project not found"
+     *   )
+     * )
      */
 
     public function update(ListProjectRequest $request, $id)
@@ -162,8 +272,8 @@ class ListProjectsController extends Controller
             return response()->json([
 
                 'success' => true,
-                'data' => $projectUpdated,
-                'message' => 'Project updated successfully'
+                'message' => 'Project updated successfully',
+                'data' => $projectUpdated
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -241,10 +351,27 @@ class ListProjectsController extends Controller
         ], 200);
     }
 
-    /** Method destroy
-     * Route is DELETE /api/listsProject/{id}
-     * destroy a specific project and returns a Json response
-     * return success true, status 200 and message is 'Project deleted successfully'
+    /**
+     * @OA\Delete(
+     *   path="/api/codeconnect/{id}",
+     *   summary="Delete a project",
+     *   tags={"Codeconnect"},
+     *   security={{"sanctum":{}}},
+     *   @OA\Parameter(
+     *       name="id",
+     *       in="path",
+     *       required=true,
+     *       @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *      description="Project deleted successfully"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="Project not found"
+     *   )
+     * )
      */
 
     public function destroy($id)

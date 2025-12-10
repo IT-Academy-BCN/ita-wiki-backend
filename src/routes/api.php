@@ -49,8 +49,15 @@ Route::prefix('tags')->group(function () {
     Route::get('/by-category', [TagController::class, 'getCategoryTagsId'])->name('tags.by-category');
 });
 
-//listProject endpoint
-Route::apiResource('listsProject', ListProjectsController::class);
+// ========== LIST PROJECTS ENDPOINTS ==========
+
+// PUBLIC
+Route::apiResource('codeconnect', ListProjectsController::class)->only(['index', 'show']);
+
+// PROTECTED
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('codeconnect', ListProjectsController::class)->except(['index', 'show']);
+});
 
 // PUBLIC CONTRIBUTOR VALIDATION ENDPOINT
 Route::patch(
@@ -58,8 +65,7 @@ Route::patch(
     [ListProjectsController::class, 'updateContributorStatus']
 )->name('contributors.update-status');
 
-
-// RESOURCES ENDPOINTS
+// ========== RESOURCES ENDPOINTS ==========
 
 // PUBLIC
 Route::apiResource('resources', ResourceController::class)->only(['index', 'show']);
