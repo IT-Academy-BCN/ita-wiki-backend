@@ -48,12 +48,7 @@ jobs:
         run: composer dump-autoload
 
       - name: Copy test environment
-        run: |
-          if [ -f .env.testing ]; then
-            cp .env.testing .env
-          else
-            cp .env.example .env
-          fi
+        run: cp .env.example .env
 
       - name: Prepare Laravel storage directories
         run: |
