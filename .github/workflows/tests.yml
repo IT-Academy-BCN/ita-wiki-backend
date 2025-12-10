@@ -10,6 +10,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
     services:
       mysql:
         image: mysql:8.0
@@ -33,18 +36,16 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.3
           extensions: mbstring, dom, fileinfo, pdo, bcmath, mysql
 
       - name: Install Composer Dependencies
-        working-directory: ./src
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       
       - name: Dump autoload after src/ restructure
         run: composer dump-autoload
 
       - name: Copy test environment
-        working-directory: ./src
         run: |
           if [ -f .env.testing ]; then
             cp .env.testing .env
@@ -54,15 +55,15 @@ jobs:
 
       - name: Prepare Laravel storage directories
         run: |
-          mkdir -p src/storage/framework/cache
-          mkdir -p src/storage/framework/sessions
-          mkdir -p src/storage/framework/views
-          mkdir -p src/storage/logs
-          chmod -R 777 src/storage
-          chmod -R 777 src/bootstrap/cache
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p storage/framework/testing
+          mkdir -p storage/logs
+          chmod -R 777 storage
+          chmod -R 777 bootstrap/cache
 
       - name: Generate Application Key
-        working-directory: ./src
         run: php artisan key:generate
 
       - name: Wait for MySQL to be Ready
@@ -72,7 +73,6 @@ jobs:
         run: php artisan config:clear 
 
       - name: Set up Database
-        working-directory: ./
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -85,7 +85,6 @@ jobs:
           php artisan migrate --force
 
       - name: Run Tests
-        working-directory: ./
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -94,4 +93,4 @@ jobs:
           DB_USERNAME: user
           DB_PASSWORD: password
           ALLOW_ROLE_SELF_ASSIGNMENT: true
-        run: php artisan test
+        run: php artisan test --stop-on-failure
