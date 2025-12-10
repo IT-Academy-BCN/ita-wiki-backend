@@ -24,9 +24,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Copy all installation files
 COPY bootstrap ./bootstrap
 COPY public ./public
-COPY storage ./storage
 COPY src ./src
 COPY  artisan composer.json composer.lock phpunit.xml ./
+
+# Create storage directory structure (since it's not in version control)
+RUN mkdir -p storage/app/public \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/framework/cache/data \
+    storage/framework/testing \
+    storage/logs \
+    bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
 
 # Install dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -44,3 +55,4 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start PHP-FPM and Nginx
 CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
+
