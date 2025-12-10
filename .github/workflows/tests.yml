@@ -37,27 +37,39 @@ jobs:
           extensions: mbstring, dom, fileinfo, pdo, bcmath, mysql
 
       - name: Install Composer Dependencies
-        working-directory: ./
+        working-directory: ./src
         run: composer install --no-progress --prefer-dist --optimize-autoloader
+      
+      - name: Dump autoload after src/ restructure
+        run: composer dump-autoload
 
       - name: Copy test environment
-        working-directory: ./
-        run: cp .env.testing .env
+        working-directory: ./src
+        run: |
+          if [ -f .env.testing ]; then
+            cp .env.testing .env
+          else
+            cp .env.example .env
+          fi
 
       - name: Prepare Laravel storage directories
         run: |
-          mkdir -p storage/framework/cache
-          mkdir -p storage/framework/sessions
-          mkdir -p storage/framework/views
-          mkdir -p storage/logs
-          chmod -R 777 storage
+          mkdir -p src/storage/framework/cache
+          mkdir -p src/storage/framework/sessions
+          mkdir -p src/storage/framework/views
+          mkdir -p src/storage/logs
+          chmod -R 777 src/storage
+          chmod -R 777 src/bootstrap/cache
 
       - name: Generate Application Key
-        working-directory: ./
+        working-directory: ./src
         run: php artisan key:generate
 
       - name: Wait for MySQL to be Ready
         run: sleep 15
+
+      - name: Clear config cache
+        run: php artisan config:clear 
 
       - name: Set up Database
         working-directory: ./
