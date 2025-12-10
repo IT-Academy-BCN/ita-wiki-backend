@@ -49,7 +49,7 @@ jobs:
 
       - name: Copy test environment
         working-directory: ./
-        run: cp .env.example .env
+        run: cp .env.example src/.env
 
       - name: Prepare Laravel storage directories
         run: |
