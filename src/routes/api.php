@@ -52,7 +52,10 @@ Route::prefix('tags')->group(function () {
 //codeconnect endpoint
 Route::apiResource('codeconnect', ListProjectsController::class);
 
-// PUBLIC CONTRIBUTOR VALIDATION ENDPOINT
+// CONTRIBUTORS ENDPOINTS
+Route::get('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'getContributors'])->name('contributors.index');
+Route::post('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'addContributor'])->name('contributors.store');
+Route::delete('/codeconnect/{listProject}/contributors/{contributor}', [ListProjectsController::class, 'removeContributor'])->name('contributors.destroy');
 Route::patch(
     '/codeconnect/{listProject}/contributors/{contributor}/status',
     [ListProjectsController::class, 'updateContributorStatus']

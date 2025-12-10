@@ -242,7 +242,7 @@ class ListProjectsController extends Controller
     }
 
     /** Method destroy
-     * Route is DELETE /api/listsProject/{id}
+     * Route is DELETE /api/codeconnect/{id}
      * destroy a specific project and returns a Json response
      * return success true, status 200 and message is 'Project deleted successfully'
      */
@@ -269,6 +269,132 @@ class ListProjectsController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error deleting project',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /** method getContributors
+     * Route is GET /api/codeconnect/{listProject}/contributors
+     * Returns a Json response with all contributors of a specific project
+     * return success true, data with contributors list, status 200 and message is 'Contributors retrieved successfully'
+     */
+    public function getContributors($listProjectId)
+    {
+        $project = ListProjects::find($listProjectId);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Project not found'
+            ], 404);
+        }
+
+        $contributors = ContributorListProject::where('list_project_id', $listProjectId)
+            ->with('user')
+            ->get()
+            ->map(function ($contributor) {
+                return [
+                    'id' => $contributor->id,
+                    'user_id' => $contributor->user_id,
+                    'programming_role' => $contributor->programming_role,
+                    'status' => $contributor->status,
+                    'user' => [
+                        'id' => $contributor->user->id,
+                        'name' => $contributor->user->name,
+                        'email' => $contributor->user->email,
+                    ],
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $contributors,
+            'message' => 'Contributors retrieved successfully'
+        ], 200);
+    }
+
+    /** method addContributor
+     * Route is POST /api/codeconnect/{listProject}/contributors
+     * Creates a new contributor request and returns a Json response
+     * return success true, status 201 and message is 'Contributor request created successfully'
+     */
+    public function addContributor(Request $request, $listProjectId)
+    {
+        $validatedData = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'programming_role' => ['required', 'string', 'in:Frontend Developer,Backend Developer,Fullstack Developer,Other'],
+        ]);
+
+        $project = ListProjects::find($listProjectId);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Project not found'
+            ], 404);
+        }
+
+        $existingContributor = ContributorListProject::where('list_project_id', $listProjectId)
+            ->where('user_id', $validatedData['user_id'])
+            ->first();
+
+        if ($existingContributor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User is already a contributor for this project'
+            ], 400);
+        }
+
+        try {
+            $contributor = ContributorListProject::create([
+                'user_id' => $validatedData['user_id'],
+                'programming_role' => $validatedData['programming_role'],
+                'list_project_id' => $listProjectId,
+                'status' => ContributorStatusEnum::Pending->value,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $contributor,
+                'message' => 'Contributor request created successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error creating contributor request',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /** method removeContributor
+     * Route is DELETE /api/codeconnect/{listProject}/contributors/{contributor}
+     * Removes a contributor from a project and returns a Json response
+     * return success true, status 200 and message is 'Contributor removed successfully'
+     */
+    public function removeContributor($listProjectId, $contributorId)
+    {
+        $contributor = ContributorListProject::where('id', $contributorId)
+            ->where('list_project_id', $listProjectId)
+            ->first();
+
+        if (!$contributor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contributor not found'
+            ], 404);
+        }
+
+        try {
+            $contributor->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contributor removed successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error removing contributor',
                 'message' => $e->getMessage()
             ], 500);
         }
