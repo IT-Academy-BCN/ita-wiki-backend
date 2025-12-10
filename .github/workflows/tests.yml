@@ -40,9 +40,11 @@ jobs:
           extensions: mbstring, dom, fileinfo, pdo, bcmath, mysql
 
       - name: Install Composer Dependencies
+        working-directory: ./
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       
-      - name: Dump autoload after src/ restructure
+      - name: Dump autoload
+        working-directory: ./
         run: composer dump-autoload
 
       - name: Copy test environment
