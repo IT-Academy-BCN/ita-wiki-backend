@@ -11,6 +11,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use App\Enums\LanguageEnum;
 
 class ListProjectsUpdateTest extends TestCase
 {
@@ -30,8 +31,8 @@ class ListProjectsUpdateTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript',
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $this->contributorOne = ContributorListProject::factory()->create([
@@ -49,8 +50,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->putJson('/api/codeconnect/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'TypeScript'
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::TypeScript->value,
         ]);
         
         $response->assertStatus(200);
@@ -69,8 +70,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->putJson('/api/codeconnect/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'language_backend' => 'Ruby',
-            'language_frontend' => 'Elm'
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
 
@@ -90,7 +91,7 @@ class ListProjectsUpdateTest extends TestCase
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
-            'language_frontend' => 'JavaScript'
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $response->assertStatus(400);
@@ -107,8 +108,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '',
-            'language_backend' => 'Python',
-            'language_frontend' => 'JavaScript'
+            'language_backend' => LanguageEnum::Python->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
         $response->assertStatus(422);
     }
@@ -118,8 +119,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->putJson('/api/codeconnect/1', [
             'title' => 'Project Alpha Updated',
             'time_duration' => '2 months',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript'
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $response->assertStatus(401);

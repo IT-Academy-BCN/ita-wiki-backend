@@ -11,6 +11,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use App\Enums\LanguageEnum;
 
 class ListProjectsDeleteTest extends TestCase
 {
@@ -30,8 +31,8 @@ class ListProjectsDeleteTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript',
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $this->contributorOne = ContributorListProject::factory()->create([

@@ -10,6 +10,7 @@ use Tests\TestCase;
 use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
+use App\Enums\LanguageEnum;
 
 class ListProjectsShowTest extends TestCase
 {
@@ -28,8 +29,8 @@ class ListProjectsShowTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript',
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $this->contributorOne = ContributorListProject::factory()->create([

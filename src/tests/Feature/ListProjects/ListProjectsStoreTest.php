@@ -11,6 +11,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use App\Enums\LanguageEnum;
 
 class ListProjectsStoreTest extends TestCase
 {
@@ -30,8 +31,8 @@ class ListProjectsStoreTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript',
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $this->contributorOne = ContributorListProject::factory()->create([
@@ -49,8 +50,8 @@ class ListProjectsStoreTest extends TestCase
         $response = $this->postJson('/api/codeconnect/', [
             'title' => 'Proyecto Beta',
             'time_duration' => '1 mes',
-            'language_backend' => 'Python',
-            'language_frontend' => 'JavaScript'
+            'language_backend' => LanguageEnum::Python->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $response->assertJsonFragment([
@@ -70,7 +71,7 @@ class ListProjectsStoreTest extends TestCase
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
-            'language_frontend' => 'JavaScript'
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $response->assertJsonFragment([
@@ -89,8 +90,8 @@ class ListProjectsStoreTest extends TestCase
         $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '',
-            'language_backend' => 'Python',
-            'language_frontend' => 'JavaScript'
+            'language_backend' => LanguageEnum::Python->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
         $response->assertStatus(422);
     }
@@ -101,8 +102,8 @@ class ListProjectsStoreTest extends TestCase
         $response = $this->postJson('/api/codeconnect/', [
             'title' => 'Proyecto Gamma',
             'time_duration' => '1 mes',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript'
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $response->assertStatus(401);
