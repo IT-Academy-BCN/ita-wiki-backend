@@ -41,7 +41,7 @@ class ListProjectsUpdateTest extends TestCase
 
 
     public function test_method_update_successfully():void{
-        $response = $this->putJson('/api/listsProject/1', [
+        $response = $this->putJson('/api/codeconnect/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
             'language_backend' => 'PHP',
@@ -55,7 +55,7 @@ class ListProjectsUpdateTest extends TestCase
     }
 
     public function test_method_update_error_404():void{
-        $response = $this->putJson('/api/listsProject/999', [
+        $response = $this->putJson('/api/codeconnect/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
             'language_backend' => 'Ruby',
@@ -70,7 +70,7 @@ class ListProjectsUpdateTest extends TestCase
     }
 
      public function test_method_datas_not_valid_language():void{
-        $response = $this->postJson('/api/listsProject/',[
+        $response = $this->postJson('/api/codeconnect/',[
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
@@ -84,7 +84,7 @@ class ListProjectsUpdateTest extends TestCase
     }
 
     public function test_method_datas_error_required():void{
-        $response = $this->postJson('/api/listsProject/',[
+        $response = $this->postJson('/api/codeconnect/',[
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => 'Python',

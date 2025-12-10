@@ -42,7 +42,7 @@ class ListProjectsShowTest extends TestCase
     
 
     public function test_show_existing_project_successfully(): void {
-        $response = $this->get("/api/listsProject/{$this->projectOne->id}");
+        $response = $this->get("/api/codeconnect/{$this->projectOne->id}");
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'success' => true,
@@ -63,7 +63,7 @@ class ListProjectsShowTest extends TestCase
     
 
     public function test_nonexistent_project_returns_404(): void{
-        $response = $this->get('/api/listsProject/999');
+        $response = $this->get('/api/codeconnect/999');
         $response->assertStatus(404);
         $response->assertJson([
             'success' => false,

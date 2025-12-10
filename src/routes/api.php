@@ -49,12 +49,12 @@ Route::prefix('tags')->group(function () {
     Route::get('/by-category', [TagController::class, 'getCategoryTagsId'])->name('tags.by-category');
 });
 
-//listProject endpoint
-Route::apiResource('listsProject', ListProjectsController::class);
+//codeconnect endpoint
+Route::apiResource('codeconnect', ListProjectsController::class);
 
 // PUBLIC CONTRIBUTOR VALIDATION ENDPOINT
 Route::patch(
-    '/listsProject/{listProject}/contributors/{contributor}/status',
+    '/codeconnect/{listProject}/contributors/{contributor}/status',
     [ListProjectsController::class, 'updateContributorStatus']
 )->name('contributors.update-status');
 

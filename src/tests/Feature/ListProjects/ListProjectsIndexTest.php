@@ -52,7 +52,7 @@ class ListProjectsIndexTest extends TestCase
 
 
     public function test_method_index_endpoint():void{
-        $response = $this->get('/api/listsProject');
+        $response = $this->get('/api/codeconnect');
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'success' => true,
@@ -60,13 +60,13 @@ class ListProjectsIndexTest extends TestCase
    }
 
     public function test_method_count_projects():void {
-        $response = $this->get('/api/listsProject');
+        $response = $this->get('/api/codeconnect');
         $response->assertJsonCount(5, 'data');
         $response->assertStatus(200);
     }
     
     public function test_index_returns_successfully():void{
-        $response = $this->get('/api/listsProject');
+        $response = $this->get('/api/codeconnect');
         $response->assertJsonFragment([
             'title' => $this->projectOne->title,
             'time_duration' => $this->projectOne->time_duration,
