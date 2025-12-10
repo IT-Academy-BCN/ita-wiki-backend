@@ -231,9 +231,6 @@ class ListProjectsController extends Controller
      *         )
      *     )
      * )
-     * Route is PATCH /api/codeconnect/{listProject}/contributors/{contributor}/status
-     * Updates the status of a specific contributor in a project and returns a Json response
-     * return success true, status 200 and message is 'Contributor status updated successfully'
      */
     public function updateContributorStatus(Request $request, int $listProjectId, int $contributorId)
     {
@@ -370,9 +367,6 @@ class ListProjectsController extends Controller
      *         )
      *     )
      * )
-     * Route is GET /api/codeconnect/{listProject}/contributors
-     * Returns a Json response with all contributors of a specific project
-     * return success true, data with contributors list, status 200 and message is 'Contributors retrieved successfully'
      */
     public function getContributors(int $listProjectId)
     {
@@ -466,9 +460,6 @@ class ListProjectsController extends Controller
      *         description="Validation Error"
      *     )
      * )
-     * Route is POST /api/codeconnect/{listProject}/contributors
-     * Creates a new contributor request and returns a Json response
-     * return success true, status 201 and message is 'Contributor request created successfully'
      */
     public function addContributor(Request $request, int $listProjectId)
     {
@@ -553,9 +544,6 @@ class ListProjectsController extends Controller
      *         )
      *     )
      * )
-     * Route is DELETE /api/codeconnect/{listProject}/contributors/{contributor}
-     * Removes a contributor from a project and returns a Json response
-     * return success true, status 200 and message is 'Contributor removed successfully'
      */
     public function removeContributor(int $listProjectId, int $contributorId)
     {
