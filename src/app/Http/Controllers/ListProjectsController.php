@@ -235,7 +235,7 @@ class ListProjectsController extends Controller
      * Updates the status of a specific contributor in a project and returns a Json response
      * return success true, status 200 and message is 'Contributor status updated successfully'
      */
-    public function updateContributorStatus(Request $request, $listProjectId, $contributorId)
+    public function updateContributorStatus(Request $request, int $listProjectId, int $contributorId)
     {
         $validatedData = $request->validate([
             'status' => ['required', 'string'],
@@ -374,7 +374,7 @@ class ListProjectsController extends Controller
      * Returns a Json response with all contributors of a specific project
      * return success true, data with contributors list, status 200 and message is 'Contributors retrieved successfully'
      */
-    public function getContributors($listProjectId)
+    public function getContributors(int $listProjectId)
     {
         $project = ListProjects::find($listProjectId);
 
@@ -470,7 +470,7 @@ class ListProjectsController extends Controller
      * Creates a new contributor request and returns a Json response
      * return success true, status 201 and message is 'Contributor request created successfully'
      */
-    public function addContributor(Request $request, $listProjectId)
+    public function addContributor(Request $request, int $listProjectId)
     {
         $validatedData = $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id'],
@@ -557,7 +557,7 @@ class ListProjectsController extends Controller
      * Removes a contributor from a project and returns a Json response
      * return success true, status 200 and message is 'Contributor removed successfully'
      */
-    public function removeContributor($listProjectId, $contributorId)
+    public function removeContributor(int $listProjectId, int $contributorId)
     {
         $contributor = ContributorListProject::where('id', $contributorId)
             ->where('list_project_id', $listProjectId)
