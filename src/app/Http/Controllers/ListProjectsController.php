@@ -197,8 +197,8 @@ class ListProjectsController extends Controller
             $newProject = ListProjects::create($validatedData);
             return response()->json([
                 'success' => true,
-                'data' => $newProject,
-                'message' => 'Project created successfully'
+                'message' => 'Project created successfully',
+                'data' => $newProject
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -272,8 +272,8 @@ class ListProjectsController extends Controller
             return response()->json([
 
                 'success' => true,
-                'data' => $projectUpdated,
-                'message' => 'Project updated successfully'
+                'message' => 'Project updated successfully',
+                'data' => $projectUpdated
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
