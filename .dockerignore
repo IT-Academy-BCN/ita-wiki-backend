@@ -8,6 +8,9 @@ storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
 
+# PHP vendor
+vendor/  
+
 # Node modules and build artifacts
 node_modules/
 npm-debug.log*
