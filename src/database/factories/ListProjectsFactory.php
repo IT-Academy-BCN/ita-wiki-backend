@@ -22,8 +22,8 @@ class ListProjectsFactory extends Factory
             //
             'title' => $this->faker->sentence(3),
             'time_duration' => $this->faker->word(),
-            'language_backend' => $this->faker->randomElement(['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other']),
-            'language_frontend' => $this->faker->randomElement(['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other']),
+            'language_backend' => $this->faker->randomElement(['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL']),
+            'language_frontend' => $this->faker->randomElement(['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React']),
         ];
     }
 }

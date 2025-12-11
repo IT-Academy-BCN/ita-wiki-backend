@@ -31,8 +31,8 @@ class ListProjectsSeeder extends Seeder
         $project3= ListProjects::firstOrCreate([
             'title' => 'Project Gamma',
             'time_duration' => '3 weeks',
-            'language_backend' => 'Ruby',
-            'language_frontend' => 'CSS',
+            'language_backend' => 'Python',
+            'language_frontend' => 'React',
         ]);
 
     }

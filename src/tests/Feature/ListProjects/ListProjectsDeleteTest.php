@@ -43,7 +43,7 @@ class ListProjectsDeleteTest extends TestCase
   
 
     public function test_delete_existing_project_successfully():void{
-        $response = $this->delete("/api/listsProject/{$this->projectOne->id}");
+        $response = $this->delete("/api/codeconnect/{$this->projectOne->id}");
   
         $response->assertJsonFragment([
             'success' => true,
@@ -53,7 +53,7 @@ class ListProjectsDeleteTest extends TestCase
     }
 
     public function test_delete_nonexistent_project_returns_404():void{
-        $response = $this->delete("/api/listsProject/999");
+        $response = $this->delete("/api/codeconnect/999");
     
         $response->assertJsonFragment([
             'success' => false,
