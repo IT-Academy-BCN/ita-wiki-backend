@@ -58,8 +58,8 @@ class ListProjectsUpdateTest extends TestCase
         $response = $this->putJson('/api/codeconnect/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'language_backend' => 'Ruby',
-            'language_frontend' => 'Elm'
+            'language_backend' => 'Python',
+            'language_frontend' => 'React'
         ]);
         $response->assertStatus(404);
         $response->assertJsonFragment([

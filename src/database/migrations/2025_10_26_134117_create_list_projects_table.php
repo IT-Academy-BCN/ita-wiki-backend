@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('time_duration')->nullable();
-            $table->enum('language_backend', ['PHP', 'JavaScript', 'Python', 'Ruby', 'Java', 'C#', 'Go', 'Other'])->nullable();
-            $table->enum('language_frontend', ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'Other'])->nullable();
+            $table->enum('language_backend', ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'])->nullable();
+            $table->enum('language_frontend', ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React'])->nullable();
             $table->timestamps();
         });
     }
