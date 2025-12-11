@@ -12,15 +12,24 @@ use App\Enums\TechnicalTestStatusEnum;
 use App\Models\User;
 use App\Models\TechnicalTest;
 use App\Models\Exercise;
+use Laravel\Sanctum\Sanctum;
 
 class TechnicalTestUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Authenticate user for all tests in this class
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+    }
+
     public function test_can_update_technical_test_with_new_exercises(): void
     {
         $githubId = 123456;
-        User::factory()->create(['github_id' => $githubId]);
 
         $technicalTest = TechnicalTest::factory()->create([
             'github_id' => $githubId,

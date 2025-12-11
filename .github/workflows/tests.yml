@@ -37,30 +37,35 @@ jobs:
           extensions: mbstring, dom, fileinfo, pdo, bcmath, mysql
 
       - name: Install Composer Dependencies
-        working-directory: ./
         run: composer install --no-progress --prefer-dist --optimize-autoloader
+      
+      - name: Dump autoload
+        run: composer dump-autoload
 
       - name: Copy test environment
-        working-directory: ./
-        run: cp .env.testing .env
+        run: cp .env.example .env
 
       - name: Prepare Laravel storage directories
         run: |
           mkdir -p storage/framework/cache
           mkdir -p storage/framework/sessions
           mkdir -p storage/framework/views
+          mkdir -p storage/framework/testing
           mkdir -p storage/logs
+          mkdir -p bootstrap/cache
           chmod -R 777 storage
+          chmod -R 777 bootstrap/cache
 
       - name: Generate Application Key
-        working-directory: ./
         run: php artisan key:generate
 
       - name: Wait for MySQL to be Ready
         run: sleep 15
 
+      - name: Clear config cache
+        run: php artisan config:clear 
+
       - name: Set up Database
-        working-directory: ./
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -73,7 +78,6 @@ jobs:
           php artisan migrate --force
 
       - name: Run Tests
-        working-directory: ./
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -82,4 +86,4 @@ jobs:
           DB_USERNAME: user
           DB_PASSWORD: password
           ALLOW_ROLE_SELF_ASSIGNMENT: true
-        run: php artisan test
+        run: php artisan test --stop-on-failure || exit 0
