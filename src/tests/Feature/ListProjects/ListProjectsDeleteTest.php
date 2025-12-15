@@ -37,10 +37,7 @@ class ListProjectsDeleteTest extends TestCase
             'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
-        
-     }
-
-  
+    }
 
     public function test_delete_existing_project_successfully():void{
         $response = $this->delete("/api/codeconnect/{$this->projectOne->id}");
