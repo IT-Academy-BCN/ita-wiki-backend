@@ -1,9 +1,10 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\LanguageEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,12 +19,13 @@ class ListProjectsFactory extends Factory
      */
     public function definition(): array
     {
+        $languages = LanguageEnum::values();
+
         return [
-            //
             'title' => $this->faker->sentence(3),
             'time_duration' => $this->faker->word(),
-            'language_backend' => $this->faker->randomElement(['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL']),
-            'language_frontend' => $this->faker->randomElement(['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React']),
+            'language_backend' => $this->faker->randomElement($languages),
+            'language_frontend' => $this->faker->randomElement($languages),
         ];
     }
 }

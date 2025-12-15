@@ -49,20 +49,29 @@ Route::prefix('tags')->group(function () {
     Route::get('/by-category', [TagController::class, 'getCategoryTagsId'])->name('tags.by-category');
 });
 
-//codeconnect endpoint
-Route::apiResource('codeconnect', ListProjectsController::class);
+// ========== LIST PROJECTS ENDPOINTS ==========
 
-// CONTRIBUTORS ENDPOINTS
+// PUBLIC
+Route::apiResource('codeconnect', ListProjectsController::class)->only(['index', 'show']);
+
+// PROTECTED
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('codeconnect', ListProjectsController::class)->except(['index', 'show']);
+});
+
+// ========== CONTRIBUTORS ENDPOINTS ==========
+
+// PUBLIC
 Route::get('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'getContributors'])->name('contributors.index');
-Route::post('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'addContributor'])->name('contributors.store');
-Route::delete('/codeconnect/{listProject}/contributors/{contributor}', [ListProjectsController::class, 'removeContributor'])->name('contributors.destroy');
-Route::patch(
-    '/codeconnect/{listProject}/contributors/{contributor}/status',
-    [ListProjectsController::class, 'updateContributorStatus']
-)->name('contributors.update-status');
 
+// PROTECTED
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'addContributor'])->name('contributors.store');
+    Route::delete('/codeconnect/{listProject}/contributors/{contributor}', [ListProjectsController::class, 'removeContributor'])->name('contributors.destroy');
+    Route::patch('/codeconnect/{listProject}/contributors/{contributor}/status', [ListProjectsController::class, 'updateContributorStatus'])->name('contributors.update-status');
+});
 
-// RESOURCES ENDPOINTS
+// ========== RESOURCES ENDPOINTS ==========
 
 // PUBLIC
 Route::apiResource('resources', ResourceController::class)->only(['index', 'show']);

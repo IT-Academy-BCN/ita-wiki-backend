@@ -10,6 +10,7 @@ use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Enums\ContributorStatusEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 
 class ContributorsCrudTest extends TestCase
 {
@@ -77,6 +78,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_it_can_create_a_new_contributor_request(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->postJson("/api/codeconnect/{$this->project->id}/contributors", [
             'user_id' => $this->user->id,
             'programming_role' => 'Frontend Developer',
@@ -103,6 +105,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_post_contributor_returns_404_when_project_does_not_exist(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->postJson("/api/codeconnect/99999/contributors", [
             'user_id' => $this->user->id,
             'programming_role' => 'Backend Developer',
@@ -122,6 +125,8 @@ class ContributorsCrudTest extends TestCase
             'list_project_id' => $this->project->id,
         ]);
 
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson("/api/codeconnect/{$this->project->id}/contributors", [
             'user_id' => $this->user->id,
             'programming_role' => 'Fullstack Developer',
@@ -136,6 +141,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_it_returns_422_when_user_id_does_not_exist(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->postJson("/api/codeconnect/{$this->project->id}/contributors", [
             'user_id' => 99999,
             'programming_role' => 'Backend Developer',
@@ -146,6 +152,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_it_returns_422_when_programming_role_is_invalid(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->postJson("/api/codeconnect/{$this->project->id}/contributors", [
             'user_id' => $this->user->id,
             'programming_role' => 'Invalid Role',
@@ -156,6 +163,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_it_returns_422_when_required_fields_are_missing(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->postJson("/api/codeconnect/{$this->project->id}/contributors", []);
 
         $response->assertStatus(422);
@@ -168,6 +176,8 @@ class ContributorsCrudTest extends TestCase
         $contributor = ContributorListProject::factory()->create([
             'list_project_id' => $this->project->id,
         ]);
+
+        Sanctum::actingAs($this->user);
 
         $response = $this->deleteJson("/api/codeconnect/{$this->project->id}/contributors/{$contributor->id}");
 
@@ -184,6 +194,7 @@ class ContributorsCrudTest extends TestCase
 
     public function test_delete_returns_404_when_contributor_does_not_exist(): void
     {
+        Sanctum::actingAs($this->user);
         $response = $this->deleteJson("/api/codeconnect/{$this->project->id}/contributors/99999");
 
         $response->assertStatus(404)
@@ -200,6 +211,7 @@ class ContributorsCrudTest extends TestCase
             'list_project_id' => $otherProject->id,
         ]);
 
+        Sanctum::actingAs($this->user);
         $response = $this->deleteJson("/api/codeconnect/{$this->project->id}/contributors/{$contributor->id}");
 
         $response->assertStatus(404)

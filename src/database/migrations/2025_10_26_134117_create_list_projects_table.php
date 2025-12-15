@@ -5,6 +5,7 @@ declare (strict_types= 1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\LanguageEnum;
 
 return new class extends Migration
 {
@@ -17,8 +18,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('time_duration')->nullable();
-            $table->enum('language_backend', ['PHP', 'JavaScript', 'Java', 'React', 'TypeScript', 'Python', 'SQL'])->nullable();
-            $table->enum('language_frontend', ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React'])->nullable();
+            $table->enum('language_backend', LanguageEnum::values())->nullable();
+            $table->enum('language_frontend', LanguageEnum::values())->nullable();
             $table->timestamps();
         });
     }

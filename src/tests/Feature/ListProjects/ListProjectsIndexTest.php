@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types= 1);
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
@@ -10,14 +10,15 @@ use Tests\TestCase;
 use App\Models\ListProjects;
 use App\Models\ContributorListProject;
 use App\Models\User;
+use App\Enums\LanguageEnum;
 
 class ListProjectsIndexTest extends TestCase
 {
-     use RefreshDatabase;
+    use RefreshDatabase;
 
-        protected $projectOne;
-        protected $projectTwo;
-        protected $contributorOne;
+    protected $projectOne;
+    protected $projectTwo;
+    protected $contributorOne;
 
     public function setUp(): void
     {
@@ -29,26 +30,26 @@ class ListProjectsIndexTest extends TestCase
             'id' => 1,
             'title' => 'Project Alpha',
             'time_duration' => '1 month',
-            'language_backend' => 'PHP',
-            'language_frontend' => 'JavaScript',
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
         $this->projectTwo = ListProjects::factory()->create([
             'id' => 2,
             'title' => 'Project Beta',
             'time_duration' => '2 months',
-            'language_backend' => 'Python',
-            'language_frontend' => 'HTML',
+            'language_backend' => LanguageEnum::Python->value,
+            'language_frontend' => LanguageEnum::React->value,
         ]);
 
         ListProjects::factory(3)->create();
-            
+
         $this->contributorOne = ContributorListProject::factory()->create([
             'user_id' => $this->userOne->id,
             'programming_role' => 'Backend Developer',
             'list_project_id' => $this->projectOne->id,
         ]);
-     }
+    }
 
 
     public function test_method_index_endpoint():void{
@@ -57,7 +58,7 @@ class ListProjectsIndexTest extends TestCase
         $response->assertJsonFragment([
             'success' => true,
         ]);
-   }
+    }
 
     public function test_method_count_projects():void {
         $response = $this->get('/api/codeconnect');
@@ -78,19 +79,16 @@ class ListProjectsIndexTest extends TestCase
                     'programming_role' => $this->contributorOne->programming_role,
                 ]
             ],
+        ]);
+
+        $response->assertJsonFragment([
             'title' => $this->projectTwo->title,
             'time_duration' => $this->projectTwo->time_duration,
             'language_backend' => $this->projectTwo->language_backend,
             'language_frontend' => $this->projectTwo->language_frontend,
             'contributors' => [],
-          
-          
         ]);
+
         $response->assertStatus(200);
     }
-
-
-
-    
 }
-
