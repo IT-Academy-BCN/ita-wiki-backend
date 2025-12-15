@@ -42,11 +42,14 @@ class ListProjectsDeleteTest extends TestCase
         ]);
     }
 
+
+
     public function test_delete_existing_project_successfully(): void
     {
+
         Sanctum::actingAs($this->userOne);
         $response = $this->delete("/api/codeconnect/{$this->projectOne->id}");
-  
+
         $response->assertJsonFragment([
             'success' => true,
             'message' => 'Project deleted successfully',
@@ -54,10 +57,11 @@ class ListProjectsDeleteTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_delete_nonexistent_project_returns_404():void{
+    public function test_delete_nonexistent_project_returns_404(): void
+    {
         Sanctum::actingAs($this->userOne);
         $response = $this->delete("/api/codeconnect/999");
-    
+
         $response->assertJsonFragment([
             'success' => false,
             'message' => 'Project not found',

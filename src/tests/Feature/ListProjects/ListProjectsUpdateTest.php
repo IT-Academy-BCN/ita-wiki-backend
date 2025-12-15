@@ -43,8 +43,10 @@ class ListProjectsUpdateTest extends TestCase
     }
 
 
-    public function test_method_update_successfully():void{
+    public function test_method_update_successfully(): void
+    {
         Sanctum::actingAs($this->userOne);
+
         $response = $this->putJson('/api/codeconnect/1', [
             'title' => 'Project Alpha',
             'time_duration' => '2 months',
@@ -60,13 +62,16 @@ class ListProjectsUpdateTest extends TestCase
 
     }
 
-    public function test_method_update_error_404():void{
+    public function test_method_update_error_404(): void
+    {
+
         Sanctum::actingAs($this->userOne);
+
         $response = $this->putJson('/api/codeconnect/999', [
             'title' => 'Non-existent Project',
             'time_duration' => '3 months',
-            'language_backend' => 'Python',
-            'language_frontend' => 'React'
+            'language_backend' => LanguageEnum::PHP->value,
+            'language_frontend' => LanguageEnum::JavaScript->value,
         ]);
 
 
@@ -77,9 +82,12 @@ class ListProjectsUpdateTest extends TestCase
         ]);
     }
 
-     public function test_method_datas_not_valid_language():void{
+    public function test_method_datas_not_valid_language(): void
+    {
+
         Sanctum::actingAs($this->userOne);
-        $response = $this->postJson('/api/codeconnect/',[
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
@@ -93,9 +101,11 @@ class ListProjectsUpdateTest extends TestCase
         ]);
     }
 
-    public function test_method_datas_error_required():void{
+    public function test_method_datas_error_required(): void
+    {
         Sanctum::actingAs($this->userOne);
-        $response = $this->postJson('/api/codeconnect/',[
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => LanguageEnum::Python->value,

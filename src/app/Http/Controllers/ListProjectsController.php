@@ -405,10 +405,27 @@ class ListProjectsController extends Controller
         ], 200);
     }
 
-    /** Method destroy
-     * Route is DELETE /api/codeconnect/{id}
-     * destroy a specific project and returns a Json response
-     * return success true, status 200 and message is 'Project deleted successfully'
+    /**
+     * @OA\Delete(
+     *   path="/api/codeconnect/{id}",
+     *   summary="Delete a project",
+     *   tags={"Codeconnect"},
+     *   security={{"sanctum":{}}},
+     *   @OA\Parameter(
+     *       name="id",
+     *       in="path",
+     *       required=true,
+     *       @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *      description="Project deleted successfully"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="Project not found"
+     *   )
+     * )
      */
 
     public function destroy($id)

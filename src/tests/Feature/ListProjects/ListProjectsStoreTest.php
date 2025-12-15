@@ -62,9 +62,12 @@ class ListProjectsStoreTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_method_datas_not_valid_language():void{
-    Sanctum::actingAs($this->userOne);
-    $response = $this->postJson('/api/codeconnect/',[
+    public function test_method_datas_not_valid_language(): void
+    {
+        
+        Sanctum::actingAs($this->userOne);
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '1 month',
             'language_backend' => 'pokemon',
@@ -79,9 +82,12 @@ class ListProjectsStoreTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function test_method_datas_error_required():void{
-    Sanctum::actingAs($this->userOne);
-    $response = $this->postJson('/api/codeconnect/',[
+    public function test_method_datas_error_required(): void
+    {
+
+        Sanctum::actingAs($this->userOne);
+
+        $response = $this->postJson('/api/codeconnect/', [
             'title' => 'project invalid',
             'time_duration' => '',
             'language_backend' => LanguageEnum::Python->value,
