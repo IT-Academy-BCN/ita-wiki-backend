@@ -83,6 +83,11 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function() {
     ->except(['index', 'show']);
 });
 
+// EXERCISES ENDPOINTS
+Route::middleware(['throttle:60,1'])->group(function () {
+    Route::apiResource('exercises', ExerciseController::class);
+});
+
 // LIKES ENDPOINTS
 Route::post('/likes', [LikeController::class, 'createStudentLike'])->name('like.create');
 Route::delete('/likes', [LikeController::class, 'deleteStudentLike'])->name('like.delete');
