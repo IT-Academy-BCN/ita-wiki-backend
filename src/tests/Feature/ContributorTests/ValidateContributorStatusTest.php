@@ -43,7 +43,7 @@ class ValidateContributorStatusTest extends TestCase
         $pendingContributor = $this->createPendingContributor($contributorUser);
 
         $response = $this->actingAs($validator)
-            ->patchJson("/api/listsProject/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
+            ->patchJson("/api/codeconnect/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
                 'status' => ContributorStatusEnum::Accepted->value,
             ]);
 
@@ -66,7 +66,7 @@ class ValidateContributorStatusTest extends TestCase
         $pendingContributor = $this->createPendingContributor($user);
 
         $response = $this->actingAs($user)
-            ->patchJson("/api/listsProject/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
+            ->patchJson("/api/codeconnect/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
                 'status' => ContributorStatusEnum::Accepted->value,
             ]);
 
@@ -89,7 +89,7 @@ class ValidateContributorStatusTest extends TestCase
         $pendingContributor = $this->createPendingContributor($contributorUser);
 
         $response = $this->actingAs($validator)
-            ->patchJson("/api/listsProject/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
+            ->patchJson("/api/codeconnect/{$this->project->id}/contributors/{$pendingContributor->id}/status", [
                 'status' => ContributorStatusEnum::Pending->value,
             ]);
 

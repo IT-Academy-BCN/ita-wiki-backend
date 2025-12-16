@@ -59,11 +59,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('codeconnect', ListProjectsController::class)->except(['index', 'show']);
 });
 
-// PUBLIC CONTRIBUTOR VALIDATION ENDPOINT
-Route::patch(
-    '/listsProject/{listProject}/contributors/{contributor}/status',
-    [ListProjectsController::class, 'updateContributorStatus']
-)->name('contributors.update-status');
+// ========== CONTRIBUTORS ENDPOINTS ==========
+
+// PUBLIC
+Route::get('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'getContributors'])->name('contributors.index');
+
+// PROTECTED
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/codeconnect/{listProject}/contributors', [ListProjectsController::class, 'addContributor'])->name('contributors.store');
+    Route::delete('/codeconnect/{listProject}/contributors/{contributor}', [ListProjectsController::class, 'removeContributor'])->name('contributors.destroy');
+    Route::patch('/codeconnect/{listProject}/contributors/{contributor}/status', [ListProjectsController::class, 'updateContributorStatus'])->name('contributors.update-status');
+});
 
 // ========== RESOURCES ENDPOINTS ==========
 
