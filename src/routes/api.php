@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Sesión closed succesfully'
+            'message' => 'Session closed successfully'
         ]);
     });
 });
@@ -75,9 +75,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('resources', ResourceController::class)->except(['index', 'show']);
 });
 
-// TECHNICAL TESTS ENDPOINTS
+// TECHNICAL TESTS
+
+//PUBLIC
 Route::middleware(['throttle:60,1'])->group(function () {
-    Route::apiResource('technical-tests', TechnicalTestController::class);
+    Route::apiResource('technical-tests', TechnicalTestController::class)
+    ->only(['index', 'show']);
+});
+
+//PROTECTED
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function() {
+    Route::apiResource('technical-tests', TechnicalTestController::class)
+    ->except(['index', 'show']);
 });
 
 // EXERCISES ENDPOINTS
