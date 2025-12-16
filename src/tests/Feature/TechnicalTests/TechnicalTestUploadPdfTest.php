@@ -8,20 +8,27 @@ use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use App\Enums\LanguageEnum;
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class TechnicalTestUploadPdfTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Authenticate user for all tests in this class
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+    }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_upload_a_pdf_file()
     {
         Storage::fake('local');
 
-     
-        // $user = $this->authenticateUserWithRole('mentor');
         $githubId = 123456;
-        User::factory()->create(['github_id' => $githubId]);
 
         $payload = [
             'title' => 'Prueba técnica con PDF',
