@@ -22,7 +22,7 @@ class ExerciseTest extends TestCase
         Sanctum::actingAs($user);
     }
 
-    /* public function test_can_create_exercise_with_required_fields()
+    public function test_can_create_exercise_with_required_fields()
     {
         $technicalTest = TechnicalTest::factory()->create();
 
@@ -187,5 +187,5 @@ class ExerciseTest extends TestCase
 
         $response->assertStatus(422)
                  ->assertJsonValidationErrors(['title']);
-    } */
+    }
 }
