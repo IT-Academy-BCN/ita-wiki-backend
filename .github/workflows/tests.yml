@@ -86,4 +86,4 @@ jobs:
           DB_USERNAME: user
           DB_PASSWORD: password
           ALLOW_ROLE_SELF_ASSIGNMENT: true
-        run: php artisan test --stop-on-failure || exit 0
+        run: php artisan test
